@@ -1,5 +1,31 @@
+/* eslint-disable prettier/prettier */
 import Keycard from './NativeKeycard';
+import { NFCCardChannel } from './card-channel';
 
-export function multiply(a: number, b: number): number {
-  return Keycard.multiply(a, b);
+export async function isNFCSupported(): Promise<boolean> {
+  return await Keycard.isNFCSupported();
+}
+
+export async function isNFCEnabled(): Promise<boolean> {
+  return await Keycard.isNFCEnabled();
+}
+
+export async function openNFCSettings(): Promise<boolean> {
+  return await Keycard.openNFCSettings();
+}
+
+export async function startNFC(): Promise<boolean> {
+  return await Keycard.startNFC();
+}
+
+export async function stopNFC(): Promise<boolean> {
+  return await Keycard.stopNFC();
+}
+
+export function startNFCChannel(): NFCCardChannel {
+  return new NFCCardChannel();
+}
+
+export function getCardChannel(): NFCCardChannel {
+  return new NFCCardChannel();
 }

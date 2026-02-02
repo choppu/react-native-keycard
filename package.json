@@ -1,7 +1,7 @@
 {
   "name": "react-native-keycard",
   "version": "0.1.0",
-  "description": "A",
+  "description": "A React Native library to interact with Keycard using NFC connection",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {
@@ -45,18 +45,10 @@
     "ios",
     "android"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/choppu/react-native-keycard.git"
-  },
-  "author": "Ksenia Lebedeva <ksenia@bitgamma.com> (https://github.com/choppu)",
+  "author": "Ksenia Lebedeva",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/choppu/react-native-keycard/issues"
-  },
-  "homepage": "https://github.com/choppu/react-native-keycard#readme",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+  "dependencies": {
+    "keycard-sdk": "https://github.com/choppu/keycard-sdk.git#separate-pcsc-channel"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^19.8.1",
@@ -68,6 +60,7 @@
     "@release-it/conventional-changelog": "^10.0.1",
     "@types/jest": "^29.5.14",
     "@types/react": "^19.2.0",
+    "buffer": "^6.0.3",
     "commitlint": "^19.8.1",
     "del-cli": "^6.0.0",
     "eslint": "^9.35.0",
