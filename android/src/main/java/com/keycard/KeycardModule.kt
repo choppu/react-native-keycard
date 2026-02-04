@@ -48,7 +48,7 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
     }
   }
 
-  override fun startNFC(promise: Promise) {
+  override fun startNFC(prompt: String, promise: Promise) {
     cardChannel?.startNFC();
     promise.resolve(true);
   }
@@ -73,6 +73,11 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
     } catch(e: IOException) {
       promise.resolve(response);
     }
+  }
+
+  // iOS only method
+  override fun setNFCMessage(message: String, promise: Promise) {
+    promise.resolve(true);
   }
 
   companion object {
