@@ -47,6 +47,7 @@
   ],
   "author": "Ksenia Lebedeva",
   "license": "MIT",
+  "homepage": "https://github.com/choppu/react-native-keycard#readme",
   "dependencies": {
     "keycard-sdk": "https://github.com/choppu/keycard-sdk.git#separate-pcsc-channel"
   },
@@ -110,12 +111,43 @@
       "javaPackageName": "com.keycard"
     }
   },
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
+  },
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
     ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release ${version}",
+      "tagName": "v${version}"
+    },
+    "npm": {
+      "publish": true
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": {
+          "name": "angular"
+        }
+      }
+    }
   },
   "create-react-native-library": {
     "type": "turbo-module",

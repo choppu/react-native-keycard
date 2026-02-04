@@ -7,37 +7,38 @@ import {
   type EventSubscription,
   Button,
 } from 'react-native';
-import { getCardChannel, isNFCEnabled, startNFC } from 'react-native-keycard';
+import { getCardChannel, isNFCEnabled, startNFC, stopNFC } from 'react-native-keycard';
 import NativeKeycard from '../../src/NativeKeycard';
-import type { CardChannel } from 'keycard-sdk/dist/card-channel';
+import { CashCommandset } from 'keycard-sdk/dist/cash-commandset';
+import { CashApplicationInfo } from 'keycard-sdk/dist/cash-application-info';
 
 export default function App() {
   const listenerSubscription = React.useRef<null | EventSubscription>(null);
   const [keycardStatus, setKeycardStatus] = React.useState<string>('false');
-  const [channel, setCardChannel] = React.useState<CardChannel | null>(null);
+
 
   React.useEffect(() => {
-    listenerSubscription.current = NativeKeycard?.onKeycardConnected(() => {
-      console.log('Keycard connected');
-      setCardChannel(getCardChannel());
+    listenerSubscription.current = NativeKeycard?.onKeycardConnected(async () => {
+      console.log('Keycard connected successfully');
+      let channel = getCardChannel();
+      setKeycardStatus(channel.isConnected().toString());
+
+      let cmdSet = new CashCommandset(channel);
+      let data = new CashApplicationInfo((await cmdSet.select()).checkOK().data);
+      console.log(data);
+      await stopNFC();
     });
 
     return () => {
       listenerSubscription.current?.remove();
       listenerSubscription.current = null;
     };
-  }, [channel]);
+  }, [keycardStatus]);
 
   async function startNFCConnection(): Promise<void> {
     if (await isNFCEnabled()) {
-      await startNFC();
+      await startNFC("Tap your card");
       console.log('NFC started');
-    }
-  }
-
-  async function updateKeycardStatus(): Promise<void> {
-    if (channel) {
-      setKeycardStatus(channel.isConnected().toString());
     }
   }
 
@@ -45,7 +46,6 @@ export default function App() {
     <View style={styles.container}>
       <Text>Result: {keycardStatus}</Text>
       <Button title={'Start NFC'} onPress={startNFCConnection} />
-      <Button title={'Check status'} onPress={updateKeycardStatus} />
     </View>
   );
 }

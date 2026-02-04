@@ -1,5 +1,5 @@
 #import <KeycardSpec/KeycardSpec.h>
 
-@interface Keycard : NSObject <NativeKeycardSpec>
+@interface Keycard : NativeKeycardSpecBase <NativeKeycardSpec>
 
 @end

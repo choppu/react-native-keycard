@@ -14,8 +14,8 @@ export async function openNFCSettings(): Promise<boolean> {
   return await Keycard.openNFCSettings();
 }
 
-export async function startNFC(): Promise<boolean> {
-  return await Keycard.startNFC();
+export async function startNFC(prompt: string): Promise<boolean> {
+  return await Keycard.startNFC(prompt);
 }
 
 export async function stopNFC(): Promise<boolean> {

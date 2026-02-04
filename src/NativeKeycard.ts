@@ -6,8 +6,9 @@ import {
 export interface Spec extends TurboModule {
   isNFCSupported(): Promise<boolean>;
   isNFCEnabled(): Promise<boolean>;
-  startNFC(): Promise<boolean>;
+  startNFC(prompt: string): Promise<boolean>;
   stopNFC(): Promise<boolean>;
+  setNFCMessage(message: string): Promise<void>;
   openNFCSettings(): Promise<boolean>;
   send(apdu: string): Promise<APDUData>;
   isKeycardConnected(): boolean;
@@ -16,6 +17,8 @@ export interface Spec extends TurboModule {
   readonly onKeycardDisconnected: CodegenTypes.EventEmitter<void>;
   readonly onKeycardNFCEnabled: CodegenTypes.EventEmitter<void>;
   readonly onKeycardNFCDisabled: CodegenTypes.EventEmitter<void>;
+  readonly onNFCUserCancelled: CodegenTypes.EventEmitter<void>;
+  readonly onNFCTimeout: CodegenTypes.EventEmitter<void>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('Keycard');
