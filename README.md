@@ -1,37 +1,7 @@
-# react-native-keycard
+# React Native Keycard SDK
 
-A
+React Native New Architecture library to interact with Keycard using NFC connection.
 
 ## Installation
 
-
-```sh
-npm install react-native-keycard
-```
-
-
-## Usage
-
-
-```js
-import { multiply } from 'react-native-keycard';
-
-// ...
-
-const result = multiply(3, 7);
-```
-
-
-## Contributing
-
-- [Development workflow](CONTRIBUTING.md#development-workflow)
-- [Sending a pull request](CONTRIBUTING.md#sending-a-pull-request)
-- [Code of conduct](CODE_OF_CONDUCT.md)
-
-## License
-
-MIT
-
----
-
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
+`npm install https://github.com/choppu/react-native-keycard.git`

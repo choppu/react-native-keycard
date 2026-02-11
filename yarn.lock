@@ -6008,6 +6008,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-base64-decode@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "fast-base64-decode@npm:1.0.0"
+  checksum: 10c0/6d8feab513222a463d1cb58d24e04d2e04b0791ac6559861f99543daaa590e2636d040d611b40a50799bfb5c5304265d05e3658b5adf6b841a50ef6bf833d821
+  languageName: node
+  linkType: hard
+
 "fast-content-type-parse@npm:^3.0.0":
   version: 3.0.0
   resolution: "fast-content-type-parse@npm:3.0.0"
@@ -8199,9 +8206,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keycard-sdk@https://github.com/choppu/keycard-sdk.git#separate-pcsc-channel":
-  version: 3.1.2
-  resolution: "keycard-sdk@https://github.com/choppu/keycard-sdk.git#commit=63188111c083ab576aca9bc14fec340cfaffdb08"
+"keycard-sdk@npm:^3.1.3":
+  version: 3.1.3
+  resolution: "keycard-sdk@npm:3.1.3"
   dependencies:
     "@noble/ciphers": "npm:^1.3.0"
     "@noble/hashes": "npm:^1.8.0"
@@ -8213,7 +8220,7 @@ __metadata:
   dependenciesMeta:
     "@nonth/pcsclite":
       optional: true
-  checksum: 10c0/8b38b85918034876209f9bf91a43275e42f4b8a7e8d20345485e0dedb19d202a79ededf73c8f02c6c4942c67b11d8ee42e1fd291f214a06c08af20fa8836b881
+  checksum: 10c0/f46a261045b834812271b9b8b4ba5b5fccc2c88f27077dc3d801654b80fc7f79045ce1041b444ca5f56a65c8d16db3cc8f1f07979aeff175c8f17b8670d83f8e
   languageName: node
   linkType: hard
 
@@ -10163,6 +10170,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-get-random-values@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "react-native-get-random-values@npm:2.0.0"
+  dependencies:
+    fast-base64-decode: "npm:^1.0.0"
+  peerDependencies:
+    react-native: ">=0.81"
+  checksum: 10c0/fd2e10ab3bca54bff8f5844e3314b797e02822e86663bc2dafe00a511b8a8e1c05d96aa0b8dc1ffad428387d44bbf458ce770a429858433d36f58a16e6e52986
+  languageName: node
+  linkType: hard
+
 "react-native-keycard-example@workspace:example":
   version: 0.0.0-use.local
   resolution: "react-native-keycard-example@workspace:example"
@@ -10180,6 +10198,7 @@ __metadata:
     react: "npm:19.2.0"
     react-native: "npm:0.83.0"
     react-native-builder-bob: "npm:^0.40.17"
+    react-native-get-random-values: "npm:^2.0.0"
     react-native-monorepo-config: "npm:^0.3.1"
   languageName: unknown
   linkType: soft
@@ -10204,7 +10223,7 @@ __metadata:
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-prettier: "npm:^5.5.4"
     jest: "npm:^29.7.0"
-    keycard-sdk: "https://github.com/choppu/keycard-sdk.git#separate-pcsc-channel"
+    keycard-sdk: "npm:^3.1.3"
     lefthook: "npm:^2.0.3"
     prettier: "npm:^2.8.8"
     react: "npm:19.2.0"
