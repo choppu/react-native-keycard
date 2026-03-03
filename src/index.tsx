@@ -1,19 +1,11 @@
 import Keycard from './NativeKeycard';
-import { NFCCardChannel } from './card-channel';
-import Smartcard from './smartcard';
+import { NFCCardChannel } from './CardChannel';
+import { LocalPairingStorage } from './LocalPairingStorage';
 
 export const RNKeycard = {
   Core: Keycard,
   NFCCardChannel: NFCCardChannel,
-  Smartcard: Smartcard,
+  PairingStorage: LocalPairingStorage,
 };
 
-export type {
-  KeycardInitParams,
-  KeyData,
-  ApplicationInfo,
-  GetKeysData,
-  VerifyCardData,
-  PairingData,
-} from './NativeKeycard';
 export default RNKeycard;

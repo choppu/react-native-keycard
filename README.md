@@ -141,7 +141,7 @@ export default ({ config }) => {
 4. Run `npx expo prebuild --clean`. Learn how to adopt Expo Prebuild in a project that was bootstrapped with React Native CLI [here](https://docs.expo.dev/guides/adopting-prebuild/).
 
 
-## Low-level API usage
+## API usage
 
 The current version of the library is implementing only the `(Android / iOS) Device <-> Keycard` NFC communication and event handling, `NFCCardChannel` creation, low-level `APDU send` method. For high-level API please use Typescript `keycard-sdk`, which is meant for development of applications for Keycard. Check [`keycard-sdk` page](https://github.com/choppu/keycard-sdk) for more details on installation and usage.
 
@@ -359,20 +359,14 @@ checks Keycard connection status.
 
 Returns `boolean`.
 
-### `RNKeycard.Smartcard`
+### `RNKeycard.PairingStorage`
 
-`RNKeycard.Smartcard` is meant to be a high-level implementation of all available Typescript Keycard SDK methods.
+`RNKeycard.PairingStorage` is an implementation of `CardChannel` interface of [Typescript `keycard-sdk`](https://github.com/choppu/keycard-sdk).
 
 ‼️ If low-level API is used, usage of `keycard-sdk` for full functonality is strongly recommended.
 
+## Usage with `keycard-sdk KeycardManager class`
+
+`KeycardManager` is a utility class, implemented in Typescript [`keycard-sdk`](https://github.com/choppu/keycard-sdk), which is meant to handle the card's lifycycle. Usage of `runOnSecureChannel` method of `KeycardManager` facilitates the handling of card initialization, authentication, pairing and opening of secure channel processes.
+
 For complete usage example check [Example project](https://github.com/choppu/react-native-keycard/blob/main/example/src/App.tsx) of the library.
-
-
-
-
-
-
-
-
-
-
