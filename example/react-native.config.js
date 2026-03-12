@@ -15,6 +15,7 @@ module.exports = {
         // So we explicitly specify the platforms with empty object
         ios: {},
         android: {},
+        assets: ['./assets/fonts'],
       },
     },
   },

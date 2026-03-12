@@ -10,11 +10,14 @@
     "build:ios": "react-native build-ios --mode Debug"
   },
   "dependencies": {
+    "@sbaiahmed1/react-native-blur": "^4.5.7",
     "react": "19.2.0",
     "react-native": "0.83.0",
     "react-native-get-random-values": "^2.0.0",
     "react-native-mmkv": "^4.1.2",
-    "react-native-nitro-modules": "^0.33.9"
+    "react-native-modal": "^14.0.0-rc.1",
+    "react-native-nitro-modules": "^0.33.9",
+    "react-native-svg": "^15.15.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
