@@ -27,7 +27,6 @@ const HomeScreen: React.FC<HomeScreenProps> = props => {
 
   const settingsIcon = () => {
     return (<SettingsIcon width="25" heigth="25" stroke="white" className="tabIcon"/>);
-
   }
 
   return (

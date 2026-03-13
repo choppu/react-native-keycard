@@ -5,11 +5,10 @@ type DialpadPinProps = {
   pinSize: number;
   pinLength: number;
   code: any[];
-  dialPadContent: any[];
 };
 
 const  DialpadPin: React.FC<DialpadPinProps> = props => {
-  const {dialPadContent, pinLength, code, pinSize} = props;
+  const {pinLength, code, pinSize} = props;
   const animatedValue = React.useRef(new Animated.Value(0)).current;
 
   const animatedStyle = {
@@ -37,8 +36,7 @@ const  DialpadPin: React.FC<DialpadPinProps> = props => {
      {Array(pinLength)
        .fill(undefined)
        .map((_, index) => {
-         const item = dialPadContent[index];
-         const isSelected = typeof item === "number" && code[index] !== undefined;
+         const isSelected = typeof code[index] === "number" && code[index] !== undefined;
          return (
            <View
              key={index}

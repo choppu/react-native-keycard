@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 5,
     paddingTop: 7,
     paddingBottom: 7
   },
