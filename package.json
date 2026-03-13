@@ -120,14 +120,5 @@
     "github": {
       "release": true
     }
-  },
-  "create-react-native-library": {
-    "type": "turbo-module",
-    "languages": "kotlin-objc",
-    "tools": [
-      "jest",
-      "release-it"
-    ],
-    "version": "0.57.0"
   }
 }
