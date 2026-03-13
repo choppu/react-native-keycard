@@ -363,6 +363,8 @@ Returns `boolean`.
 
 `RNKeycard.PairingStorage` is an implementation of `CardChannel` interface of [Typescript `keycard-sdk`](https://github.com/choppu/keycard-sdk).
 
+> `RNKeycard.PairingStorage` requires `react-native-mmkv` and `react-native-nitro-modules` to be installed.
+
 ‼️ If low-level API is used, usage of `keycard-sdk` for full functonality is strongly recommended.
 
 ## Usage with `keycard-sdk KeycardManager class`
