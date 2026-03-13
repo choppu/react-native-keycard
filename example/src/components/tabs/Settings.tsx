@@ -15,11 +15,11 @@ const SettingsTab: React.FC<SettingsTabProps> = props => {
     <View>
       <View style={styles.buttonsContainer}>
         <Text style={Styles.tabHeading}>Settings</Text>
-        <Button label="Change PIN" disabled={false} onChangeFunc={() => onClickFunc(Screen.ChangePIN)} type="secondary" />
-        <Button label="Change PUK" disabled={false} onChangeFunc={() => onClickFunc(Screen.ChangePUK)} type="secondary" />
-        <Button label="Change Pairing" disabled={false} onChangeFunc={() => onClickFunc(Screen.ChangePairing)} type="secondary" />
-        <Button label="Unpair" disabled={false} onChangeFunc={() => onClickFunc(Screen.Unpair)} type="secondary" />
-        <Button label="Unpair Others" disabled={false} onChangeFunc={() => onClickFunc(Screen.UnpairOthers)} type="secondary" />
+        <Button label="Change PIN" disabled={false} onChangeFunc={() => onClickFunc(Screen.ChangePIN)} type="menu" />
+        <Button label="Change PUK" disabled={false} onChangeFunc={() => onClickFunc(Screen.ChangePUK)} type="menu" />
+        <Button label="Change Pairing" disabled={false} onChangeFunc={() => onClickFunc(Screen.ChangePairing)} type="menu" />
+        <Button label="Unpair" disabled={false} onChangeFunc={() => onClickFunc(Screen.Unpair)} type="menu" />
+        <Button label="Unpair Others" disabled={false} onChangeFunc={() => onClickFunc(Screen.UnpairOthers)} type="menu" />
       </View>
     </View>
   )

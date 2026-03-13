@@ -36,7 +36,7 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -58,6 +58,11 @@
 		<string>A00000080400010101</string>
 		<string>A00000080400010301</string>
 		<string>A000000151000000</string>
+	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>SourceCodePro.ttf</string>
+		<string>InterVariable.ttf</string>
 	</array>
 </dict>
 </plist>

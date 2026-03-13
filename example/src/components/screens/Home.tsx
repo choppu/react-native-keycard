@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Styles, { logBgColor } from "../../Styles";
+import Styles, { logBgColor, logFont } from "../../Styles";
 import WalletTab from "../tabs/Wallet";
 import SettingsIcon from "../../assets/images/SettingsIcon";
 import WalletIcon from "../../assets/images/WalletIcon";
@@ -67,7 +67,8 @@ const styles = StyleSheet.create({
   },
   logMessage: {
     color: 'white',
-    fontSize: 12
+    fontSize: 12,
+    fontFamily: logFont
   }
 })
 

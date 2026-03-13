@@ -13,6 +13,7 @@ import type { NFCCardChannel } from '../../src/CardChannel';
 import useNFCSession from './hooks/useNFC';
 import type { KeycardManagerArgs, KeycardManagerResponse, KeycardManagerResponseData } from 'keycard-sdk/dist/types/keycard-manager-types';
 import ChangePUKScreen from './components/screens/ChangePUK';
+import InitializationScreen from './components/screens/Initialization';
 
 const kManager = new KeycardManager(new LocalPairingStorage());
 const authCert = new Uint8Array([0x02, 0x9a, 0xb9, 0x9e, 0xe1, 0xe7, 0xa7, 0x1b, 0xdf, 0x45, 0xb3, 0xf9, 0xc5, 0x8c, 0x99, 0x86, 0x6f, 0xf1, 0x29, 0x4d, 0x2c, 0x1e, 0x30, 0x4e, 0x22, 0x8a, 0x86, 0xe1, 0x0c, 0x33, 0x43, 0x50, 0x1c]);
@@ -181,7 +182,7 @@ export default function App() {
   return (
     <View style={Styles.mainContainer}>
       {screen == Screen.Home && <HomeScreen logs={log} onClickFunc={setScreen} />}
-      {screen == Screen.ChangePIN && <ChangePINScreen onSubmitFunc={handlePINChange} onCancelFunc={setScreen} />}
+      {screen == Screen.ChangePIN && <InitializationScreen onSubmitFunc={() => handlePINChange} onCancelFunc={setScreen} />}
       {screen == Screen.ChangePUK && <ChangePUKScreen onSubmitFunc={handlePUKChange} onCancelFunc={setScreen} />}
 
       <NFCModal isVisible={isModalVisible} modalHeader={modalHeader} modalPrompt={modalPrompt} onChangeFunc={stop} />

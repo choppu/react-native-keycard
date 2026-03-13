@@ -13,6 +13,7 @@
     "@sbaiahmed1/react-native-blur": "^4.5.7",
     "react": "19.2.0",
     "react-native": "0.83.0",
+    "react-native-bouncy-checkbox": "^4.1.4",
     "react-native-get-random-values": "^2.0.0",
     "react-native-mmkv": "^4.1.2",
     "react-native-modal": "^14.0.0-rc.1",

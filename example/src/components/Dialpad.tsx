@@ -57,7 +57,7 @@ const Dialpad: React.FC<DialpadProps> = props => {
     </View>
     <View style={Styles.footer}>
       <View style={Styles.navContainer}>
-        <Button label={buttonLabel ? buttonLabel : "Continue"} disabled={!(code.length === pinLength)} onChangeFunc={onNext} />
+        <Button label={buttonLabel ? buttonLabel : "Continue"} disabled={!(code.length === pinLength)} onChangeFunc={onNext} type="secondary" />
       </View>
     </View>
   </View>

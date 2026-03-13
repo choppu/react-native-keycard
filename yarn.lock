@@ -1509,6 +1509,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@freakycoder/react-native-bounceable@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@freakycoder/react-native-bounceable@npm:1.0.3"
+  checksum: 10c0/190f121c24b2565ed915b9be0b394cfeb27bdf84bb857e34081a26964513f08a8786f80367c6dcb5250c1d1b988fcb8fe3898d4dca2c144574e49e3d620bf641
+  languageName: node
+  linkType: hard
+
 "@gar/promise-retry@npm:^1.0.0":
   version: 1.0.2
   resolution: "@gar/promise-retry@npm:1.0.2"
@@ -7935,6 +7942,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-bouncy-checkbox@npm:^4.1.2, react-native-bouncy-checkbox@npm:^4.1.4":
+  version: 4.1.4
+  resolution: "react-native-bouncy-checkbox@npm:4.1.4"
+  dependencies:
+    "@freakycoder/react-native-bounceable": "npm:^1.0.3"
+    react-native-bouncy-checkbox: "npm:^4.1.2"
+  checksum: 10c0/4ec41b9120581c3fc4766d983425f82406bc24ebff436711f0eaacd336c23984d2b8bf5b1776199fb14e5ad2c6ca9ec65723472b1e23cb76fb52fd6496a6cd45
+  languageName: node
+  linkType: hard
+
 "react-native-builder-bob@npm:^0.40.17":
   version: 0.40.18
   resolution: "react-native-builder-bob@npm:0.40.18"
@@ -7995,6 +8012,7 @@ __metadata:
     "@types/react": "npm:^19.2.0"
     react: "npm:19.2.0"
     react-native: "npm:0.83.0"
+    react-native-bouncy-checkbox: "npm:^4.1.4"
     react-native-builder-bob: "npm:^0.40.17"
     react-native-get-random-values: "npm:^2.0.0"
     react-native-mmkv: "npm:^4.1.2"
