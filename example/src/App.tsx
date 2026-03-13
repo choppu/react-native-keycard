@@ -2,7 +2,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import RNKeycard from 'react-native-keycard';
-import { CardAuthenticationError, CardInitializeError, CardLoadKeyError, CardPairingError, CardPinVerificationError, KeycardManager, KManagerError, PAIRED } from 'keycard-sdk/dist/keycard-manager';
+import { CardInitializeError, CardLoadKeyError, CardPairingError, CardPinVerificationError, KeycardManager, PAIRED } from 'keycard-sdk/dist/keycard-manager';
 import { LocalPairingStorage } from '../../src/LocalPairingStorage';
 import NFCModal from './NFCModal';
 import Styles from './Styles';
