@@ -8028,6 +8028,11 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
+  dependenciesMeta:
+    react-native-mmkv:
+      optional: true
+    react-native-nitro-modules:
+      optional: true
   languageName: unknown
   linkType: soft
 

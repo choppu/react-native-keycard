@@ -48,9 +48,7 @@
   "homepage": "https://github.com/choppu/react-native-keycard#readme",
   "dependencies": {
     "crypto-random-string": "^5.0.0",
-    "keycard-sdk": "https://github.com/choppu/keycard-sdk.git",
-    "react-native-mmkv": "^4.1.2",
-    "react-native-nitro-modules": "^0.33.9"
+    "keycard-sdk": "https://github.com/choppu/keycard-sdk.git"
   },
   "devDependencies": {
     "@react-native/babel-preset": "0.83.0",
@@ -69,6 +67,10 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
+  },
+  "optionalDependencies": {
+    "react-native-mmkv": "^4.1.2",
+    "react-native-nitro-modules": "^0.33.9"
   },
   "workspaces": [
     "example"
