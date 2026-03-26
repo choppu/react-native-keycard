@@ -6,7 +6,7 @@ import { Screen } from "../../App";
 import UseDefaultInit from "./UseDefaultInit";
 import PairingInput from "../PairingInput";
 
-type initData = {
+export type initData = {
   puk: string;
   pairingPassword: string
 }
@@ -124,8 +124,8 @@ const InitializationScreen: React.FC<InitializationScreenProps> = props => {
       { step == InitializationSteps.ConfirmDuressPin && (<Dialpad pinRetryCounter={-1} prompt={"Confirm duress PIN"} onCancelFunc={() => setStep(InitializationSteps.InsertDuressPin)} onNextFunc={confirmDuressPin} type='pin' />)}
       { step == InitializationSteps.InsertPuk && (<Dialpad pinRetryCounter={-1} prompt={"Enter new PUK"} onCancelFunc={() => setStep(InitializationSteps.ConfirmDuressPin)} onNextFunc={insertPuk} type='puk' />)}
       { step == InitializationSteps.ConfirmPuk && (<Dialpad pinRetryCounter={-1} prompt={"Confirm PUK"} onCancelFunc={() => setStep(InitializationSteps.InsertPuk)} onNextFunc={confirmPuk} type='puk' />)}
-      { step == InitializationSteps.InsertPairingPassword && (<PairingInput prompt={"Enter pairing password"} onCancelFunc={() => setStep(InitializationSteps.ConfirmPuk)} onNextFunc={insertPairingPass} />)}
-      { step == InitializationSteps.ConfirmPairingPassword && (<PairingInput prompt={"Confirm pairing password"} onCancelFunc={() => setStep(InitializationSteps.InsertPairingPassword)} onNextFunc={confirmPairingPass} />)}
+      { step == InitializationSteps.InsertPairingPassword && (<PairingInput prompt={"Enter pairing password"} onCancelFunc={() => setStep(InitializationSteps.ConfirmPuk)} onNextFunc={insertPairingPass} type="change"/>)}
+      { step == InitializationSteps.ConfirmPairingPassword && (<PairingInput prompt={"Confirm pairing password"} onCancelFunc={() => setStep(InitializationSteps.InsertPairingPassword)} onNextFunc={confirmPairingPass} type="change" />)}
     </View>
   )
 };

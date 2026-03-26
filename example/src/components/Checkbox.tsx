@@ -8,11 +8,12 @@ type CheckboxProps = {
   state: boolean;
   color?: string;
   onChangeFunc: (val: boolean) => void;
-  size?: number
+  size?: number;
+  checkBgColor?: string
 };
 
 const Checkbox: React.FC<CheckboxProps> = props => {
-  const { label, state, color = secondaryColor, onChangeFunc, size = 24 } = props;
+  const { label, state, color = secondaryColor, onChangeFunc, size = 22, checkBgColor = backgroundColor} = props;
 
   return (
     <BouncyCheckbox
@@ -24,7 +25,7 @@ const Checkbox: React.FC<CheckboxProps> = props => {
     textStyle={{ fontFamily: defaultFont, textDecorationLine: "none"}}
     onPress={(checked: boolean) => onChangeFunc(checked)}
     isChecked={state}
-    iconComponent={<Check width="25" heigth="25" stroke={backgroundColor}/>}
+    iconComponent={<Check width="25" heigth="25" stroke={checkBgColor}/>}
 />
   )
 };

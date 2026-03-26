@@ -45,7 +45,7 @@ const ChangePINScreen: React.FC<ChangePINScreenProps> = props => {
 
   return (
     <View style={Styles.container}>
-      { step == PinSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter current PIN"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={insertPin} type='pin' />)}
+      { step == PinSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={insertPin} type='pin' />)}
       { step == PinSteps.InsertNewPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter new PIN"} onCancelFunc={() => setStep(PinSteps.VerifyPin)} onNextFunc={insertNewPin} type='pin' />)}
       { step == PinSteps.RepeatPin && (<Dialpad pinRetryCounter={-1} prompt={"Repeat new PIN"} onCancelFunc={() => setStep(PinSteps.InsertNewPin)} onNextFunc={submitPin} buttonLabel="Submit" type='pin' />)}
   </View>

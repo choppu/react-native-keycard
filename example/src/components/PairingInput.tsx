@@ -1,24 +1,30 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { TextInput } from 'react-native-paper';
 import React from "react";
 import Button from "./Button";
-import Styles, { buttonTextColor, defaultFont } from "../Styles";
+import Styles, { buttonTextColor, defaultFont, neutralSolid, white80 } from "../Styles";
+import BlurView from "@sbaiahmed1/react-native-blur";
+import Checkbox from "./Checkbox";
 
 type PairingInputProps = {
   buttonLabel?: string;
+  type: 'change' | 'verify';
   prompt: string;
   onCancelFunc: () => void;
   onNextFunc: (p?: any) => boolean;
 };
 
 const PairingInput: React.FC<PairingInputProps> = props => {
-  const { prompt, buttonLabel, onNextFunc, onCancelFunc } = props;
+  const { prompt, buttonLabel, onNextFunc, onCancelFunc, type } = props;
   const [pass, setPass] = React.useState<string | undefined>(undefined);
   const wrongRepeatTextRef = React.useRef<string>(`The pairing passwords do not match`);
-  const [wrongRepeat, setWrongRepeat] = React.useState(false);
-
+  const [wrongRepeat, setWrongRepeat] = React.useState<boolean>(false);
+  const [useDefaultPassword, setUseDefaultPassword] = React.useState<boolean>(false);
 
   const onNext = () => {
-    setWrongRepeat(!onNextFunc(pass));
+    const p = useDefaultPassword ? undefined : pass;
+
+    setWrongRepeat(!onNextFunc(p));
     setPass(undefined);
   }
 
@@ -30,7 +36,10 @@ const PairingInput: React.FC<PairingInputProps> = props => {
         </View>
         <Text style={Styles.heading}>{prompt}</Text>
         {wrongRepeat && <Text style={styles.wrongPassText}>{wrongRepeatTextRef.current}</Text>}
-        <TextInput style={styles.pairingInput} onChangeText={setPass} value={pass} />
+        <BlurView blurType="extraDark" blurAmount={40} style={styles.inputContainer}>
+          <TextInput mode="flat" style={styles.pairingInput} underlineColor={white80} underlineStyle={{borderWidth: 1}} activeUnderlineColor={buttonTextColor} textColor={buttonTextColor} onChangeText={setPass} value={pass} secureTextEntry={true} cursorColor={buttonTextColor} disabled={useDefaultPassword}/>
+          {type == 'change' && (<Checkbox label="Use default pairing password" onChangeFunc={setUseDefaultPassword} state={useDefaultPassword} checkBgColor={neutralSolid}/>)}
+        </BlurView>
       </View>
       <View style={Styles.footer}>
         <View style={Styles.navContainer}>
@@ -49,6 +58,22 @@ const styles = StyleSheet.create({
     position: "relative",
     marginTop: 40
   },
+  inputContainer: {
+    width: '90%',
+    height: 150,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    borderRadius: 12,
+    marginTop: 60,
+    marginBottom: 40,
+    padding: 10,
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   backBtnContainer: {
     width: '100%',
     paddingLeft: 15,
@@ -63,7 +88,14 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   pairingInput: {
-
+    color: buttonTextColor,
+    boxSizing: 'border-box',
+    fontSize: 18,
+    fontFamily: defaultFont,
+    fontWeight: '300',
+    width: '100%',
+    backgroundColor: 'transparent',
+    paddingHorizontal: 4
   }
 });
 

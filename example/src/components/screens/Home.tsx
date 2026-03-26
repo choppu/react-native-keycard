@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Styles, { logBgColor, logFont } from "../../Styles";
 import WalletTab from "../tabs/Wallet";
 import SettingsIcon from "../../assets/images/SettingsIcon";
@@ -31,11 +31,11 @@ const HomeScreen: React.FC<HomeScreenProps> = props => {
 
   return (
     <View style={Styles.container}>
-      <View style={styles.logContainer}>
+      <ScrollView style={styles.logContainer}>
         {logs.map((message, index) => {
           return <Text key={index} style={styles.logMessage}>{message}</Text>
         })}
-      </View>
+      </ScrollView>
       <View style={styles.screenContentContainer}>
         {tab == Tabs.Wallet && <WalletTab onClickFunc={onClickFunc}/>}
         {tab == Tabs.Settings && <SettingsTab onClickFunc={onClickFunc}/>}
@@ -58,7 +58,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     overflow: 'scroll',
     color: 'white',
-    padding: 25,
+    paddingTop: 0,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 0,
     boxSizing: 'border-box'
   },
   screenContentContainer: {
@@ -67,8 +70,11 @@ const styles = StyleSheet.create({
   },
   logMessage: {
     color: 'white',
-    fontSize: 12,
-    fontFamily: logFont
+    fontSize: 11,
+    fontFamily: logFont,
+    lineHeight: 16,
+    paddingBottom: 2,
+    paddingTop: 2
   }
 })
 

@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const backgroundColor = '#000000';
 export const backgroundColorTransparent = '#cccccc11'
-export const neutralSolid = '#111111';
+export const neutralSolid = '#111111bb';
 export const neutral90 = '#1d1d1d';
 export const logBgColor = '#26272988';
 export const defaultFont = 'InterVariable';

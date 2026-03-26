@@ -11,13 +11,18 @@
   },
   "dependencies": {
     "@sbaiahmed1/react-native-blur": "^4.5.7",
+    "add": "^2.0.6",
     "react": "19.2.0",
     "react-native": "0.83.0",
     "react-native-bouncy-checkbox": "^4.1.4",
     "react-native-get-random-values": "^2.0.0",
-    "react-native-mmkv": "^4.1.2",
+    "react-native-mmkv": "^4.2.0",
     "react-native-modal": "^14.0.0-rc.1",
-    "react-native-nitro-modules": "^0.33.9",
+    "react-native-nitro-modules": "^0.35.2",
+    "react-native-paper": "^5.15.0",
+    "react-native-quick-base64": "^2.2.2",
+    "react-native-quick-crypto": "^1.0.16",
+    "react-native-safe-area-context": "^5.7.0",
     "react-native-svg": "^15.15.3"
   },
   "devDependencies": {
@@ -30,6 +35,7 @@
     "@react-native/babel-preset": "0.83.0",
     "@react-native/metro-config": "0.83.0",
     "@react-native/typescript-config": "0.83.0",
+    "@types/add": "^2",
     "@types/react": "^19.2.0",
     "react-native-builder-bob": "^0.40.17",
     "react-native-monorepo-config": "^0.3.1"
