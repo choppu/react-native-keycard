@@ -5,7 +5,7 @@ import { Screen } from "../../App";
 import Styles from "../../Styles";
 
 type SettingsTabProps = {
-  onClickFunc: (scree: number) => void;
+  onClickFunc: (screen: number) => void;
 };
 
 const SettingsTab: React.FC<SettingsTabProps> = props => {

@@ -8,4 +8,13 @@ export namespace Utils {
 
     return Crypto.pbkdf2Sync(pairingPassword, salt, iterationCount, kSize, 'SHA256');
   }
+
+  export function hx(arr: Uint8Array): string {
+    let result = "";
+    for (const value of arr) {
+      result += value.toString(16).padStart(2, "0");
+    }
+
+    return result;
+  }
 }

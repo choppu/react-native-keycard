@@ -135,7 +135,7 @@ const Styles = StyleSheet.create({
     marginRight: 'auto'
   },
   tabsContainer: {
-    width: '50%',
+    width: '60%',
     height: 55,
     backgroundColor: secondaryColor,
     display: 'flex',
@@ -143,7 +143,7 @@ const Styles = StyleSheet.create({
     marginLeft: 'auto',
     marginRight: 'auto',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     borderRadius: 38,
     shadowColor: logBgColor,
     elevation: 10,
