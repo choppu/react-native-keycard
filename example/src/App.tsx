@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useCallback } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import RNKeycard from 'react-native-keycard';
 import { CardInitializeError, CardLoadKeyError, CardPairingError, CardPinVerificationError, defaultPairingPassword, KeycardManager, KManagerError, PAIRED } from 'keycard-sdk/dist/keycard-manager';
@@ -13,7 +13,7 @@ import type { NFCCardChannel } from '../../src/CardChannel';
 import useNFCSession from './hooks/useNFC';
 import type { KeycardManagerArgs, KeycardManagerResponse, KeycardManagerResponseData } from 'keycard-sdk/dist/types/keycard-manager-types';
 import ChangePUKScreen from './components/screens/ChangePUK';
-import InitializationScreen from './components/screens/Initialization';
+import InitializationScreen, { type initData } from './components/screens/Initialization';
 import VerifyPINScreen from './components/screens/VerifyPIN';
 import PairingScreen from './components/screens/Pairing';
 import { Utils } from './utils';
@@ -73,6 +73,7 @@ export default function App() {
   const [modalHeader, setModalHeader] = React.useState<string>('Ready to Scan');
   const [modalPrompt, setModalPrompt] = React.useState<string>('Hold your Keycard near NFC sensor');
   const [screen, setScreen] = React.useState<number>(Screen.Home);
+  const [lastScreenState, setlastScreenState] = React.useState<number>(0);
   const [tab, setTab] = React.useState<number>(Tabs.Wallet);
   const [phase, setPhase] = React.useState<number>(Phase.Idle);
   const [pinRetry, setPinRetry] = React.useState<number>(3);
@@ -83,6 +84,7 @@ export default function App() {
   const [mnemonic, setMnemonic] = React.useState<string>('');
   const screenRef = React.useRef<number>(screen);
   const pinRef = React.useRef<string | undefined>(undefined);
+  const duressPinRef = React.useRef<string | undefined>(undefined);
   const newPinRef = React.useRef<string | undefined>(undefined);
   const newPairingPasswordRef = React.useRef<Uint8Array | undefined>(undefined);
   const newPukRef = React.useRef<string | undefined>(undefined);
@@ -90,33 +92,57 @@ export default function App() {
   const mnemonicLengthRef = React.useRef<number>(12);
   const { start, stop } = useNFCSession(setIsModalVisible);
 
+  const reset = React.useCallback(() => {
+    setKMArgs(initialArgs);
+    setPhase(Phase.Idle);
+    setCmdExecFailed(false);
+    setPinRetry(3);
+    setModalHeader('Ready to Scan');
+    setModalPrompt('Hold your Keycard near NFC sensor');
+    pinRef.current = undefined;
+    pairingPasswordRef.current = undefined;
+    newPinRef.current = undefined;
+    newPukRef.current = undefined;
+    newPairingPasswordRef.current = undefined;
+    duressPinRef.current = undefined;
+  }, [kmArgs, phase, modalHeader, modalPrompt, pinRetry, cmdExecFailed]);
+
+  const handleCardError = React.useCallback((errorCode: number, errorMessage: string, pinRetry?: number) => {
+    setCmdExecFailed(true);
+    switch (errorCode) {
+      case CardInitializeError:
+        setPhase(Phase.CardInitialization);
+        break;
+      case CardPairingError:
+        setPhase(Phase.CardPairing);
+        break;
+      case CardPinVerificationError:
+        setPhase(Phase.CardPinVerification);
+        if(pinRetry) {
+          setPinRetry(pinRetry);
+        }
+        break;
+      case CardLoadKeyError:
+        setPhase(Phase.CardLoadKey);
+        break;
+      default:
+        setPhase(Phase.Idle);
+        setScreen(Screen.Home);
+        setCmdExecFailed(true);
+        setLogMessage([
+          ...log,
+          `${new Date(Date.now()).toLocaleString("en-GB")} - ${errorMessage}`
+        ]);
+        break;
+    }
+  }, [log, screen, phase, cmdExecFailed]);
+
   const checkCmdExec = React.useCallback((responseData: KeycardManagerResponse, successMessage?: string) => {
     stop();
 
     if (responseData.status == 'error') {
       const d = responseData.data as KeycardManagerResponseData;
-      setCmdExecFailed(true);
-      switch (d.type) {
-        case CardInitializeError:
-          setPhase(Phase.CardInitialization);
-          break;
-        case CardPairingError:
-          setPhase(Phase.CardPairing);
-          break;
-        case CardPinVerificationError:
-          setPhase(Phase.CardPinVerification);
-          break;
-        case CardLoadKeyError:
-          setPhase(Phase.CardLoadKey);
-          break;
-        default:
-          setPhase(Phase.Idle);
-          setScreen(Screen.Home);
-          setLogMessage([
-            ...log,
-            `${new Date(Date.now()).toLocaleString("en-GB")} - ${d.message}`
-          ]);
-      }
+      handleCardError(d.type!, d.message!);
     } else {
       if(successMessage) {
         setLogMessage(
@@ -126,17 +152,7 @@ export default function App() {
         )
       }
 
-      setKMArgs(initialArgs);
-      setPhase(Phase.Idle);
-      setCmdExecFailed(false);
-      setPinRetry(3);
-      setModalHeader('Ready to Scan');
-      setModalPrompt('Hold your Keycard near NFC sensor');
-      pinRef.current = undefined;
-      pairingPasswordRef.current = undefined;
-      newPinRef.current = undefined;
-      newPukRef.current = undefined;
-      newPairingPasswordRef.current = undefined;
+      reset();
 
       if(screen != Screen.CreateMnemonic) {
         setScreen(Screen.Home);
@@ -160,6 +176,26 @@ export default function App() {
   const handlePairing = React.useCallback((pass: string) => {
     pairingPasswordRef.current = Utils.pairingPasswordToSecret(pass);
     setKMArgs(prevArgs => ({...prevArgs, pairingPassword: pairingPasswordRef.current}));
+    setCmdExecFailed(false);
+    start();
+    return true;
+  }, [start, kmArgs]);
+
+  const handleInit = React.useCallback((pin: string, duressPin?: string, initData?: initData) => {
+    pinRef.current = pin;
+
+    if(duressPin) {
+      duressPinRef.current = duressPin;
+      setKMArgs(prevArgs => ({...prevArgs, duressPin: duressPinRef.current}));
+    }
+
+    if(initData) {
+      newPukRef.current = initData.puk;
+      newPairingPasswordRef.current = Utils.pairingPasswordToSecret(initData.pairingPassword);
+      setKMArgs(prevArgs => ({...prevArgs, newPuk: newPukRef.current, newPairingPassword: newPairingPasswordRef.current}));
+    }
+
+    setKMArgs(prevArgs => ({...prevArgs, pin: pinRef.current}));
     setCmdExecFailed(false);
     start();
     return true;
@@ -192,12 +228,18 @@ export default function App() {
     start();
   }, [start, kmArgs]);
 
-  const handleCreateMnemonic = React.useCallback((p: string, mLength: number) => {
+  const handleCreateMnemonic = React.useCallback((p: string, mLength: number, lastScreenState: number) => {
     mnemonicLengthRef.current = mLength;
     pinRef.current = p;
     setKMArgs(prevArgs => ({...prevArgs, pin: p}));
+    setlastScreenState(lastScreenState);
     start();
   }, [start, kmArgs]);
+
+  const handleVerificationCancelled = React.useCallback(() => {
+    setScreen(Screen.Home);
+    setCmdExecFailed(false);
+  }, [screen]);
 
   const changePIN = React.useCallback(async (channel: NFCCardChannel) => {
     return await kManager.runOnSecureChannel(
@@ -281,6 +323,11 @@ export default function App() {
       }
     )}, [kManager, kmArgs]);
 
+  const handleNFCStarted = React.useCallback(() => {
+    setModalHeader('Ready to Scan');
+    setModalPrompt('Hold your Keycard near NFC sensor');
+  }, [modalHeader, modalPrompt]);
+
   const handleCardConnected = React.useCallback(async (): Promise<void> => {
     try {
       const channel = new RNKeycard.NFCCardChannel();
@@ -336,40 +383,27 @@ export default function App() {
       setModalPrompt(err.message);
 
       if(err instanceof KManagerError) {
-        setCmdExecFailed(true);
-        switch(err.errorCode) {
-          case CardInitializeError:
-            setPhase(Phase.CardInitialization);
-            break;
-          case CardPairingError:
-            setPhase(Phase.CardPairing);
-            break;
-          case CardPinVerificationError:
-            setPhase(Phase.CardPinVerification);
-            setPinRetry(err.cardData.pinRetry ? err.cardData.pinRetry: 3);
-            break;
-          case CardLoadKeyError:
-            setPhase(Phase.CardLoadKey);
-            break;
-          default:
-            setPhase(Phase.Idle);
-            setScreen(Screen.Home);
-            setCmdExecFailed(false);
-        }
+        const pRetry = err.cardData.pinRetry ?  err.cardData.pinRetry : 3;
+        handleCardError(err.errorCode, err.message, pRetry);
       } else {
         setScreen(Screen.Home);
+        setlastScreenState(0);
+        setLogMessage([
+          ...log,
+          `${new Date(Date.now()).toLocaleString("en-GB")} - ${err.message}`
+        ]);
       }
-      setLogMessage([
-        ...log,
-        `${new Date(Date.now()).toLocaleString("en-GB")} - ${err.message}`
-      ]);
       stop();
-      setModalHeader('Ready to Scan');
-      setModalPrompt('Hold your Keycard near NFC sensor');
     }
   }, [stop, changePIN, changePUK, phase, log, screen, cardInfo]);
 
-  const handleCardInitialized = React.useCallback(() => setPhase(Phase.CardPairing), [phase]);
+  const handleCardInitialized = React.useCallback(() => {
+    setPhase(Phase.CardPairing);
+    setLogMessage([
+        ...log,
+        `${new Date(Date.now()).toLocaleString("en-GB")} - Card initialized successfully`
+      ]);
+  }, [phase, log]);
   const handleCardAuthentic = React.useCallback(() => setPhase(Phase.CardPairing), [phase]);
   const handleCardPaired = React.useCallback(() => setPhase(Phase.CardPairing), [phase]);
   const handleSecureChannelOpened = React.useCallback(() => setPhase(Phase.CardPinVerification), [phase]);
@@ -380,6 +414,7 @@ export default function App() {
   React.useEffect(() => {
     screenRef.current = screen;
     const onConnect = RNKeycard.Core.onKeycardConnected(handleCardConnected);
+    const onNFCStart = RNKeycard.Core.onKeycardNFCEnabled(handleNFCStarted);
     const onCardInitialized = kManager.emitter.subscribe("card-initialized", handleCardInitialized);
     const onCardAuthentic = kManager.emitter.subscribe("card-authentic", handleCardAuthentic);
     const onCardPaired = kManager.emitter.subscribe("card-paired", handleCardPaired);
@@ -389,6 +424,7 @@ export default function App() {
 
     return () => {
       onConnect.remove();
+      onNFCStart.remove();
       onCardInitialized.unsubscribe();
       onCardAuthentic.unsubscribe();
       onCardPaired.unsubscribe();
@@ -396,21 +432,21 @@ export default function App() {
       onPinVerified.unsubscribe();
       onCmdSuccess.unsubscribe();
     };
-  }, [screen, log, phase, handleCardConnected, handleCardInitialized, handleCardAuthentic, handleCardPaired, handleSecureChannelOpened, handlePinVerified, handleCmdExecuted]);
+  }, [screen, log, phase, handleCardConnected, handleNFCStarted, handleCardInitialized, handleCardAuthentic, handleCardPaired, handleSecureChannelOpened, handlePinVerified, handleCmdExecuted]);
 
   return (
     <View style={Styles.mainContainer}>
       {(cmdExecFailed == false) && screen == Screen.Home && <HomeScreen logs={log} tab={tab} onTabChangeFunc={handleTabChange} cardInfo={cardInfo} onClickFunc={setScreen} onShowCardFunc={start}/>}
-      {(cmdExecFailed == false) && screen == Screen.CreateMnemonic && <CreateMnemonicScreen onCancelFunc={setScreen} onSubmitFunc={handleCreateMnemonic} mnemonic={mnemonic} updateMnemonicFunc={setMnemonic}/>}
+      {(cmdExecFailed == false) && screen == Screen.CreateMnemonic && <CreateMnemonicScreen onCancelFunc={setScreen} onSubmitFunc={handleCreateMnemonic} mnemonic={mnemonic} updateMnemonicFunc={setMnemonic} lastScreenState={lastScreenState} onShowMnemonicFunc={setlastScreenState}/>}
       {(cmdExecFailed == false) && screen == Screen.ChangePIN && <ChangePINScreen onSubmitFunc={handlePINChange} onCancelFunc={setScreen} />}
       {(cmdExecFailed == false) && screen == Screen.ChangePUK && <ChangePUKScreen onSubmitFunc={handlePUKChange} onCancelFunc={setScreen} />}
       {(cmdExecFailed == false) && screen == Screen.ChangePairing && <ChangePairingScreen onSubmitFunc={handlePairingChange} onCancelFunc={setScreen} />}
       {(cmdExecFailed == false) && screen == Screen.Unpair && <UnpairScreen onSubmitFunc={handleUnpair} onCancelFunc={setScreen} prompt={'Are you sure you want to unpair your card?'}/>}
       {(cmdExecFailed == false) && screen == Screen.UnpairOthers && <UnpairScreen onSubmitFunc={handleUnpair} onCancelFunc={setScreen} prompt={'Are you sure you want to unpair your card from other devices?'}/>}
 
-      {phase == Phase.CardInitialization && cmdExecFailed && <InitializationScreen onSubmitFunc={() => {}} onCancelFunc={setScreen}/>}
-      {phase == Phase.CardPairing && cmdExecFailed && <PairingScreen onSubmitFunc={handlePairing} onCancelFunc={setScreen} />}
-      {phase == Phase.CardPinVerification && cmdExecFailed && <VerifyPINScreen onSubmitFunc={handleVerifyPin} onCancelFunc={setScreen} pinRetry={pinRetry}/>}
+      {phase == Phase.CardInitialization && cmdExecFailed && <InitializationScreen onSubmitFunc={handleInit} onCancelFunc={handleVerificationCancelled}/>}
+      {phase == Phase.CardPairing && cmdExecFailed && <PairingScreen onSubmitFunc={handlePairing} onCancelFunc={handleVerificationCancelled} />}
+      {phase == Phase.CardPinVerification && cmdExecFailed && <VerifyPINScreen onSubmitFunc={handleVerifyPin} onCancelFunc={handleVerificationCancelled} pinRetry={pinRetry}/>}
       <NFCModal isVisible={isModalVisible} modalHeader={modalHeader} modalPrompt={modalPrompt} onChangeFunc={stop} />
     </View>
   );

@@ -1,6 +1,6 @@
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import Styles, { logBgColor, logFont } from "../../Styles";
+import Styles, { logBgColor, logContainerTopPadding, logFont } from "../../Styles";
 import WalletTab from "../tabs/Wallet";
 import SettingsIcon from "../../assets/images/SettingsIcon";
 import WalletIcon from "../../assets/images/WalletIcon";
@@ -65,9 +65,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     overflow: 'scroll',
     color: 'white',
-    paddingTop: 0,
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingTop: logContainerTopPadding,
+    paddingLeft: 15,
+    paddingRight: 15,
     paddingBottom: 0,
     boxSizing: 'border-box'
   },
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     fontFamily: logFont,
     lineHeight: 16,
     paddingBottom: 2,
-    paddingTop: 2
+    paddingTop: 2,
   }
 })
 

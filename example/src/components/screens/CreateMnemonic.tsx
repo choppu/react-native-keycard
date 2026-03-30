@@ -7,8 +7,10 @@ import Button from "../Button";
 
 type CreateMnemonicScreenProps = {
   mnemonic: string;
+  lastScreenState: number;
   updateMnemonicFunc: (val: string) => void;
-  onSubmitFunc: (pin: string, mnemonicLength: number) => void;
+  onSubmitFunc: (pin: string, mnemonicLength: number, screen: number) => void;
+  onShowMnemonicFunc: (screen: number) => void;
   onCancelFunc: (screen: number) => void;
 };
 
@@ -19,9 +21,9 @@ enum MnemonicSteps {
 }
 
 const CreateMnemonicScreen: React.FC<CreateMnemonicScreenProps> = props => {
-  const { mnemonic, onSubmitFunc, onCancelFunc, updateMnemonicFunc } = props;
+  const { mnemonic, lastScreenState, onSubmitFunc, onCancelFunc, updateMnemonicFunc, onShowMnemonicFunc } = props;
   const [pin, setCurrentPin] = React.useState('');
-  const [step, setStep] = React.useState(MnemonicSteps.VerifyPin);
+  const [step, setStep] = React.useState(lastScreenState);
 
   const insertPin = (p: string) => {
     setCurrentPin(p);
@@ -30,13 +32,14 @@ const CreateMnemonicScreen: React.FC<CreateMnemonicScreenProps> = props => {
   }
 
   const createMnemonic = (mnemonicLength: number) => {
-    onSubmitFunc(pin, mnemonicLength);
+    onSubmitFunc(pin, mnemonicLength, MnemonicSteps.ShowMnemonic);
     setStep(MnemonicSteps.ShowMnemonic);
     return true;
   }
 
   const mnemonicSuccess = () => {
     updateMnemonicFunc('');
+    onShowMnemonicFunc(MnemonicSteps.VerifyPin);
     onCancelFunc(Screen.Home);
     return true;
   }
@@ -74,7 +77,7 @@ const CreateMnemonicScreen: React.FC<CreateMnemonicScreenProps> = props => {
 const styles = StyleSheet.create({
   mnemonicSelectContainer: {
     width: '100%',
-    height: '95%',
+    height: '90%',
     display: 'flex',
     flexDirection: 'column',
     gap: 300,
@@ -82,7 +85,7 @@ const styles = StyleSheet.create({
   },
   successMnemonicContainer: {
     width: '100%',
-    height: '95%',
+    height: '90%',
     display: 'flex',
     flexDirection: 'column',
     gap: 10,

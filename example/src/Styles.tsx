@@ -1,22 +1,23 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 export const backgroundColor = '#000000';
 export const backgroundColorTransparent = '#cccccc11'
 export const neutralSolid = '#111111bb';
 export const neutral90 = '#1d1d1d';
 export const logBgColor = '#26272988';
-export const defaultFont = 'InterVariable';
-export const logFont = 'SourceCodePro';
+export const defaultFont = Platform.OS === 'ios' ? 'Inter-Variable' : 'InterVariable';
+export const logFont = Platform.OS === 'ios' ? 'Source Code Pro' : 'SourceCodePro';
 export const secondaryColor = '#FF6400cc';
 export const buttonTextColor = '#ffffffcc';
-export const white80 = '#ffffff88'
+export const white80 = '#ffffff88';
+export const logContainerTopPadding = Platform.OS === 'ios' ? 40 : 0;
 
 const Styles = StyleSheet.create({
   mainContainer: {
     backgroundColor: backgroundColor,
     color: 'white',
     width: '100%',
-    height: '100%',
+    height: '95%',
     letterSpacing: -.9
   },
   container: {

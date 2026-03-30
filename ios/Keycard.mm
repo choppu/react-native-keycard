@@ -58,7 +58,15 @@
     reject(@"E_KEYCARD", @"Unsupported on iOS", nil);
 };
 - (void)send:(NSString *)apdu resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    resolve([keycard send:apdu]);
+  NSDictionary *result = [keycard send:apdu];
+  if([[result objectForKey:@"state"] isEqual: @"success"]) {
+    resolve(result);
+  } else {
+    reject(@"E_KEYCARD", @"Invalid APDUResponse", nil);
+  }
+
+
+
 };
 - (NSNumber *)isKeycardConnected {
     return [keycard isKeycardConnected];

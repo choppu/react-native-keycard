@@ -2,11 +2,10 @@ import React from "react";
 import { View } from "react-native";
 import Styles from "../../Styles";
 import PairingInput from "../PairingInput";
-import { Screen } from "../../App";
 
 type PairingScreenProps = {
   onSubmitFunc: (pass: string) => boolean;
-  onCancelFunc: (screen: number) => void;
+  onCancelFunc: () => void;
 };
 
 const PairingScreen: React.FC<PairingScreenProps> = props => {
@@ -14,7 +13,7 @@ const PairingScreen: React.FC<PairingScreenProps> = props => {
 
   return (
     <View style={Styles.container}>
-      <PairingInput prompt={"Enter pairing password"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={onSubmitFunc} type="verify"/>
+      <PairingInput prompt={"Enter pairing password"} onCancelFunc={() => {onCancelFunc}} onNextFunc={onSubmitFunc} type="verify"/>
     </View>
   )
 };

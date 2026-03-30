@@ -43,7 +43,7 @@ const PairingInput: React.FC<PairingInputProps> = props => {
       </View>
       <View style={Styles.footer}>
         <View style={Styles.navContainer}>
-          <Button label={buttonLabel ? buttonLabel : "Continue"} disabled={false} onChangeFunc={onNext} type="secondary" />
+          <Button label={buttonLabel ? buttonLabel : "Continue"} disabled={type == 'verify' ? (pass == undefined) : false} onChangeFunc={onNext} type="secondary" />
         </View>
       </View>
     </View>
