@@ -84,6 +84,7 @@ export default function App() {
   const [modalHeader, setModalHeader] = React.useState<string>('Ready to Scan');
   const [modalPrompt, setModalPrompt] = React.useState<string>('Hold your Keycard near NFC sensor');
   const [screen, setScreen] = React.useState<number>(Screen.Home);
+  const [startScreen, setStartScreen] = React.useState<number | undefined>(undefined);
   const [lastScreenState, setlastScreenState] = React.useState<number>(0);
   const [tab, setTab] = React.useState<number>(Tabs.Wallet);
   const [phase, setPhase] = React.useState<number>(Phase.Idle);
@@ -103,7 +104,7 @@ export default function App() {
   const pairingPasswordRef = React.useRef<Uint8Array | undefined>(undefined);
   const mnemonicLengthRef = React.useRef<number>(12);
   const mnemonicRef = React.useRef<string>('');
-  const lastScreenRef = React.useRef<number>(0);
+  const lastScreenRef = React.useRef<number>(undefined);
   const { start, stop } = useNFCSession(setIsModalVisible, setModalHeader, setModalPrompt);
   const {
     createMnemonic,
@@ -172,7 +173,6 @@ export default function App() {
         setPhase(Phase.CardPairing);
         break;
       case CardPinVerificationError:
-        console.log(pRetry);
         if(pRetry > 0) {
           setPhase(Phase.CardPinVerification);
           setPinRetry(pRetry);
@@ -214,14 +214,14 @@ export default function App() {
 
       reset();
 
-      console.log(screen);
-
       if((screen != Screen.CreateMnemonic) && (screen != Screen.ShowWallet)) {
         setScreen(Screen.Home);
       }
 
-      if((screen == Screen.CreateMnemonic && lastScreenState != 0) || screen == Screen.LoadMnemonic) {
-        setScreen(lastScreenRef.current);
+      if((lastScreenRef.current != undefined) && ((screen == Screen.CreateMnemonic && lastScreenState != 2) || screen == Screen.LoadMnemonic)) {
+        setScreen(lastScreenRef.current!);
+        setStartScreen(undefined);
+        lastScreenRef.current = undefined;
       }
     }
   }, [screen, phase, log, pinRetry, reset]);
@@ -241,6 +241,7 @@ export default function App() {
 
   const handleCardLoadKey = React.useCallback((kScreen: number) => {
     lastScreenRef.current = screen;
+    setStartScreen(screen);
     setScreen(kScreen);
     setCmdExecFailed(false);
   }, [screen, cmdExecFailed]);
@@ -462,7 +463,7 @@ export default function App() {
   return (
     <View style={Styles.mainContainer}>
       {(cmdExecFailed == false) && screen == Screen.Home && <HomeScreen logs={log} tab={tab} onTabChangeFunc={handleTabChange} cardInfo={cardInfo} onClickFunc={setScreen} onShowCardFunc={start}/>}
-      {(cmdExecFailed == false) && screen == Screen.CreateMnemonic && <CreateMnemonicScreen onCancelFunc={setScreen} onSubmitFunc={handleCreateMnemonic} mnemonic={mnemonic} updateMnemonicFunc={setMnemonic} lastScreenState={lastScreenState} onShowMnemonicFunc={setlastScreenState}/>}
+      {(cmdExecFailed == false) && screen == Screen.CreateMnemonic && <CreateMnemonicScreen onCancelFunc={setScreen} onSubmitFunc={handleCreateMnemonic} mnemonic={mnemonic} startScreen={startScreen} updateMnemonicFunc={setMnemonic} lastScreenState={lastScreenState} onShowMnemonicFunc={setlastScreenState}/>}
       {(cmdExecFailed == false) && screen == Screen.LoadMnemonic && <LoadMnemonicScreen onCancelFunc={setScreen} onSubmitFunc={handleLoadMnemonic} />}
       {(cmdExecFailed == false) && screen == Screen.ShowWallet && <ShowWalletsScreen addresses={ethAddresses} onCancelFunc={setScreen} onSubmitFunc={handleShowWalletAddress} onScreenCloseFunc={setEthAddresses}/>}
       {(cmdExecFailed == false) && screen == Screen.RemoveKey && <RemoveKeyScreen onCancelFunc={setScreen} onSubmitFunc={handleRemoveKey} />}

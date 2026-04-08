@@ -7,6 +7,7 @@ import Button from "../Button";
 
 type CreateMnemonicScreenProps = {
   mnemonic: string;
+  startScreen: number | undefined;
   lastScreenState: number;
   updateMnemonicFunc: (val: string) => void;
   onSubmitFunc: (pin: string, mnemonicLength: number, screen: number) => void;
@@ -21,7 +22,7 @@ enum MnemonicSteps {
 }
 
 const CreateMnemonicScreen: React.FC<CreateMnemonicScreenProps> = props => {
-  const { mnemonic, lastScreenState, onSubmitFunc, onCancelFunc, updateMnemonicFunc, onShowMnemonicFunc } = props;
+  const { mnemonic, lastScreenState, startScreen, onSubmitFunc, onCancelFunc, updateMnemonicFunc, onShowMnemonicFunc } = props;
   const [pin, setCurrentPin] = React.useState('');
   const [step, setStep] = React.useState(lastScreenState);
 
@@ -40,7 +41,7 @@ const CreateMnemonicScreen: React.FC<CreateMnemonicScreenProps> = props => {
   const mnemonicSuccess = () => {
     updateMnemonicFunc('');
     onShowMnemonicFunc(MnemonicSteps.VerifyPin);
-    onCancelFunc(Screen.Home);
+    onCancelFunc(startScreen == undefined ? Screen.Home : startScreen);
     return true;
   }
 

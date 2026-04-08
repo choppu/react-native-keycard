@@ -52,7 +52,6 @@ const useKeycard = (props: useKeycardProps) => {
   }, [props.kManager, props.kmArgs, props.newPukRef]);
 
   const changePairing = React.useCallback(async (channel: NFCCardChannel) => {
-    console.log(props.kmArgs);
     return await props.kManager.runOnSecureChannel(
       channel,
       PAIRED,

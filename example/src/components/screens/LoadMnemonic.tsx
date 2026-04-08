@@ -31,7 +31,6 @@ const LoadMnemonicScreen: React.FC<LoadMnemonicScreenProps> = props => {
   }
 
   const validateMnemonic = (m: string) => {
-    console.log(bip39.validateMnemonic(m, wordlist))
     return bip39.validateMnemonic(m, wordlist);
   }
 

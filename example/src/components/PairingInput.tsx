@@ -24,7 +24,6 @@ const PairingInput: React.FC<PairingInputProps> = props => {
     const p = useDefaultPassword ? undefined : pass;
 
     setWrongRepeat(!onNextFunc(p));
-    console.log("Hello");
     setPass(undefined);
   }
 

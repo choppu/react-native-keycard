@@ -1,7 +1,5 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import Styles from "../../Styles";
-import Dialpad from "../Dialpad";
 import { Screen } from "../../App";
 import Button from "../Button";
 
@@ -14,7 +12,7 @@ const CardLoadKeyScreen: React.FC<CardLoadKeyScreenProps> = props => {
   const { onSubmitFunc, onCancelFunc } = props;
 
   return (
-    <View style={Styles.container}>
+    <View style={styles.loadKeyContainer}>
       <View style={styles.backBtnContainer}>
         <Button disabled={false} onChangeFunc={() => onCancelFunc(Screen.Home)} type="cancel"></Button>
       </View>
@@ -27,6 +25,15 @@ const CardLoadKeyScreen: React.FC<CardLoadKeyScreenProps> = props => {
 };
 
 const styles = StyleSheet.create({
+  loadKeyContainer: {
+    width: '100%',
+    height: '100%',
+    paddingTop: 40,
+    paddingBottom: 40,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+  },
   backBtnContainer: {
     width: '100%',
     paddingLeft: 15,
