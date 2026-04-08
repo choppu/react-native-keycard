@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   logContainer: {
     backgroundColor: logBgColor,
     width: '100%',
-    height: 340,
+    height: 320,
     flexGrow: 1,
     display: 'flex',
     flexDirection: 'column',

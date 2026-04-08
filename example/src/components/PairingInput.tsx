@@ -1,8 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
-import { TextInput } from 'react-native-paper';
+import { StyleSheet, Text, View, TextInput } from "react-native";
 import React from "react";
 import Button from "./Button";
-import Styles, { buttonTextColor, defaultFont, neutralSolid, white80 } from "../Styles";
+import Styles, { buttonTextColor, defaultFont, logBgColor, neutralSolid } from "../Styles";
 import BlurView from "@sbaiahmed1/react-native-blur";
 import Checkbox from "./Checkbox";
 
@@ -25,6 +24,7 @@ const PairingInput: React.FC<PairingInputProps> = props => {
     const p = useDefaultPassword ? undefined : pass;
 
     setWrongRepeat(!onNextFunc(p));
+    console.log("Hello");
     setPass(undefined);
   }
 
@@ -37,8 +37,8 @@ const PairingInput: React.FC<PairingInputProps> = props => {
         <Text style={Styles.heading}>{prompt}</Text>
         {wrongRepeat && <Text style={styles.wrongPassText}>{wrongRepeatTextRef.current}</Text>}
         <BlurView blurType="extraDark" blurAmount={40} style={styles.inputContainer}>
-          <TextInput mode="flat" style={styles.pairingInput} underlineColor={white80} underlineStyle={{borderWidth: 1}} activeUnderlineColor={buttonTextColor} textColor={buttonTextColor} onChangeText={setPass} value={pass} secureTextEntry={true} cursorColor={buttonTextColor} disabled={useDefaultPassword}/>
-          {type == 'change' && (<Checkbox label="Use default pairing password" onChangeFunc={setUseDefaultPassword} state={useDefaultPassword} checkBgColor={neutralSolid}/>)}
+          <TextInput style={useDefaultPassword ? styles.pairingInputDisabled : styles.pairingInputEbabled} onChangeText={setPass} value={pass} secureTextEntry={true} cursorColor={buttonTextColor} readOnly={useDefaultPassword} />
+          {type == 'change' && (<View style={styles.checkContainer}><Checkbox label="Use default pairing password" onChangeFunc={setUseDefaultPassword} state={useDefaultPassword} checkBgColor={neutralSolid} /></View>)}
         </BlurView>
       </View>
       <View style={Styles.footer}>
@@ -53,26 +53,32 @@ const PairingInput: React.FC<PairingInputProps> = props => {
 const styles = StyleSheet.create({
   textContainer: {
     display: 'flex',
+    width: '100%',
+    height: 'auto',
+    flexDirection: 'column',
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
-    marginTop: 40
+    marginTop: 40,
+    gap: 10
   },
   inputContainer: {
     width: '90%',
-    height: 150,
+    height: 'auto',
     marginLeft: 'auto',
     marginRight: 'auto',
     borderRadius: 12,
     marginTop: 60,
     marginBottom: 40,
-    padding: 10,
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 15,
+    paddingBottom: 15,
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
-    gap: 20,
-    alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    gap: 10
   },
   backBtnContainer: {
     width: '100%',
@@ -87,15 +93,40 @@ const styles = StyleSheet.create({
     color: buttonTextColor,
     marginTop: 10
   },
-  pairingInput: {
-    color: buttonTextColor,
+  pairingInputEbabled: {
+    borderBottomColor: logBgColor,
+    width: '100%',
+    height: 40,
+    padding: 6,
     boxSizing: 'border-box',
+    borderBottomWidth: 2,
+    borderRadius: 7,
+    marginLeft: 'auto',
+    marginRight: 'auto',
     fontSize: 18,
     fontFamily: defaultFont,
     fontWeight: '300',
+    color: buttonTextColor
+  },
+  pairingInputDisabled: {
+    borderBottomColor: 'black',
     width: '100%',
-    backgroundColor: 'transparent',
-    paddingHorizontal: 4
+    height: 40,
+    padding: 6,
+    boxSizing: 'border-box',
+    borderBottomWidth: 2,
+    borderRadius: 7,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    fontSize: 18,
+    fontFamily: defaultFont,
+    fontWeight: '300',
+    color: buttonTextColor
+  },
+
+  checkContainer: {
+    width: '100%',
+    marginTop: 10
   }
 });
 

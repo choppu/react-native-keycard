@@ -20,6 +20,7 @@ const SettingsTab: React.FC<SettingsTabProps> = props => {
         <Button label="Change Pairing" disabled={false} onChangeFunc={() => onClickFunc(Screen.ChangePairing)} type="menu" />
         <Button label="Unpair" disabled={false} onChangeFunc={() => onClickFunc(Screen.Unpair)} type="menu" />
         <Button label="Unpair Others" disabled={false} onChangeFunc={() => onClickFunc(Screen.UnpairOthers)} type="menu" />
+        <Button label="Factory Reset" disabled={false} onChangeFunc={() => onClickFunc(Screen.FactoryReset)} type="menu" />
       </View>
     </View>
   )

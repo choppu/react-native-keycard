@@ -93,10 +93,11 @@ const InitializationScreen: React.FC<InitializationScreenProps> = props => {
     return true;
   }
 
-  const confirmPairingPass = (pass: string) => {
+  const confirmPairingPass = (pass: string | undefined) => {
     if(pairingPass == pass) {
-      if(puk && pairingPass) {
-        onSubmitFunc(pin, duressPin, { puk: puk, pairingPassword: pairingPass});
+      const p = pairingPass == undefined ? 'KeycardDefaultPairing' : pairingPass;
+      if(puk && p) {
+        onSubmitFunc(pin, duressPin, { puk: puk, pairingPassword: p});
       }
       return true;
     }

@@ -1,4 +1,8 @@
 import Crypto from 'react-native-quick-crypto';
+import { keccak_256 } from "@noble/hashes/sha3.js";
+import * as secp256 from '@noble/secp256k1';
+
+
 
 export namespace Utils {
   export const pairingPasswordToSecret = (pairingPassword: string) : Uint8Array  => {
@@ -17,4 +21,9 @@ export namespace Utils {
 
     return result;
   }
+
+  export function compressedPKeyToEthereumAddress(compressedPubKey: Uint8Array): string {
+  const pubKey = secp256.Point.fromBytes(compressedPubKey).toBytes(false);
+  return hx(keccak_256(pubKey.subarray(1)).subarray(12));
+}
 }

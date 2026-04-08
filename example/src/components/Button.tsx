@@ -4,11 +4,14 @@ import { backgroundColorTransparent, buttonTextColor, defaultFont, neutral90, se
 import BackKey from "../assets/images/BackKey";
 import { BlurView } from '@sbaiahmed1/react-native-blur';
 import ChevronRight from "../assets/images/ChevronRight";
+import RemoveKey from "../assets/images/RemoveKey";
+import QRIcon from "../assets/images/QRIcon";
 
 
 type ButtonProps = {
-  label?: string;
   disabled: boolean;
+  label?: string;
+  key?: string;
   type?: string;
   onChangeFunc: () => void;
 };
@@ -17,11 +20,11 @@ const Button: FC<ButtonProps> = props => {
   const { label, disabled, type = "primary", onChangeFunc } = props;
 
   const textContainer = () => {
-    if (type == 'cancel') {
+    if (type == 'cancel' || type == 'remove') {
       return style.cancelBtnContainer;
     } else if (type == 'secondary') {
       return style.secondaryBtnContainer;
-    } else if (type == 'menu') {
+    } else if (type == 'menu' || type == 'address') {
       return style.secondaryBtnContainer;
     } else {
       return style.primarytBtnContainer;
@@ -33,9 +36,16 @@ const Button: FC<ButtonProps> = props => {
     <TouchableOpacity key={label} disabled={disabled} onPress={onChangeFunc} style={[textContainer(), disabled ? style.disabledBtn : null]}>
       <View style={style.button}>
         {type == "cancel" && <BackKey width="20" heigth="20" stroke="white" />}
+        {type == "remove" && <RemoveKey width="30" heigth="30" stroke="white" />}
         {type == "primary" && <BlurView blurType='dark' blurAmount={40} style={style.bluredButton} overlayColor={neutral90} reducedTransparencyFallbackColor={backgroundColorTransparent}><Text style={style.primaryText}>{label}</Text></BlurView>}
         {type == "secondary" && <View style={style.secondaryButton}><Text style={style.secondaryText}>{label}</Text></View>}
         {type == "menu" && <View style={style.menuButton}><Text style={style.secondaryText}>{label}</Text><ChevronRight width="20" heigth="20" stroke="white" /></View>}
+        {type == "address" && <View style={style.menuButton}>
+          <Text style={style.secondaryText}>{label}</Text>
+          <View style={style.iconContainer}>
+            <QRIcon width="18" heigth="18" stroke="white" />
+          </View>
+          </View>}
       </View>
     </TouchableOpacity>
   )
@@ -61,7 +71,7 @@ const style = StyleSheet.create({
     height: 25,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   secondaryBtnContainer: {
     flexDirection: 'row',
@@ -75,9 +85,7 @@ const style = StyleSheet.create({
     flexBasis: 'auto',
     paddingLeft: '5%',
     paddingRight: '5%',
-    boxSizing: 'border-box',
-    borderBottomWidth: 1,
-    borderColor: backgroundColorTransparent
+    boxSizing: 'border-box'
   },
   button: {
     display: 'flex',
@@ -112,7 +120,8 @@ const style = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingLeft: 2,
-    paddingRight: 2
+    paddingRight: 2,
+    gap: 2
   },
   disabledBtn: {
     opacity: 0.5,
@@ -127,11 +136,20 @@ const style = StyleSheet.create({
     color: buttonTextColor,
     fontFamily: defaultFont,
     fontSize: 15,
+    lineHeight: 22,
     fontWeight: '200',
   },
   cancelIcon: {
     color: 'white',
     textAlign: 'center'
+  },
+  iconContainer: {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    paddingTop: 8,
+    boxSizing: 'border-box'
   }
 });
 

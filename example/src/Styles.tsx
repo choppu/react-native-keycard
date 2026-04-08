@@ -10,6 +10,7 @@ export const logFont = Platform.OS === 'ios' ? 'Source Code Pro' : 'SourceCodePr
 export const secondaryColor = '#FF6400cc';
 export const buttonTextColor = '#ffffffcc';
 export const white80 = '#ffffff88';
+export const white40 = '#FFFFFF66';
 export const logContainerTopPadding = Platform.OS === 'ios' ? 40 : 0;
 
 const Styles = StyleSheet.create({
@@ -17,7 +18,7 @@ const Styles = StyleSheet.create({
     backgroundColor: backgroundColor,
     color: 'white',
     width: '100%',
-    height: '95%',
+    height: '100%',
     letterSpacing: -.9
   },
   container: {
@@ -26,6 +27,7 @@ const Styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-end',
+    paddingBottom: 15
   },
   screenContainer: {
     width: '100%',
@@ -148,6 +150,7 @@ const Styles = StyleSheet.create({
     borderRadius: 38,
     shadowColor: logBgColor,
     elevation: 10,
+    marginBottom: 20
   },
   tabIcon: {
     backgroundColor: 'transparent',
