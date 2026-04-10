@@ -1,6 +1,7 @@
 import React from 'react';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { View } from 'react-native';
+import { buttonTextColor } from '../../Styles';
 
 type SvgProps = {
   width: string;
@@ -15,7 +16,7 @@ const  CardNFC: React.FC<SvgProps> = (props: SvgProps) => {
       <View>
         <Svg width={width} height={heigth} viewBox="0 0 114 114" fill="none">
           <Circle cx="57" cy="57" r="54" stroke="#FF6400" strokeWidth="3" />
-          <Path d="M68.9371 78.5076L68.9371 36C68.9371 31.5817 65.3554 28 60.9371 28L15.2474 28C13.4334 28 11.7472 28.9689 10.8617 30.5522C7.95224 35.7544 3.00001 45.5568 3.00001 57.2538C3.00001 68.9508 7.95223 78.7532 10.8617 83.9554C11.7471 85.5386 13.4334 86.5076 15.2474 86.5076L60.9371 86.5076C65.3554 86.5076 68.9371 82.9258 68.9371 78.5076Z" fill="#2A4AF5" fillOpacity="0.1" stroke="#FF6400" strokeWidth="3" />
+          <Path d="M68.9371 78.5076L68.9371 36C68.9371 31.5817 65.3554 28 60.9371 28L15.2474 28C13.4334 28 11.7472 28.9689 10.8617 30.5522C7.95224 35.7544 3.00001 45.5568 3.00001 57.2538C3.00001 68.9508 7.95223 78.7532 10.8617 83.9554C11.7471 85.5386 13.4334 86.5076 15.2474 86.5076L60.9371 86.5076C65.3554 86.5076 68.9371 82.9258 68.9371 78.5076Z" fill={buttonTextColor} fillOpacity="0.1" stroke="#FF6400" strokeWidth="3" />
           <Path d="M39.8058 62.8584L39.7574 50.4406C39.7522 49.0426 40.8805 47.9043 42.2788 47.8986L55.5081 47.8481C56.9064 47.8425 58.0437 48.9722 58.0488 50.3702L58.0971 62.7879C58.1029 64.1859 56.9739 65.3242 55.576 65.3281L42.3463 65.3803C40.9482 65.386 39.8107 64.2564 39.8058 62.8584Z" stroke="#FF6400" strokeWidth="1.05769" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
           <Path d="M44.6469 52.3949C45.7434 52.3909 46.6352 53.276 46.64 54.372L46.658 59.0436C46.6619 60.1414 45.777 61.0323 44.6803 61.0381L39.7987 61.0563" stroke="#FF6400" strokeWidth="1.05769" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
           <Path d="M39.7648 52.4128L44.6464 52.3946L39.7648 52.4128Z" fill="#FF6400" />

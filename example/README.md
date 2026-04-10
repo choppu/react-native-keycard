@@ -1,97 +1,131 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Keycard Example App
 
-# Getting Started
+A React Native example application demonstrating how to use the `react-native-keycard` library to interact with Keycard using NFC connection.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Overview
 
-## Step 1: Start Metro
+This example app showcases the full Keycard workflow including:
+- Card initialization
+- Pairing management
+- PIN/PUK management
+- Mnemonic generation / import
+- Ethereum wallet derivation
+- Signing
+- Factory reset
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+`Keycard Example App` uses `runOnSecureChannel` method of `KeycardManager` class ([`keycard-sdk`](https://github.com/choppu/keycard-sdk)) to facilitate the handling of card initialization, authentication, pairing and opening of secure channel processes.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Prerequisites
 
-```sh
-# Using npm
-npm start
+- Node.js >= 20
+- Yarn package manager
+- iOS: Xcode 14+ with iOS SDK 16+
+- Android: Android Studio with API 21+
+- Keycard
 
-# OR using Yarn
+## Installation
+
+```bash
+# Clone project
+git clone https://github.com/choppu/react-native-keycard.git
+```
+
+Open project in editor. In terminal:
+
+```bash
+cd example
+
+# Install dependencies
+yarn install
+
+# iOS: Install CocoaPods dependencies
+cd ios && bundle exec pod install && cd ..
+```
+
+## Running the Example
+
+### Start Metro Bundler
+
+```bash
 yarn start
 ```
 
-## Step 2: Build and run your app
+### Run on iOS
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
+```bash
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Run on Android
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+yarn android
+```
 
-## Step 3: Modify your app
+## Features
 
-Now that you have successfully run the app, let's make changes!
+### Wallet Tab
+- Create mnemonic
+- Load mnemonic
+- Sign personal message
+- Derive and view Ethereum wallet addresses
+- Remove key
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+### Settings Tab
+- Change PIN
+- Change PUK
+- Change pairing password
+- Unpair
+- Unpair others
+- Factory reset card
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+### Card Tab
+- View card application info
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## Custom Hooks
 
-## Congratulations! :tada:
+The example app uses two custom React hooks to manage Keycard interactions:
 
-You've successfully run and modified your React Native App. :partying_face:
+### [`useNFCCardSession`](src/hooks/useKeycardNFC.tsx)
 
-### Now what?
+This hook manages the NFC session lifecycle for card communication:
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+- **`start()`**: Initiates NFC scanning and checks for NFC support/enabled status
+- **`stop()`**: Stops the NFC session and resets the UI state
+- **`handleCardInitialized()`**: Called when the card is successfully initialized
+- **`handleCardAuthentic()`**: Called when card authenticated
+- **`handleCardPaired()`**: Called when pairing is complete
+- **`handleSecureChannelOpened()`**: Called when the secure channel is established
+- **`handlePinVerified()`**: Called when PIN verification succeeds
+- **`handleCmdExecuted()`**: Called when command execution completes
 
-# Troubleshooting
+### [`useKeycard`](src/hooks/useKeycard.tsx)
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+This hook provides Keycard operation callbacks that wrap the `KeycardManager` API:
 
-# Learn More
+| Method | Description |
+|--------|-------------|
+| `changePIN()` | Changes the card PIN |
+| `changePUK()` | Changes the card PUK |
+| `changePairing()` | Updates the pairing password |
+| `unpair()` | Unpairs the current card and removes stored pairing data |
+| `unpairOthers()` | Unpairs all other devices from the card |
+| `getCardInfo()` | Retrieves application info, status, and key path |
+| `createMnemonic()` | Generates a new BIP39 mnemonic (12 or 24 words) and loads it |
+| `loadMnemonic()` | Loads an imported recovery phrase into the card |
+| `exportKey()` | Derives Ethereum addresses from the card's key hierarchy |
+| `removeKey()` | Removes the loaded key from the card |
+| `sign()` | Signs a personal message hash with the given path |
+| `factoryReset()` | Resets the card to factory defaults |
 
-To learn more about React Native, take a look at the following resources:
+Both hooks work together: `useNFCCardSession` handles the NFC connection and state transitions, while `useKeycard` executes the actual Keycard commands once the secure channel is established.
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## Showcase
+
+| Feature | Video |
+|---------|-------|
+| **Card application info** | <video src="https://github.com/user-attachments/assets/69f12d14-7c0e-4430-ae0d-08b1a3a9cc95" controls width="300"></video> |
+| **Show wallets** | <video src="https://github.com/user-attachments/assets/a4e4eeeb-1c84-4c5e-87f0-6f2e7ca2720f" controls width="300"></video> |
+| **Sign message** | <video src="https://github.com/user-attachments/assets/188e6268-d3f2-4916-8dbf-1bb39932515c" controls width="300"></video> |
+| **Factory reset** | <video src="https://github.com/user-attachments/assets/babee5c9-b227-44e5-a2c4-96db74e9f179" controls width="300"></video> |
+| **Change PIN** | <video src="https://github.com/user-attachments/assets/4e316cfa-7f17-425e-b7b7-3fadf8c3c963" controls width="300"></video> |

@@ -2,6 +2,10 @@ import Foundation
 import os.log
 
 @objcMembers public class KeycardImp: NSObject {
+  public enum Error: Swift.Error {
+    case invalidAPDUResponse
+  }
+
   var cardChannel: NFCCardChannel? = nil
   var nfcStartPrompt: String = "Hold your iPhone close to a Keycard"
 
@@ -112,7 +116,10 @@ import os.log
 
   public func send(_ apdu: String) -> [String : String] {
     guard let apduResp = try? self.cardChannel?.send(apdu) else {
-        fatalError("Invalid response data")
+      return [
+      "data": "",
+      "state": "error",
+      ]
     }
 
     var state: String = (apduResp != nil) ? "success" : "error";

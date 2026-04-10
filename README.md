@@ -42,7 +42,7 @@ React Native New Architecture library to interact with Keycard using NFC connect
 
 3. In terminal:
 
-```
+```sh
 cd ios
 pod install
 ```
@@ -87,7 +87,7 @@ pod install
 
     Example `app.plugin.ts`
 
-  ```
+  ```ts
   import { ExpoConfig } from '@expo/config-types';
   import { ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
 
@@ -125,7 +125,7 @@ export default withKeycardSDK;
 
     Example code to dynamically update plugins block adding `app.plugin`:
 
-```
+```js
 import "tsx/cjs";
 import withKeycardSDK from './expo-custom/app.plugin';
 
@@ -155,7 +155,7 @@ checks if NFC is supported.
 
 **Example**
 
-```
+```ts
 import React from 'react';
 import RNKeycard from 'react-native-keycard';
 
@@ -171,7 +171,7 @@ checks if NFC is enabled.
 
 **Example**
 
-```
+```ts
 import React from 'react';
 import RNKeycard from 'react-native-keycard';
 
@@ -194,7 +194,7 @@ opens NFC Settings on Android. Unsupported on iOS.
 
 **Example**
 
-```
+```ts
 import React from 'react';
 import RNKeycard from 'react-native-keycard';
 
@@ -217,7 +217,7 @@ updates the alert message on iOS. Unsupported on Android.
 
 **Example**
 
-```
+```ts
 import React from 'react';
 import RNKeycard from 'react-native-keycard';
 
@@ -246,7 +246,7 @@ starts NFC.
 
 **Example**
 
-```
+```ts
 import React from 'react';
 import RNKeycard from 'react-native-keycard';
 
@@ -269,7 +269,7 @@ stops NFC.
 
 **Example**
 
-```
+```ts
 import React from 'react';
 import RNKeycard from 'react-native-keycard';
 
@@ -295,7 +295,7 @@ checks Keycard connection status.
 
 **Example**
 
-```
+```ts
 import React from 'react';
 import RNKeycard from 'react-native-keycard';
 

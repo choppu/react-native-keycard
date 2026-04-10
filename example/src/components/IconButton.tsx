@@ -21,7 +21,13 @@ const  IconButton: FC<IconButtonProps> = props => {
 
 const style = StyleSheet.create({
   iconButtonContainer: {
-    flexGrow: 1
+    flexGrow: 1,
+    margin: 1,
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });
 
