@@ -11,22 +11,15 @@ type ChangePairingScreenProps = {
 };
 
 enum PairingSteps {
-  VerifyPin,
   InsertNewPairing,
-  ConfirmNewPairing
+  ConfirmNewPairing,
+  VerifyPin
 }
 
 const ChangePairingScreen: React.FC<ChangePairingScreenProps> = props => {
   const { onSubmitFunc, onCancelFunc } = props;
-  const [pin, setCurrentPin] = React.useState('');
   const [newPairing, setNewPairing] = React.useState<string | undefined>(undefined);
-  const [step, setStep] = React.useState(PairingSteps.VerifyPin);
-
-  const insertPin = (p: string) => {
-    setCurrentPin(p);
-    setStep(PairingSteps.InsertNewPairing);
-    return true;
-  }
+  const [step, setStep] = React.useState(PairingSteps.InsertNewPairing);
 
   const insertNewPairing = (pass: string | undefined) => {
     setNewPairing(pass);
@@ -36,20 +29,24 @@ const ChangePairingScreen: React.FC<ChangePairingScreenProps> = props => {
 
   const submitPairing = (pass: string | undefined) => {
     if(newPairing == pass) {
-      setStep(PairingSteps.InsertNewPairing);
-      onSubmitFunc(pin, newPairing);
+      setStep(PairingSteps.VerifyPin);
       return true;
     }
 
     return false;
   }
 
+  const insertPin = (p: string) => {
+    onSubmitFunc(p, newPairing);
+    return true;
+  }
+
 
   return (
     <View style={Styles.container}>
-      { step == PairingSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={insertPin} type='pin' />)}
       { step == PairingSteps.InsertNewPairing && (<PairingInput prompt={"Enter new pairing password"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={insertNewPairing} type="change"/>)}
       { step == PairingSteps.ConfirmNewPairing && (<PairingInput prompt={"Confirm pairing password"} onCancelFunc={() => setStep(PairingSteps.InsertNewPairing)} onNextFunc={submitPairing} buttonLabel="Submit" type="change"/>)}
+      { step == PairingSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => onCancelFunc(PairingSteps.ConfirmNewPairing)} onNextFunc={insertPin} type='pin' />)}
   </View>
   )
 };

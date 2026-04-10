@@ -122,20 +122,10 @@ Both hooks work together: `useNFCCardSession` handles the NFC connection and sta
 
 ## Showcase
 
-**Card application info**
-<video src="https://github.com/user-attachments/assets/3f3f3e6f-1dfa-4bc0-97d9-c3f3a5d404e9" controls width="300"></video>
-
-**Change PIN**
-<video src="https://github.com/user-attachments/assets/245290db-cc6c-450a-9d8c-771507cd861e" controls width="300"></video>
-
-**Create Mnemonic**
-<video src="https://github.com/user-attachments/assets/4b786a83-e1b3-4628-85c1-a010fc6ce06b" controls width="300"></video>
-
-**Sign Message**
-<video src="https://github.com/user-attachments/assets/431d5a4b-cb83-448e-85c6-a1f0ef3ef02d" controls width="300"></video>
-
-**Remove Key**
-<video src="https://github.com/user-attachments/assets/9d634470-e89e-4235-90eb-10b138069919" controls width="300"></video>
-
-**Derive / show Ethereum addresses**
-<video src="https://github.com/user-attachments/assets/af91523c-7546-43bb-a28b-9db42e3eeead" controls width="300"></video>
+| Feature | Video |
+|---------|-------|
+| **Card application info** | <video src="https://github.com/user-attachments/assets/69f12d14-7c0e-4430-ae0d-08b1a3a9cc95" controls width="300"></video> |
+| **Show wallets** | <video src="https://github.com/user-attachments/assets/a4e4eeeb-1c84-4c5e-87f0-6f2e7ca2720f" controls width="300"></video> |
+| **Sign message** | <video src="https://github.com/user-attachments/assets/188e6268-d3f2-4916-8dbf-1bb39932515c" controls width="300"></video> |
+| **Factory reset** | <video src="https://github.com/user-attachments/assets/babee5c9-b227-44e5-a2c4-96db74e9f179" controls width="300"></video> |
+| **Change PIN** | <video src="https://github.com/user-attachments/assets/4e316cfa-7f17-425e-b7b7-3fadf8c3c963" controls width="300"></video> |

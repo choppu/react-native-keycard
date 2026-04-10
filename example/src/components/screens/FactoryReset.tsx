@@ -43,8 +43,7 @@ const styles = StyleSheet.create({
   resetContainer: {
     width: '100%',
     height: '100%',
-    paddingTop: 40,
-    paddingBottom: 40,
+    paddingVertical: 60,
     boxSizing: 'border-box'
   },
   resetPromptContainer: {

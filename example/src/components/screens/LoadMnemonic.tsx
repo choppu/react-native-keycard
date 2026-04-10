@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
-import Styles, { buttonTextColor, defaultFont, logBgColor, logFont } from "../../Styles";
+import Styles, { buttonTextColor, defaultFont, logBgColor, logFont, neutral90 } from "../../Styles";
 import Dialpad from "../Dialpad";
 import { Screen } from "../../Main";
 import Button from "../Button";
@@ -20,13 +20,11 @@ enum MnemonicSteps {
 const LoadMnemonicScreen: React.FC<LoadMnemonicScreenProps> = props => {
   const { onSubmitFunc, onCancelFunc } = props;
   const [mnemonic, setMnemonic] = React.useState<string>('');
-  const [pin, setCurrentPin] = React.useState('');
-  const [step, setStep] = React.useState(MnemonicSteps.VerifyPin);
+  const [step, setStep] = React.useState(MnemonicSteps.LoadMnemonic);
   const [isBtnDisabled, setBtnDisabled] = React.useState<boolean>(true);
 
   const insertPin = (p: string) => {
-    setCurrentPin(p);
-    setStep(MnemonicSteps.LoadMnemonic);
+    onSubmitFunc(p, mnemonic);
     return true;
   }
 
@@ -42,49 +40,42 @@ const LoadMnemonicScreen: React.FC<LoadMnemonicScreenProps> = props => {
   }
 
   const loadMnemonic = () => {
-    onSubmitFunc(pin, mnemonic);
+    setStep(MnemonicSteps.VerifyPin);
     return true;
   }
 
 
   return (
     <View style={Styles.container}>
-      {step == MnemonicSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={insertPin} type='pin' />)}
       {
         step == MnemonicSteps.LoadMnemonic && (
-          <View style={styles.successMnemonicContainer}>
+          <View style={styles.container}>
             <View style={styles.backBtnContainer}>
-              <Button disabled={false} onChangeFunc={() => setStep(MnemonicSteps.VerifyPin)} type="cancel"></Button>
+              <Button disabled={false} onChangeFunc={() => onCancelFunc(Screen.Home)} type="cancel"></Button>
             </View>
             <Text style={Styles.heading}>Import recovery phrase</Text>
-            <View style={styles.mnemonicContainer}>
-                <Text style={styles.mnemonic}>{mnemonic.toLowerCase()}</Text>
-            </View>
-            <TextInput onChangeText={updateMnemonic} style={styles.wordInput} />
+            <TextInput onChangeText={updateMnemonic} style={styles.wordInput}numberOfLines={10} multiline={true} submitBehavior={'blurAndSubmit'}/>
             <View>
               <Button label={'Submit'} disabled={isBtnDisabled} onChangeFunc={loadMnemonic} type="secondary" />
             </View>
           </View>
         )
       }
+      {step == MnemonicSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => setStep(MnemonicSteps.LoadMnemonic)} onNextFunc={insertPin} type='pin' />)}
     </View>
   )
 };
 
 const styles = StyleSheet.create({
-  successMnemonicContainer: {
+  container: {
     width: '100%',
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    gap: 10,
+    gap: 20,
     justifyContent: 'center',
     paddingBottom: 30,
     paddingTop: 40
-  },
-  headingContainer: {
-    width: '100%',
-    height: 570
   },
   backBtnContainer: {
     width: '100%',
@@ -93,45 +84,24 @@ const styles = StyleSheet.create({
     boxSizing: 'border-box',
     marginBottom: 0
   },
-  mnemonicContainer: {
-    width: '95%',
-    margin: 'auto',
-    backgroundColor: logBgColor,
-    minHeight: 120,
-    height: 'auto',
-    borderRadius: 20,
-    textAlign: 'justify',
-    padding: 10,
-    paddingTop: 20,
-    paddingBottom: 20,
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 5,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  mnemonic: {
-    color: 'white',
-    fontSize: 12,
-    lineHeight: 20,
-    fontFamily: logFont,
-    textAlign: 'justify',
-  },
   wordInput: {
     width: '90%',
-    height: 40,
-    padding: 6,
-    boxSizing: 'border-box',
-    borderBottomColor: logBgColor,
-    borderBottomWidth: 2,
-    borderRadius: 7,
     marginLeft: 'auto',
     marginRight: 'auto',
-    fontSize: 14,
-    fontFamily: defaultFont,
+    borderBottomWidth: 2,
+    marginTop: 30,
     marginBottom: 300,
-    color: buttonTextColor
+    color: buttonTextColor,
+    fontSize: 16,
+    fontFamily: defaultFont,
+    fontWeight: '300',
+    backgroundColor: neutral90,
+    borderColor: logBgColor,
+    borderRadius: 6,
+    height: 180,
+    textAlignVertical: 'top',
+    padding: 8,
+    boxSizing: 'border-box'
   }
 });
 

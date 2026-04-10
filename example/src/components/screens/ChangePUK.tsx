@@ -10,20 +10,18 @@ type ChangePUKScreenProps = {
 };
 
 enum PukSteps {
-  VerifyPin,
   InsertNewPuk,
-  RepeatPuk
+  RepeatPuk,
+  VerifyPin
 }
 
 const ChangePUKScreen: React.FC<ChangePUKScreenProps> = props => {
   const { onSubmitFunc, onCancelFunc } = props;
   const [newPuk, setNewPuk] = React.useState('');
-  const [pin, setCurrentPin] = React.useState('');
-  const [step, setStep] = React.useState(PukSteps.VerifyPin);
+  const [step, setStep] = React.useState(PukSteps.InsertNewPuk);
 
   const insertPin = (p: string) => {
-    setCurrentPin(p);
-    setStep(PukSteps.InsertNewPuk);
+    onSubmitFunc(p, newPuk);
     return true;
   }
 
@@ -35,7 +33,7 @@ const ChangePUKScreen: React.FC<ChangePUKScreenProps> = props => {
 
   const submitPuk = (p: string) => {
     if(newPuk == p) {
-      onSubmitFunc(pin, newPuk);
+      setStep(PukSteps.VerifyPin);
       return true;
     }
 
@@ -45,9 +43,9 @@ const ChangePUKScreen: React.FC<ChangePUKScreenProps> = props => {
 
   return (
     <View style={Styles.container}>
-      { step == PukSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={insertPin} type='pin' />)}
-      { step == PukSteps.InsertNewPuk && (<Dialpad pinRetryCounter={-1} prompt={"Enter new PUK"} onCancelFunc={() => setStep(PukSteps.VerifyPin)} onNextFunc={insertNewPuk} type='puk' />)}
+      { step == PukSteps.InsertNewPuk && (<Dialpad pinRetryCounter={-1} prompt={"Enter new PUK"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={insertNewPuk} type='puk' />)}
       { step == PukSteps.RepeatPuk && (<Dialpad pinRetryCounter={-1} prompt={"Repeat new PUK"} onCancelFunc={() => setStep(PukSteps.InsertNewPuk)} onNextFunc={submitPuk} buttonLabel="Submit" type='puk'/>)}
+      { step == PukSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter current PIN"} onCancelFunc={() => setStep(PukSteps.RepeatPuk)} onNextFunc={insertPin} type='pin' />)}
   </View>
   )
 };

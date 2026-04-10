@@ -10,20 +10,18 @@ type ChangePINScreenProps = {
 };
 
 enum PinSteps {
-  VerifyPin,
   InsertNewPin,
-  RepeatPin
+  RepeatPin,
+  VerifyPin
 }
 
 const ChangePINScreen: React.FC<ChangePINScreenProps> = props => {
   const { onSubmitFunc, onCancelFunc } = props;
   const [newPin, setNewPin] = React.useState('');
-  const [pin, setCurrentPin] = React.useState('');
-  const [step, setStep] = React.useState(PinSteps.VerifyPin);
+  const [step, setStep] = React.useState(PinSteps.InsertNewPin);
 
   const insertPin = (p: string) => {
-    setCurrentPin(p);
-    setStep(PinSteps.InsertNewPin);
+    onSubmitFunc(p, newPin);
     return true;
   }
 
@@ -35,7 +33,7 @@ const ChangePINScreen: React.FC<ChangePINScreenProps> = props => {
 
   const submitPin = (p: string) => {
     if(newPin == p) {
-      onSubmitFunc(pin, newPin);
+      setStep(PinSteps.VerifyPin);
       return true;
     }
 
@@ -45,9 +43,9 @@ const ChangePINScreen: React.FC<ChangePINScreenProps> = props => {
 
   return (
     <View style={Styles.container}>
-      { step == PinSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={insertPin} type='pin' />)}
-      { step == PinSteps.InsertNewPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter new PIN"} onCancelFunc={() => setStep(PinSteps.VerifyPin)} onNextFunc={insertNewPin} type='pin' />)}
+      { step == PinSteps.InsertNewPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter new PIN"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={insertNewPin} type='pin' />)}
       { step == PinSteps.RepeatPin && (<Dialpad pinRetryCounter={-1} prompt={"Repeat new PIN"} onCancelFunc={() => setStep(PinSteps.InsertNewPin)} onNextFunc={submitPin} buttonLabel="Submit" type='pin' />)}
+      { step == PinSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => setStep(PinSteps.RepeatPin)} onNextFunc={insertPin} type='pin' />)}
   </View>
   )
 };

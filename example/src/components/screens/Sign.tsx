@@ -2,44 +2,37 @@ import React from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import Styles, { backgroundColorTransparent, buttonTextColor, defaultFont, logBgColor, logFont, neutral90 } from "../../Styles";
 import Button from "../Button";
-import { ethPath, type SignData, type Wallet } from "../../Main";
+import { ethPath, paths, type SignData } from "../../Main";
 import Dialpad from "../Dialpad";
 import ChevronBottom from "../../assets/images/ChevronBottom";
 import { SelectList } from 'react-native-dropdown-select-list'
 
 type SignScreenProps = {
-  addresses: Wallet[];
   signResponse: SignData | undefined;
-  getAddressesFunc: (pin: string) => void;
   onSubmitFunc: (pin: string, message: string, path: string) => void;
   onCancelFunc: () => void;
 };
 
 enum SignSteps {
-  VerifyPin,
   SignMessage,
-  SignSuccess
+  SignSuccess,
+  VerifyPin
 }
 
 const SignScreen: React.FC<SignScreenProps> = props => {
-  const { addresses, signResponse, onSubmitFunc, getAddressesFunc, onCancelFunc } = props;
-  const [pin, setCurrentPin] = React.useState('');
-  const [step, setStep] = React.useState<number>(SignSteps.VerifyPin);
-  const [childIndex, setChildIndex] = React.useState<number>(0);
+  const {signResponse, onSubmitFunc, onCancelFunc } = props;
+  const [step, setStep] = React.useState<number>(SignSteps.SignMessage);
+  const [path, setPath] = React.useState<string>(ethPath);
   const [message, setMessage] = React.useState<string>('');
 
-
   const insertPin = (p: string) => {
-    setCurrentPin(p);
-    getAddressesFunc(p);
-    setStep(SignSteps.SignMessage);
+    onSubmitFunc(p, message, path);
+    setStep(SignSteps.SignSuccess);
     return true;
   }
 
-  const signTransaction = () => {
-    const accountPath = `${ethPath}/${childIndex}`;
-    onSubmitFunc(pin, message, accountPath);
-    setStep(SignSteps.SignSuccess);
+  const signMessage = () => {
+    setStep(SignSteps.VerifyPin);
   }
 
   const closeSign = () => {
@@ -49,21 +42,18 @@ const SignScreen: React.FC<SignScreenProps> = props => {
 
   return (
     <View style={Styles.container}>
-      {step == SignSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={onCancelFunc} onNextFunc={insertPin} type='pin' />)}
       {step == SignSteps.SignMessage && (
         <View style={styles.container}>
           <View style={styles.backBtnContainer}>
-            <Button disabled={false} onChangeFunc={() => setStep(SignSteps.VerifyPin)} type="cancel" />
+            <Button disabled={false} onChangeFunc={onCancelFunc} type="cancel" />
           </View>
           <Text style={Styles.heading}>Sign personal message</Text>
           <View style={styles.formContainer}>
             <View style={styles.fieldContainer}>
               <Text style={styles.fieldLabel}>Account</Text>
               <SelectList
-                setSelected={(val: number) => setChildIndex(val)}
-                data={addresses.map((address) => {
-                  return { value: `0x${address.address}`, key: address.index }
-                })}
+                setSelected={(val: string) => setPath(val)}
+                data={paths}
                 dropdownStyles={styles.dropdownList}
                 dropdownTextStyles={styles.dropdownItemStyles}
                 inputStyles={styles.selectedItem}
@@ -73,7 +63,7 @@ const SignScreen: React.FC<SignScreenProps> = props => {
                 fontFamily={defaultFont}
                 arrowicon={<ChevronBottom width="20" heigth="20" stroke={buttonTextColor} />}
                 maxHeight={120}
-                save="key"
+                save="value"
               />
             </View>
             <View style={styles.fieldContainer}>
@@ -82,10 +72,11 @@ const SignScreen: React.FC<SignScreenProps> = props => {
             </View>
           </View>
           <View style={styles.buttonContainer}>
-            <Button label={'Sign'} disabled={message == ''} onChangeFunc={signTransaction} type="secondary" />
+            <Button label={'Sign'} disabled={message == ''} onChangeFunc={signMessage} type="secondary" />
           </View>
         </View>
       )}
+      {step == SignSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => setStep(SignSteps.SignMessage)} onNextFunc={insertPin} type='pin' />)}
       {step == SignSteps.SignSuccess && signResponse != undefined && (
         <View style={styles.successContainer}>
           <Text style={Styles.heading}>Sign response data</Text>
@@ -160,6 +151,7 @@ const styles = StyleSheet.create({
   selectorStyle: {
     width: '100%',
     paddingVertical: 12,
+    paddingTop: 13,
     paddingHorizontal: 10,
     backgroundColor: backgroundColorTransparent,
     borderColor: logBgColor,

@@ -15,7 +15,9 @@ const VerifyPINScreen: React.FC<VerifyPINScreenProps> = props => {
 
   return (
     <View style={Styles.container}>
-      <Dialpad pinRetryCounter={pinRetry} prompt={"Enter PIN"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={onSubmitFunc} type='pin' />
+      <View style={Styles.screenContainer}>
+        <Dialpad pinRetryCounter={pinRetry} prompt={"Enter PIN"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={onSubmitFunc} type='pin' />
+      </View>
     </View>
   )
 };

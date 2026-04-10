@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   loadKeyContainer: {
     width: '100%',
     height: '100%',
-    paddingTop: 40,
+    paddingTop: 60,
     paddingBottom: 40,
     display: 'flex',
     flexDirection: 'column',

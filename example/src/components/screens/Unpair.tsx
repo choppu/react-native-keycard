@@ -13,36 +13,33 @@ type UnpairScreenProps = {
 };
 
 enum UnpairSteps {
-  VerifyPin,
-  Unpair
+  Unpair,
+  VerifyPin
 }
 
 const UnpairScreen: React.FC<UnpairScreenProps> = props => {
   const { onSubmitFunc, onCancelFunc, prompt } = props;
-  const [step, setStep] = React.useState(UnpairSteps.VerifyPin);
-  const [pin, setCurrentPin] = React.useState('');
+  const [step, setStep] = React.useState(UnpairSteps.Unpair);
 
 
 
   const insertPin = (p: string) => {
-    setCurrentPin(p);
-    setStep(UnpairSteps.Unpair);
+    onSubmitFunc(p);
     return true;
   }
 
   const unpair = () => {
-    onSubmitFunc(pin);
+    setStep(UnpairSteps.VerifyPin);
     return true;
   }
 
   return (
     <View style={Styles.container}>
-      {step == UnpairSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={insertPin} type='pin' />)}
       {
         step == UnpairSteps.Unpair && (
           <View style={styles.unpairContainer}>
             <View style={styles.backBtnContainer}>
-              <Button disabled={false} onChangeFunc={() => setStep(UnpairSteps.VerifyPin)} type="cancel" />
+              <Button disabled={false} onChangeFunc={() => onCancelFunc(Screen.Home)} type="cancel" />
             </View>
             <View style={styles.unpairPromptContainer}>
               <Logo width="78" heigth="136" stroke="white"/>
@@ -54,6 +51,7 @@ const UnpairScreen: React.FC<UnpairScreenProps> = props => {
           </View>
         )
       }
+      {step == UnpairSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => setStep(UnpairSteps.Unpair)} onNextFunc={insertPin} type='pin' />)}
     </View>
   )
 };
@@ -69,8 +67,7 @@ const styles = StyleSheet.create({
   unpairContainer: {
     width: '100%',
     height: '100%',
-    paddingTop: 40,
-    paddingBottom: 20,
+    paddingVertical: 60,
     boxSizing: 'border-box',
   },
   unpairPromptContainer: {

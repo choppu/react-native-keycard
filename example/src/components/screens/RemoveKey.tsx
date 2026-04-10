@@ -12,31 +12,28 @@ type RemoveKeyScreenProps = {
 };
 
 enum RemoveKeySteps {
-  VerifyPin,
-  RemoveKey
+  RemoveKey,
+  VerifyPin
 }
 
 const RemoveKeyScreen: React.FC<RemoveKeyScreenProps> = props => {
   const { onSubmitFunc, onCancelFunc } = props;
-  const [step, setStep] = React.useState(RemoveKeySteps.VerifyPin);
-  const [pin, setCurrentPin] = React.useState('');
+  const [step, setStep] = React.useState(RemoveKeySteps.RemoveKey);
 
 
 
   const insertPin = (p: string) => {
-    setCurrentPin(p);
-    setStep(RemoveKeySteps.RemoveKey);
+    onSubmitFunc(p);
     return true;
   }
 
-  const unpair = () => {
-    onSubmitFunc(pin);
+  const removeKey = () => {
+    setStep(RemoveKeySteps.VerifyPin);
     return true;
   }
 
   return (
     <View style={Styles.container}>
-      {step == RemoveKeySteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={insertPin} type='pin' />)}
       {
         step == RemoveKeySteps.RemoveKey && (
           <View style={styles.unpairContainer}>
@@ -44,15 +41,16 @@ const RemoveKeyScreen: React.FC<RemoveKeyScreenProps> = props => {
               <Button disabled={false} onChangeFunc={() => onCancelFunc(Screen.Home)} type="cancel" />
             </View>
             <View style={styles.unpairPromptContainer}>
-              <Logo width="78" heigth="136" stroke="white"/>
+              <Logo width="78" heigth="136" stroke="white" />
               <Text style={styles.unpairPrompt}>Are you sure you want to remove key?</Text>
             </View>
             <View style={Styles.navContainer}>
-              <Button label="Remove Key" disabled={false} onChangeFunc={unpair} type="secondary" />
+              <Button label="Remove Key" disabled={false} onChangeFunc={removeKey} type="secondary" />
             </View>
           </View>
         )
       }
+      {step == RemoveKeySteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => setStep(RemoveKeySteps.RemoveKey)} onNextFunc={insertPin} type='pin' />)}
     </View>
   )
 };
@@ -68,8 +66,7 @@ const styles = StyleSheet.create({
   unpairContainer: {
     width: '100%',
     height: '100%',
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingVertical: 60,
     boxSizing: 'border-box'
   },
   unpairPromptContainer: {

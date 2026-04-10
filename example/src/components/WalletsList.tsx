@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     boxSizing: 'border-box',
-    marginBottom: 0
+    marginTop: 30
   },
   container: {
     width: '100%',

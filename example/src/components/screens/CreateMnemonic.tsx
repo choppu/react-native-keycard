@@ -16,25 +16,25 @@ type CreateMnemonicScreenProps = {
 };
 
 export enum MnemonicSteps {
-  VerifyPin,
   SelectMnemonic,
+  VerifyPin,
   ShowMnemonic
 }
 
 const CreateMnemonicScreen: React.FC<CreateMnemonicScreenProps> = props => {
   const { mnemonic, lastScreenState, startScreen, onSubmitFunc, onCancelFunc, updateMnemonicFunc, onShowMnemonicFunc } = props;
-  const [pin, setCurrentPin] = React.useState('');
-  const [step, setStep] = React.useState(lastScreenState);
+  const [step, setStep] = React.useState<number>(lastScreenState);
+  const [mnemonicLength, setMnemonicLength] = React.useState<number>(12);
 
   const insertPin = (p: string) => {
-    setCurrentPin(p);
-    setStep(MnemonicSteps.SelectMnemonic);
+    onSubmitFunc(p, mnemonicLength, MnemonicSteps.ShowMnemonic);
+    setStep(MnemonicSteps.ShowMnemonic);
     return true;
   }
 
-  const createMnemonic = (mnemonicLength: number) => {
-    onSubmitFunc(pin, mnemonicLength, MnemonicSteps.ShowMnemonic);
-    setStep(MnemonicSteps.ShowMnemonic);
+  const createMnemonic = (mLength: number) => {
+    setMnemonicLength(mLength);
+    setStep(MnemonicSteps.VerifyPin);
     return true;
   }
 
@@ -48,12 +48,11 @@ const CreateMnemonicScreen: React.FC<CreateMnemonicScreenProps> = props => {
 
   return (
     <View style={Styles.container}>
-      {step == MnemonicSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => onCancelFunc(Screen.Home)} onNextFunc={insertPin} type='pin' />)}
       {
         step == MnemonicSteps.SelectMnemonic && (
           <View style={styles.mnemonicSelectContainer}>
             <View style={styles.backBtnContainer}>
-              <Button disabled={false} onChangeFunc={() => setStep(MnemonicSteps.VerifyPin)} type="cancel"></Button>
+              <Button disabled={false} onChangeFunc={() => onCancelFunc(Screen.Home)} type="cancel"></Button>
             </View>
             <View style={styles.headingContainer}>
               <Text style={Styles.heading}>Select mnemonic length</Text>
@@ -65,6 +64,7 @@ const CreateMnemonicScreen: React.FC<CreateMnemonicScreenProps> = props => {
           </View>
         )
       }
+      {step == MnemonicSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => setStep(MnemonicSteps.SelectMnemonic)} onNextFunc={insertPin} type='pin' />)}
       {
         step == MnemonicSteps.ShowMnemonic && (
           <View style={styles.successMnemonicContainer}>
@@ -91,22 +91,21 @@ const CreateMnemonicScreen: React.FC<CreateMnemonicScreenProps> = props => {
 const styles = StyleSheet.create({
   mnemonicSelectContainer: {
     width: '100%',
-    height: '100%',
+    height: '92%',
     display: 'flex',
     flexDirection: 'column',
     gap: 0,
     justifyContent: 'space-between',
-    paddingTop: 40,
+    paddingBottom: 40,
   },
   successMnemonicContainer: {
     width: '100%',
-    height: '100%',
+    height: '92%',
     display: 'flex',
     flexDirection: 'column',
     gap: 10,
     justifyContent: 'center',
-    paddingBottom: 30,
-    paddingTop: 40
+    paddingBottom: 60,
   },
   mnemonicButtonsContainer: {
     width: '100%',
@@ -140,7 +139,6 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
     padding: 10,
     paddingTop: 30,
-    paddingBottom: 30,
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',

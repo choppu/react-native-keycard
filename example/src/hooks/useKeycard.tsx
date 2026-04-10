@@ -87,20 +87,6 @@ const useKeycard = (props: useKeycardProps) => {
     );
   }, [props.kManager, props.kmArgs]);
 
-  const getCardInfo = React.useCallback(async (channel: NFCCardChannel) => {
-    return await props.kManager.runOnSecureChannel(
-      channel,
-      PAIRED,
-      props.kmArgs,
-      async (cmdSet: Commandset) => {
-        const appInfo = cmdSet.applicationInfo;
-        const status = new ApplicationStatus((await cmdSet.getStatus(Constants.GET_STATUS_P1_APPLICATION)).checkOK().data);
-        const path = new KeyPath((await cmdSet.getStatus(Constants.GET_STATUS_P1_KEY_PATH)).checkOK().data);
-        props.setCardInfo({ ...props.cardInfo, appInfo: appInfo!, status: status, path: path });
-      }
-    );
-  }, [props.kManager, props.kmArgs, props.cardInfo]);
-
   const createMnemonic = React.useCallback(async (channel: NFCCardChannel) => {
     return await props.kManager.runOnSecureChannel(
       channel,
@@ -182,6 +168,19 @@ const useKeycard = (props: useKeycardProps) => {
     )
   }, [props.kManager, props.kmArgs, props.setSignResponse]);
 
+  const getCardInfo = React.useCallback(async (channel: NFCCardChannel) => {
+    return await props.kManager.runOnSecureChannel(
+      channel,
+      PAIRED,
+      props.kmArgs,
+      async (cmdSet: Commandset) => {
+        const appInfo = cmdSet.applicationInfo;
+        const status = new ApplicationStatus((await cmdSet.getStatus(Constants.GET_STATUS_P1_APPLICATION)).checkOK().data);
+        props.setCardInfo({ ...props.cardInfo, appInfo: appInfo!, status: status });
+      }
+    );
+  }, [props.kManager, props.kmArgs, props.cardInfo]);
+
   const factoryReset = React.useCallback(async (channel: NFCCardChannel) => {
     const cmdSet = new Commandset(channel);
     const appInfo = new ApplicationInfo((await cmdSet.select()).checkOK().data);
@@ -193,7 +192,7 @@ const useKeycard = (props: useKeycardProps) => {
     }
 
     return false;
-  }, [props.kManager])
+  }, [props.kManager]);
 
   return { createMnemonic, loadMnemonic, exportKey, removeKey, sign, changePIN, changePUK, changePairing, unpair, unpairOthers, getCardInfo, factoryReset };
 }

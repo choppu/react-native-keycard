@@ -28,14 +28,15 @@ const Styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-end',
-    paddingBottom: 15
+    paddingBottom: 20
   },
   screenContainer: {
     width: '100%',
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    gap: 10
+    gap: 10,
+    paddingVertical: 30,
   },
   textContainer: {
     width: '100%',

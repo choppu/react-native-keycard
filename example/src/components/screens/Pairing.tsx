@@ -13,7 +13,9 @@ const PairingScreen: React.FC<PairingScreenProps> = props => {
 
   return (
     <View style={Styles.container}>
-      <PairingInput prompt={"Enter pairing password"} onCancelFunc={() => {onCancelFunc}} onNextFunc={onSubmitFunc} type="verify"/>
+      <View style={Styles.screenContainer}>
+        <PairingInput prompt={"Enter pairing password"} onCancelFunc={() => { onCancelFunc }} onNextFunc={onSubmitFunc} type="verify" />
+      </View>
     </View>
   )
 };

@@ -25,10 +25,6 @@ const CardTab: React.FC<CardTabProps> = props => {
         <Text style={styles.cardInfo}>{cardInfo.appInfo ? (cardInfo.appInfo.keyUID ? `0x${Utils.hx(cardInfo.appInfo.keyUID)}`: '---') : '---'}</Text>
       </View>
       <View style={styles.cardInfoField}>
-        <Text style={styles.cardInfoLabel}>Wallet path</Text>
-        <Text style={styles.cardInfo}>{cardInfo.path ? cardInfo.path.toString() : '---'}</Text>
-      </View>
-      <View style={styles.cardInfoField}>
         <Text style={styles.cardInfoLabel}>Applet version</Text>
         <Text style={styles.cardInfo}>{cardInfo.appInfo ? cardInfo.appInfo.getAppVersionString() : '---'}</Text>
       </View>
@@ -60,7 +56,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
     height: 50,
-    marginTop: 5
+    marginTop: 20
   },
   cardInfoContainer: {
     display: 'flex',
@@ -74,10 +70,10 @@ const styles = StyleSheet.create({
   },
   cardInfoField: {
     width: '100%',
-    height: 50,
+    height: 60,
     display: 'flex',
     flexDirection: 'row',
-    gap: 8,
+    gap: 10,
     paddingLeft: 10,
     paddingRight: 10,
     boxSizing: 'border-box',

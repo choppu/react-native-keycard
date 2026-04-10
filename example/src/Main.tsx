@@ -18,7 +18,6 @@ import UnpairScreen from './components/screens/Unpair';
 import ChangePairingScreen from './components/screens/ChangePairing';
 import { ApplicationInfo } from 'keycard-sdk/dist/application-info';
 import { ApplicationStatus } from 'keycard-sdk/dist/application-status';
-import { KeyPath } from 'keycard-sdk/dist/key-path';
 import CreateMnemonicScreen, { MnemonicSteps } from './components/screens/CreateMnemonic';
 import RemoveKeyScreen from './components/screens/RemoveKey';
 import useKeycard from './hooks/useKeycard';
@@ -28,12 +27,18 @@ import type { NFCCardChannel } from '../../src/CardChannel';
 import CardLoadKeyScreen from './components/screens/CardLoadKey';
 import ShowWalletsScreen from './components/screens/ShowWallets';
 import SignScreen from './components/screens/Sign';
-import type { RecoverableSignature } from 'keycard-sdk/dist/recoverable-signature';
 
 const kManager = new KeycardManager(new LocalPairingStorage());
 const authCert = new Uint8Array([0x02, 0x9a, 0xb9, 0x9e, 0xe1, 0xe7, 0xa7, 0x1b, 0xdf, 0x45, 0xb3, 0xf9, 0xc5, 0x8c, 0x99, 0x86, 0x6f, 0xf1, 0x29, 0x4d, 0x2c, 0x1e, 0x30, 0x4e, 0x22, 0x8a, 0x86, 0xe1, 0x0c, 0x33, 0x43, 0x50, 0x1c]);
 const initialArgs = { cardPublicKeys: [authCert], skipVerificationUID: [] };
 export const ethPath = "m/44'/60'/0'/0";
+export const paths = [
+  {key: "m/44'/60'/0'/0", value: "m/44'/60'/0'/0"},
+  {key: "m/44'/60'/0'/1", value: "m/44'/60'/0'/1"},
+  {key: "m/44'/60'/0'/2", value: "m/44'/60'/0'/2"},
+  {key: "m/44'/60'/0'/3", value: "m/44'/60'/0'/3"},
+  {key: "m/44'/60'/0'/4", value: "m/44'/60'/0'/4"},
+];
 export enum Screen {
   Home,
   Initialization,
@@ -72,7 +77,6 @@ export enum Tabs {
 export type CardInfo = {
   appInfo: ApplicationInfo;
   status: ApplicationStatus;
-  path: KeyPath
 }
 
 export type Wallet = {
@@ -195,7 +199,7 @@ const Main = () => {
     ]);
     setScreen(Screen.Home);
     setlastScreenState(0);
-  }, [stop, reset, screen, log, factoryReset, lastScreenState])
+  }, [stop, reset, screen, log, factoryReset, lastScreenState]);
 
   const handleCardError = React.useCallback((errorCode: number, errorMessage: string, pRetry: number) => {
     setCmdExecFailed(true);
@@ -419,17 +423,10 @@ const Main = () => {
           );
           break;
         case Screen.Sign:
-          if ((messageRef.current == undefined) && (pathRef.current == undefined)) {
-            checkCmdExec(
-              await exportKey(channel),
-              `${new Date(Date.now()).toLocaleString("en-GB")} - Extended public key exported successfully`
-            );
-          } else {
-            checkCmdExec(
-              await sign(channel),
-              `${new Date(Date.now()).toLocaleString("en-GB")} - Personal message signed successfully`
-            );
-          }
+          checkCmdExec(
+            await sign(channel),
+            `${new Date(Date.now()).toLocaleString("en-GB")} - Personal message signed successfully`
+          );
           break;
         case Screen.ChangePIN:
           checkCmdExec(
@@ -515,7 +512,7 @@ const Main = () => {
       {(cmdExecFailed == false) && screen == Screen.LoadMnemonic && <LoadMnemonicScreen onCancelFunc={setScreen} onSubmitFunc={handleLoadMnemonic} />}
       {(cmdExecFailed == false) && screen == Screen.ShowWallet && <ShowWalletsScreen addresses={ethAddresses} onCancelFunc={setScreen} onSubmitFunc={handleShowWalletAddress} onScreenCloseFunc={setEthAddresses} />}
       {(cmdExecFailed == false) && screen == Screen.RemoveKey && <RemoveKeyScreen onCancelFunc={setScreen} onSubmitFunc={handleRemoveKey} />}
-      {(cmdExecFailed == false) && screen == Screen.Sign && <SignScreen addresses={ethAddresses} signResponse={signResponseData} getAddressesFunc={handleShowWalletAddress} onCancelFunc={handleSignScreenClose} onSubmitFunc={handleSignMessage} />}
+      {(cmdExecFailed == false) && screen == Screen.Sign && <SignScreen signResponse={signResponseData} onCancelFunc={handleSignScreenClose} onSubmitFunc={handleSignMessage} />}
       {(cmdExecFailed == false) && screen == Screen.ChangePIN && <ChangePINScreen onSubmitFunc={handlePINChange} onCancelFunc={setScreen} />}
       {(cmdExecFailed == false) && screen == Screen.ChangePUK && <ChangePUKScreen onSubmitFunc={handlePUKChange} onCancelFunc={setScreen} />}
       {(cmdExecFailed == false) && screen == Screen.ChangePairing && <ChangePairingScreen onSubmitFunc={handlePairingChange} onCancelFunc={setScreen} />}
