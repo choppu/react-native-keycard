@@ -19,6 +19,7 @@
     "react": "19.2.3",
     "react-native": "^0.84.1",
     "react-native-bouncy-checkbox": "^4.1.4",
+    "react-native-dropdown-select-list": "^2.0.5",
     "react-native-get-random-values": "^2.0.0",
     "react-native-mmkv": "^4.2.0",
     "react-native-modal": "^14.0.0-rc.1",

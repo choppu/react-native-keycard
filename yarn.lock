@@ -6808,9 +6808,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keycard-sdk@npm:^3.1.8":
+"keycard-sdk@https://github.com/choppu/keycard-sdk.git":
   version: 3.1.8
-  resolution: "keycard-sdk@npm:3.1.8"
+  resolution: "keycard-sdk@https://github.com/choppu/keycard-sdk.git#commit=5c616d49e5792bfd695a10fb83c222267f14bd67"
   dependencies:
     "@noble/ciphers": "npm:^1.3.0"
     "@noble/hashes": "npm:^1.8.0"
@@ -6824,7 +6824,7 @@ __metadata:
   dependenciesMeta:
     "@nonth/pcsclite":
       optional: true
-  checksum: 10c0/b436fe0b350c50fabbdc885d86970cf5104e4992be011c942359284d5be76c998d504e5f0103ee2a2d28ade35e67709786b8db1d8c9a9575773313dfe0447682
+  checksum: 10c0/bb6be843d19682bf3cad75ecbcf368b93680320731ea3361105535e50bc285fae8a6d966c9119e22c73227ba0d3e62e295105ca63c1c92cdee5c003819150f9c
   languageName: node
   linkType: hard
 
@@ -8466,6 +8466,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-dropdown-select-list@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "react-native-dropdown-select-list@npm:2.0.5"
+  checksum: 10c0/ca3d885efde0628d40956af2c08dcc92599963b5d0eb4bdcbef7e991d91dc5cb61739c85ad39c8dc2c5ec389a0532a394ec3bb97dbd6a95d6d900468a2d67781
+  languageName: node
+  linkType: hard
+
 "react-native-get-random-values@npm:^2.0.0":
   version: 2.0.0
   resolution: "react-native-get-random-values@npm:2.0.0"
@@ -8502,6 +8509,7 @@ __metadata:
     react-native: "npm:^0.84.1"
     react-native-bouncy-checkbox: "npm:^4.1.4"
     react-native-builder-bob: "npm:^0.40.17"
+    react-native-dropdown-select-list: "npm:^2.0.5"
     react-native-get-random-values: "npm:^2.0.0"
     react-native-mmkv: "npm:^4.2.0"
     react-native-modal: "npm:^14.0.0-rc.1"
@@ -8527,7 +8535,7 @@ __metadata:
     crypto-random-string: "npm:^5.0.0"
     del-cli: "npm:^6.0.0"
     jest: "npm:^29.7.0"
-    keycard-sdk: "npm:^3.1.8"
+    keycard-sdk: "https://github.com/choppu/keycard-sdk.git"
     react: "npm:19.2.0"
     react-native: "npm:0.83.0"
     react-native-builder-bob: "npm:^0.40.17"

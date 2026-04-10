@@ -1,5 +1,5 @@
 import React from "react";
-import Styles, { backgroundColorTransparent, buttonTextColor, defaultFont, white80 } from "../../Styles";
+import { defaultFont, white80 } from "../../Styles";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "../Button";
 import Checkbox from "../Checkbox";

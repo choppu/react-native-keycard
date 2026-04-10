@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import Styles from "../../Styles";
-import { Screen } from "../../App";
+import { Screen } from "../../Main";
 import PairingInput from "../PairingInput";
 import Dialpad from "../Dialpad";
 

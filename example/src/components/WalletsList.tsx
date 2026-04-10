@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 import Button from "./Button";
-import { type Wallet } from "../App";
+import { type Wallet } from "../Main";
 import Styles, { buttonTextColor, defaultFont, logBgColor, logFont, white40 } from "../Styles";
 import QRCode from 'react-native-qrcode-svg';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    marginTop: -10
+    marginTop: -15
   },
   buttonsContainer: {
     display: 'flex',
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
     height: 'auto',
-    padding: 5,
+    padding: 4,
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'row',
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     borderRadius: 12,
-    marginTop: 40,
+    marginTop: 20,
     marginBottom: 10
   },
   ethAddress: {
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     paddingLeft: 35,
     paddingRight: 35,
-    paddingTop: 25,
+    paddingTop: 15,
     boxSizing: 'border-box',
     textAlign: 'center'
   },

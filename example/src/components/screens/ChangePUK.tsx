@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import Styles from "../../Styles";
 import Dialpad from "../Dialpad";
-import { Screen } from "../../App";
+import { Screen } from "../../Main";
 
 type ChangePUKScreenProps = {
   onSubmitFunc: (pin: string, newPin: string) => void;

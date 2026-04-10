@@ -1,8 +1,7 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Styles from "../../Styles";
-import Button from "../Button";
-import { Screen, type Wallet } from "../../App";
+import { Screen, type Wallet } from "../../Main";
 import Dialpad from "../Dialpad";
 import WalletsList from "../WalletsList";
 

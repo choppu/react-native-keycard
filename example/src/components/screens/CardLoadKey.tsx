@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Screen } from "../../App";
+import { Screen } from "../../Main";
 import Button from "../Button";
 
 type CardLoadKeyScreenProps = {

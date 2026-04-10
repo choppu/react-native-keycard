@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Styles, { logBgColor, logFont } from "../../Styles";
 import Dialpad from "../Dialpad";
-import { Screen } from "../../App";
+import { Screen } from "../../Main";
 import Button from "../Button";
 
 type CreateMnemonicScreenProps = {
@@ -15,7 +15,7 @@ type CreateMnemonicScreenProps = {
   onCancelFunc: (screen: number) => void;
 };
 
-enum MnemonicSteps {
+export enum MnemonicSteps {
   VerifyPin,
   SelectMnemonic,
   ShowMnemonic
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 0,
     justifyContent: 'space-between',
-    paddingTop: 40
+    paddingTop: 40,
   },
   successMnemonicContainer: {
     width: '100%',
@@ -117,11 +117,11 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     marginTop: 10,
     marginBottom: 10,
-    paddingBottom: 50
+    paddingBottom: 50,
   },
   headingContainer: {
     width: '100%',
-    height: 570
+    height: '77%'
   },
   backBtnContainer: {
     width: '100%',

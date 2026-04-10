@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { buttonTextColor, defaultFont, logBgColor, logFont, secondaryColor } from "../../Styles";
+import { buttonTextColor, defaultFont, logBgColor, logFont } from "../../Styles";
 import Button from "../Button";
-import type { CardInfo } from "../../App";
+import type { CardInfo } from "../../Main";
 import { Utils } from "../../utils";
 
 type CardTabProps = {

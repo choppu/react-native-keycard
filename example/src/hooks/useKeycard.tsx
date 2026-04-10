@@ -6,13 +6,13 @@ import { Commandset } from "keycard-sdk/dist/commandset";
 import { ApplicationStatus } from "keycard-sdk/dist/application-status";
 import { KeyPath } from "keycard-sdk/dist/key-path";
 import { Constants } from "keycard-sdk/dist/constants";
-import type { CardInfo, Wallet } from "../App";
+import { ethPath, type CardInfo, type SignData, type Wallet } from "../Main";
 import { Mnemonic } from "keycard-sdk/dist/mnemonic";
 import { BIP32KeyPair } from "keycard-sdk/dist/bip32key";
 import { ApplicationInfo } from "keycard-sdk/dist/application-info";
-import type { HDKey } from "@scure/bip32";
 import { Ethereum } from "keycard-sdk/dist/ethereum";
 import { Utils } from "../utils";
+import { RecoverableSignature } from "keycard-sdk/dist/recoverable-signature";
 
 type useKeycardProps = {
   kManager: KeycardManager;
@@ -23,14 +23,15 @@ type useKeycardProps = {
   newPukRef: React.RefObject<string | undefined>;
   mnemonicRef: React.RefObject<string>;
   mnemonicLengthRef: React.RefObject<number>;
+  pathRef: React.RefObject<string | undefined>;
+  messageRef: React.RefObject<string | undefined>;
   cardInfo: CardInfo;
   setCardInfo: (cInfo: CardInfo) => void;
   setMnemonic: (mnemonic: string) => void;
   setAddresses: (addresses: Wallet[]) => void;
+  setSignResponse: (data: SignData) => void;
   newPairingPasswordRef: React.RefObject<Uint8Array<ArrayBufferLike> | undefined>
 };
-
-const eth_path = "m/44'/60'/0'/0";
 
 const useKeycard = (props: useKeycardProps) => {
   const changePIN = React.useCallback(async (channel: NFCCardChannel) => {
@@ -133,12 +134,12 @@ const useKeycard = (props: useKeycardProps) => {
       LOADED,
       props.kmArgs,
       async (cmdSet: Commandset) => {
-        let data = (await cmdSet.exportExtendedKey(0, eth_path, false)).checkOK().data;
+        let data = (await cmdSet.exportExtendedKey(0, ethPath, false)).checkOK().data;
         let extendedKey = BIP32KeyPair.extendedKey(data);
         let ethAddresses = [];
         for (let i = 0; i < 9; i++) {
           let key = extendedKey.deriveChild(i);
-          ethAddresses[i] = {index: i, address: Utils.compressedPKeyToEthereumAddress(key.publicKey!), publicKey: Utils.hx(key.publicKey!)} as Wallet;
+          ethAddresses[i] = {index: i, address: Utils.hx(Ethereum.toEthereumAddress(key.publicKey!)), publicKey: Utils.hx(key.publicKey!)} as Wallet;
         };
         props.setAddresses(ethAddresses);
       }
@@ -159,6 +160,28 @@ const useKeycard = (props: useKeycardProps) => {
     );
   }, [props.kManager, props.kmArgs]);
 
+  const sign = React.useCallback(async (channel: NFCCardChannel) => {
+    return await props.kManager.runOnSecureChannel(
+      channel,
+      LOADED,
+      props.kmArgs,
+      async (cmdSet: Commandset) => {
+        if(props.messageRef.current && props.pathRef.current) {
+          let hash = Ethereum.getMessageHash(Ethereum.encodeEthPersonalMessage(props.messageRef.current));
+          const resp = (await cmdSet.signWithPath(hash, props.pathRef.current, false)).checkOK().data;
+          const recSignature = new RecoverableSignature({hash: hash, tlvData: resp});
+          props.setSignResponse({
+            account: props.pathRef.current,
+            r: Utils.hx(recSignature.r!),
+            s: Utils.hx(recSignature.s!),
+            publicKey: Utils.hx(recSignature.publicKey!),
+            recId: recSignature.recId!
+          });
+        }
+      }
+    )
+  }, [props.kManager, props.kmArgs, props.setSignResponse]);
+
   const factoryReset = React.useCallback(async (channel: NFCCardChannel) => {
     const cmdSet = new Commandset(channel);
     const appInfo = new ApplicationInfo((await cmdSet.select()).checkOK().data);
@@ -172,7 +195,7 @@ const useKeycard = (props: useKeycardProps) => {
     return false;
   }, [props.kManager])
 
-  return { createMnemonic, loadMnemonic, exportKey, removeKey, changePIN, changePUK, changePairing, unpair, unpairOthers, getCardInfo, factoryReset };
+  return { createMnemonic, loadMnemonic, exportKey, removeKey, sign, changePIN, changePUK, changePairing, unpair, unpairOthers, getCardInfo, factoryReset };
 }
 
 export default useKeycard;

@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "../Button";
-import { Screen } from "../../App";
+import { Screen } from "../../Main";
 import Styles from "../../Styles";
 
 type SettingsTabProps = {

@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "../Button";
-import { Screen } from "../../App";
 import Styles from "../../Styles";
+import { Screen } from "../../Main";
 
 type WalletTabProps = {
   onClickFunc: (screen: number) => void;
@@ -18,7 +18,7 @@ const WalletTab: React.FC<WalletTabProps> = props => {
         <Button label="Create Mnemonic" disabled={false} onChangeFunc={() => onClickFunc(Screen.CreateMnemonic)} type="menu" />
         <Button label="Load Mnemonic" disabled={false} onChangeFunc={() => onClickFunc(Screen.LoadMnemonic)} type="menu" />
         <Button label="Show Wallet Address" disabled={false} onChangeFunc={() => onClickFunc(Screen.ShowWallet)} type="menu" />
-        <Button label="Sign Message" disabled={false} onChangeFunc={() => onClickFunc(Screen.Sign)} type="menu" />
+        <Button label="Sign Personal Message" disabled={false} onChangeFunc={() => onClickFunc(Screen.Sign)} type="menu" />
         <Button label="Remove Key" disabled={false} onChangeFunc={() => onClickFunc(Screen.RemoveKey)} type="menu" />
       </View>
     </View>

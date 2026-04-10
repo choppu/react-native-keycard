@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Styles, { defaultFont } from "../../Styles";
 import Dialpad from "../Dialpad";
-import { Screen } from "../../App";
+import { Screen } from "../../Main";
 import Button from "../Button";
 import Logo from "../../assets/images/Logo";
 

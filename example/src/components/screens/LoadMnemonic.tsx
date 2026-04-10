@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import Styles, { buttonTextColor, defaultFont, logBgColor, logFont } from "../../Styles";
 import Dialpad from "../Dialpad";
-import { Screen } from "../../App";
+import { Screen } from "../../Main";
 import Button from "../Button";
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english.js';

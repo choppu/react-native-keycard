@@ -8,7 +8,7 @@ import IconButton from "../IconButton";
 import SettingsTab from "../tabs/Settings";
 import Smartcard from "../../assets/images/Smartcard";
 import CardTab from "../tabs/Card";
-import { Tabs, type CardInfo } from "../../App";
+import { Tabs, type CardInfo } from "../../Main";
 
 type HomeScreenProps = {
   logs: string[],
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   logContainer: {
     backgroundColor: logBgColor,
     width: '100%',
-    height: 320,
+    height: 280,
     flexGrow: 1,
     display: 'flex',
     flexDirection: 'column',

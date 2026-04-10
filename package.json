@@ -48,7 +48,7 @@
   "homepage": "https://github.com/choppu/react-native-keycard#readme",
   "dependencies": {
     "crypto-random-string": "^5.0.0",
-    "keycard-sdk": "^3.1.8"
+    "keycard-sdk": "https://github.com/choppu/keycard-sdk.git"
   },
   "devDependencies": {
     "@react-native/babel-preset": "0.83.0",
