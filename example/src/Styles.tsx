@@ -7,7 +7,7 @@ export const neutral90 = '#1d1d1d';
 export const logBgColor = '#26272988';
 export const defaultFont = Platform.OS === 'ios' ? 'Inter-Variable' : 'InterVariable';
 export const logFont = Platform.OS === 'ios' ? 'Source Code Pro' : 'SourceCodePro';
-export const tabBtnsMargin = Platform.OS === 'ios' ? 20 : 5;
+export const tabBtnsMargin = Platform.OS === 'ios' ? 60 : 5;
 export const secondaryColor = '#FF6400cc';
 export const buttonTextColor = '#ffffffcc';
 export const white80 = '#ffffff88';

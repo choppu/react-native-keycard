@@ -77,9 +77,8 @@ const SignScreen: React.FC<SignScreenProps> = props => {
               />
             </View>
             <View style={styles.fieldContainer}>
-              <Text style={Styles.heading}>Sign personal message</Text>
               <Text style={styles.fieldLabel}>Message</Text>
-              <TextInput style={styles.messageInput} multiline={true} numberOfLines={10} onChangeText={setMessage} value={message} />
+              <TextInput style={styles.messageInput} multiline={true} numberOfLines={10} onChangeText={setMessage} value={message} submitBehavior={'blurAndSubmit'}/>
             </View>
           </View>
           <View style={styles.buttonContainer}>
@@ -123,20 +122,19 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    height: '95%',
+    height: '100%',
     display: 'flex',
     flexDirection: 'column',
     gap: 10,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     boxSizing: 'border-box',
-    marginBottom: 20
   },
   successContainer: {
     width: '100%',
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    gap: 20,
+    gap: 40,
     justifyContent: 'center',
     boxSizing: 'border-box',
   },
@@ -145,8 +143,8 @@ const styles = StyleSheet.create({
   },
   fieldContainer: {
     width: '100%',
-    paddingLeft: 25,
-    paddingRight: 25,
+    paddingLeft: 20,
+    paddingRight: 20,
     marginVertical: 5,
     boxSizing: 'border-box'
   },
@@ -161,7 +159,7 @@ const styles = StyleSheet.create({
   },
   selectorStyle: {
     width: '100%',
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 10,
     backgroundColor: backgroundColorTransparent,
     borderColor: logBgColor,
@@ -171,7 +169,7 @@ const styles = StyleSheet.create({
   },
   selectedItem: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: defaultFont,
     fontWeight: '300',
   },
@@ -182,7 +180,7 @@ const styles = StyleSheet.create({
   },
   dropdownItemStyles: {
     color: buttonTextColor,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: defaultFont,
     fontWeight: '300',
     paddingVertical: 3,
@@ -190,7 +188,7 @@ const styles = StyleSheet.create({
   },
   messageInput: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: defaultFont,
     fontWeight: '300',
     backgroundColor: neutral90,
@@ -198,7 +196,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     height: 180,
     textAlignVertical: 'top',
-    paddingHorizontal: 8,
+    padding: 8,
     boxSizing: 'border-box'
   },
   buttonContainer: {
