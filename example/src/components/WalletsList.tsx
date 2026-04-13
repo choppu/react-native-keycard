@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 import Button from "./Button";
 import { type Wallet } from "../Main";
-import Styles, { buttonTextColor, defaultFont, logBgColor, logFont, pVertical, white40 } from "../Styles";
+import Styles, { buttonTextColor, defaultFont, logBgColor, logFont, white40 } from "../Styles";
 import QRCode from 'react-native-qrcode-svg';
 import Clipboard from '@react-native-clipboard/clipboard';
 

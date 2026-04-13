@@ -32,10 +32,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     paddingTop: 7,
     paddingBottom: 7
-  },
-  buttonContainer: {
-    width: '100%',
-    height: 100,
   }
 })
 

@@ -139,10 +139,6 @@ const style = StyleSheet.create({
     lineHeight: 22,
     fontWeight: '200',
   },
-  cancelIcon: {
-    color: 'white',
-    textAlign: 'center'
-  },
   iconContainer: {
     height: '100%',
     display: 'flex',

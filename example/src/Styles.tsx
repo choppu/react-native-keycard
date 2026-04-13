@@ -39,17 +39,6 @@ const Styles = StyleSheet.create({
     gap: 10,
     paddingVertical: 30,
   },
-  textContainer: {
-    width: '100%',
-    paddingTop: 80,
-  },
-  headingLarge: {
-    fontSize: 40,
-    lineHeight: 48,
-    color: 'white',
-    textAlign: 'center',
-    fontFamily: defaultFont,
-  },
   heading: {
     color: buttonTextColor,
     textAlign: 'center',
@@ -57,48 +46,12 @@ const Styles = StyleSheet.create({
     fontFamily: defaultFont,
     lineHeight: 40,
   },
-  subtitle: {
-    textAlign: 'center',
-    paddingTop: 20,
-    color: 'white',
-    fontSize: 18,
-    lineHeight: 24,
-    width: '60%',
-    marginLeft: '20%',
-    marginRight: '20%'
-  },
-  multipassImg: {
-    width: '80%',
-    height: '38%',
-    resizeMode: 'contain',
-    marginLeft: '10%',
-    marginRight: '10%',
-    marginTop: 80
-  },
   footer: {
     width: '100%',
     position: 'absolute',
     bottom: pVertical,
     justifyContent: 'center'
   },
-  sublinkContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingTop: 20
-  },
-  sublinkText: {
-    color: 'white',
-    fontSize: 12,
-    fontFamily: defaultFont
-  },
-  sublinkAction: {
-    color: 'white',
-    fontSize: 12,
-    fontFamily: defaultFont,
-    textDecorationLine: 'underline'
-  },
-
   modalContainer: {
     justifyContent: 'flex-end',
     margin: 0,

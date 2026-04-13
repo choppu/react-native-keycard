@@ -32,10 +32,6 @@ const styles = StyleSheet.create({
     gap: 0,
     paddingTop: 10,
     paddingBottom: 10
-  },
-  buttonContainer: {
-    width: '100%',
-    height: 100,
   }
 })
 

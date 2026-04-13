@@ -371,4 +371,4 @@ Returns `boolean`.
 
 `KeycardManager` is a utility class, implemented in Typescript [`keycard-sdk`](https://github.com/choppu/keycard-sdk), which is meant to handle the card's lifycycle. Usage of `runOnSecureChannel` method of `KeycardManager` facilitates the handling of card initialization, authentication, pairing and opening of secure channel processes.
 
-For complete usage example check [Example project](https://github.com/choppu/react-native-keycard/blob/main/example/src/App.tsx) of the library.
+For complete usage example check [Example project](https://github.com/choppu/react-native-keycard/tree/main/example) of the library.
