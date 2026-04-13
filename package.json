@@ -1,6 +1,6 @@
 {
   "name": "react-native-keycard",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A React Native library to interact with Keycard using NFC connection",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",

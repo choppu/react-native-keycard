@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Screen } from "../../Main";
 import Button from "../Button";
+import { pVertical } from "../../Styles";
 
 type CardLoadKeyScreenProps = {
   onSubmitFunc: (screen: number) => void;
@@ -28,8 +29,7 @@ const styles = StyleSheet.create({
   loadKeyContainer: {
     width: '100%',
     height: '100%',
-    paddingTop: 60,
-    paddingBottom: 40,
+    paddingVertical: pVertical,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between'

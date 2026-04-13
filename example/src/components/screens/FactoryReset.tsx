@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Styles, {defaultFont } from "../../Styles";
+import Styles, {defaultFont, pVertical } from "../../Styles";
 import { Screen } from "../../Main";
 import Button from "../Button";
 import Logo from "../../assets/images/Logo";
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   resetContainer: {
     width: '100%',
     height: '100%',
-    paddingVertical: 60,
+    paddingVertical: pVertical,
     boxSizing: 'border-box'
   },
   resetPromptContainer: {

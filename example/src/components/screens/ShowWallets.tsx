@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import Styles from "../../Styles";
+import Styles, { pVertical } from "../../Styles";
 import { Screen, type Wallet } from "../../Main";
 import Dialpad from "../Dialpad";
 import WalletsList from "../WalletsList";
@@ -59,8 +59,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 10,
     justifyContent: 'flex-start',
-    paddingBottom: 30,
-    paddingTop: 45
+    paddingVertical: pVertical,
+    boxSizing: 'border-box'
   }
 });
 

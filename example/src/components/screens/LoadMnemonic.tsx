@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
-import Styles, { buttonTextColor, defaultFont, logBgColor, logFont, neutral90 } from "../../Styles";
+import Styles, { buttonTextColor, defaultFont, logBgColor, neutral90, pVertical } from "../../Styles";
 import Dialpad from "../Dialpad";
 import { Screen } from "../../Main";
 import Button from "../Button";
@@ -73,9 +73,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 20,
-    justifyContent: 'center',
-    paddingBottom: 30,
-    paddingTop: 40
+    justifyContent: 'flex-start',
+    paddingVertical: pVertical
   },
   backBtnContainer: {
     width: '100%',

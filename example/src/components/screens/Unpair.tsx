@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Styles, { defaultFont } from "../../Styles";
+import Styles, { defaultFont, pVertical } from "../../Styles";
 import Dialpad from "../Dialpad";
 import { Screen } from "../../Main";
 import Button from "../Button";
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   unpairContainer: {
     width: '100%',
     height: '100%',
-    paddingVertical: 60,
+    paddingVertical: pVertical,
     boxSizing: 'border-box',
   },
   unpairPromptContainer: {

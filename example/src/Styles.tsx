@@ -13,6 +13,7 @@ export const buttonTextColor = '#ffffffcc';
 export const white80 = '#ffffff88';
 export const white40 = '#FFFFFF66';
 export const logContainerTopPadding = Platform.OS === 'ios' ? 40 : 0;
+export const pVertical = Platform.OS === 'ios' ? 60 : 30;
 
 const Styles = StyleSheet.create({
   mainContainer: {
@@ -77,7 +78,7 @@ const Styles = StyleSheet.create({
   footer: {
     width: '100%',
     position: 'absolute',
-    bottom: 40,
+    bottom: pVertical,
     justifyContent: 'center'
   },
   sublinkContainer: {

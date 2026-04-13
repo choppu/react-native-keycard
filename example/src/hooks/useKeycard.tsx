@@ -4,7 +4,6 @@ import { LOADED, PAIRED, type KeycardManager } from "keycard-sdk/dist/keycard-ma
 import type { KeycardManagerArgs } from "keycard-sdk/dist/types/keycard-manager-types";
 import { Commandset } from "keycard-sdk/dist/commandset";
 import { ApplicationStatus } from "keycard-sdk/dist/application-status";
-import { KeyPath } from "keycard-sdk/dist/key-path";
 import { Constants } from "keycard-sdk/dist/constants";
 import { ethPath, type CardInfo, type SignData, type Wallet } from "../Main";
 import { Mnemonic } from "keycard-sdk/dist/mnemonic";

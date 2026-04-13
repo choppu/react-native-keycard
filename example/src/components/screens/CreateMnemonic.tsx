@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import Styles, { logBgColor, logFont } from "../../Styles";
+import Styles, { logBgColor, logFont, pVertical } from "../../Styles";
 import Dialpad from "../Dialpad";
 import { Screen } from "../../Main";
 import Button from "../Button";
@@ -69,7 +69,7 @@ const CreateMnemonicScreen: React.FC<CreateMnemonicScreenProps> = props => {
         step == MnemonicSteps.ShowMnemonic && (
           <View style={styles.successMnemonicContainer}>
             <View style={styles.backBtnContainer}>
-              <Button disabled={false} onChangeFunc={() => setStep(MnemonicSteps.SelectMnemonic)} type="cancel"></Button>
+              <Button disabled={false} onChangeFunc={() => setStep(MnemonicSteps.VerifyPin)} type="cancel"></Button>
             </View>
             <Text style={Styles.heading}>Write down recovery phrase</Text>
             <View style={styles.mnemonicContainer}>
@@ -91,21 +91,21 @@ const CreateMnemonicScreen: React.FC<CreateMnemonicScreenProps> = props => {
 const styles = StyleSheet.create({
   mnemonicSelectContainer: {
     width: '100%',
-    height: '92%',
+    height: '100%',
     display: 'flex',
     flexDirection: 'column',
     gap: 0,
-    justifyContent: 'space-between',
-    paddingBottom: 40,
+    justifyContent: 'flex-start',
+    paddingVertical: pVertical
   },
   successMnemonicContainer: {
     width: '100%',
-    height: '92%',
+    height: '100%',
     display: 'flex',
     flexDirection: 'column',
     gap: 10,
-    justifyContent: 'center',
-    paddingBottom: 60,
+    justifyContent: 'flex-start',
+    paddingVertical: pVertical
   },
   mnemonicButtonsContainer: {
     width: '100%',

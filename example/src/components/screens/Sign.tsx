@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import Styles, { backgroundColorTransparent, buttonTextColor, defaultFont, logBgColor, logFont, neutral90 } from "../../Styles";
+import Styles, { backgroundColorTransparent, buttonTextColor, defaultFont, logBgColor, logFont, neutral90, pVertical } from "../../Styles";
 import Button from "../Button";
 import { ethPath, paths, type SignData } from "../../Main";
 import Dialpad from "../Dialpad";
@@ -20,7 +20,7 @@ enum SignSteps {
 }
 
 const SignScreen: React.FC<SignScreenProps> = props => {
-  const {signResponse, onSubmitFunc, onCancelFunc } = props;
+  const { signResponse, onSubmitFunc, onCancelFunc } = props;
   const [step, setStep] = React.useState<number>(SignSteps.SignMessage);
   const [path, setPath] = React.useState<string>(ethPath);
   const [message, setMessage] = React.useState<string>('');
@@ -54,6 +54,7 @@ const SignScreen: React.FC<SignScreenProps> = props => {
               <SelectList
                 setSelected={(val: string) => setPath(val)}
                 data={paths}
+                defaultOption={paths[0]}
                 dropdownStyles={styles.dropdownList}
                 dropdownTextStyles={styles.dropdownItemStyles}
                 inputStyles={styles.selectedItem}
@@ -68,7 +69,7 @@ const SignScreen: React.FC<SignScreenProps> = props => {
             </View>
             <View style={styles.fieldContainer}>
               <Text style={styles.fieldLabel}>Message</Text>
-              <TextInput style={styles.messageInput} multiline={true} numberOfLines={10} onChangeText={setMessage} value={message} submitBehavior={'blurAndSubmit'}/>
+              <TextInput style={styles.messageInput} multiline={true} numberOfLines={10} onChangeText={setMessage} value={message} submitBehavior={'blurAndSubmit'} />
             </View>
           </View>
           <View style={styles.buttonContainer}>
@@ -77,26 +78,33 @@ const SignScreen: React.FC<SignScreenProps> = props => {
         </View>
       )}
       {step == SignSteps.VerifyPin && (<Dialpad pinRetryCounter={-1} prompt={"Enter PIN"} onCancelFunc={() => setStep(SignSteps.SignMessage)} onNextFunc={insertPin} type='pin' />)}
-      {step == SignSteps.SignSuccess && signResponse != undefined && (
+      {step == SignSteps.SignSuccess && (
         <View style={styles.successContainer}>
-          <Text style={Styles.heading}>Sign response data</Text>
-          <View style={styles.textContainer}>
-            <Text style={styles.signDataLabel}>Signer account</Text>
-            <Text style={styles.signData}>{signResponse?.account}</Text>
-            <Text style={styles.signDataLabel}>Message</Text>
-            <Text style={styles.signData}>{message}</Text>
-            <Text style={styles.signDataLabel}>R</Text>
-            <Text style={styles.signData}>0x{signResponse?.r}</Text>
-            <Text style={styles.signDataLabel}>S</Text>
-            <Text style={styles.signData}>0x{signResponse?.s}</Text>
-            <Text style={styles.signDataLabel}>Public key</Text>
-            <Text style={styles.signData}>0x{signResponse?.publicKey}</Text>
-            <Text style={styles.signDataLabel}>Recovery ID</Text>
-            <Text style={styles.signData}>{signResponse?.recId}</Text>
+          <View style={styles.backBtnContainer}>
+            <Button disabled={false} onChangeFunc={onCancelFunc} type="remove" />
           </View>
-          <View style={styles.buttonContainer}>
-            <Button label={'OK'} disabled={false} onChangeFunc={closeSign} type="secondary" />
-          </View>
+          {signResponse != undefined && (
+            <View>
+              <Text style={Styles.heading}>Sign response data</Text>
+              <View style={styles.textContainer}>
+                <Text style={styles.signDataLabel}>Signer account</Text>
+                <Text style={styles.signData}>{signResponse?.account}</Text>
+                <Text style={styles.signDataLabel}>Message</Text>
+                <Text style={styles.signData}>{message}</Text>
+                <Text style={styles.signDataLabel}>R</Text>
+                <Text style={styles.signData}>0x{signResponse?.r}</Text>
+                <Text style={styles.signDataLabel}>S</Text>
+                <Text style={styles.signData}>0x{signResponse?.s}</Text>
+                <Text style={styles.signDataLabel}>Public key</Text>
+                <Text style={styles.signData}>0x{signResponse?.publicKey}</Text>
+                <Text style={styles.signDataLabel}>Recovery ID</Text>
+                <Text style={styles.signData}>{signResponse?.recId}</Text>
+              </View>
+              <View style={styles.buttonContainer}>
+                <Button label={'OK'} disabled={false} onChangeFunc={closeSign} type="secondary" />
+              </View>
+            </View>
+          )}
         </View>
       )}
     </View>
@@ -117,8 +125,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 10,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     boxSizing: 'border-box',
+    paddingVertical: pVertical
   },
   successContainer: {
     width: '100%',
@@ -126,8 +135,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 40,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     boxSizing: 'border-box',
+    paddingVertical: pVertical
   },
   formContainer: {
     minHeight: '58%'
@@ -192,7 +202,7 @@ const styles = StyleSheet.create({
     boxSizing: 'border-box'
   },
   buttonContainer: {
-    paddingTop: 30
+    paddingTop: 50
   },
   textContainer: {
     paddingHorizontal: 30,
