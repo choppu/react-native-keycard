@@ -1,10 +1,14 @@
 # React Native Keycard SDK
 
-React Native New Architecture library to interact with Keycard using NFC connection. At the moment, only low-level API (Native Android & iOS NFC communication) is implemented. High-level API is coming soon.
+React Native New Architecture library to interact with Keycard using NFC connection.
 
 ### Installation and setup
 
-`npm install https://github.com/choppu/react-native-keycard.git`
+`npm install react-native-keycard`
+
+or
+
+`yarn add react-native-keycard`
 
 
 ‼️ For `react-native-keycard` & `keycard-sdk` libraries proper functioning `install react-native-get-random-values`.
@@ -143,7 +147,7 @@ export default ({ config }) => {
 
 ## API usage
 
-The current version of the library is implementing only the `(Android / iOS) Device <-> Keycard` NFC communication and event handling, `NFCCardChannel` creation, low-level `APDU send` method. For high-level API please use Typescript `keycard-sdk`, which is meant for development of applications for Keycard. Check [`keycard-sdk` page](https://github.com/choppu/keycard-sdk) for more details on installation and usage.
+The library is implementing only the `(Android / iOS) Device <-> Keycard` NFC communication and event handling, `NFCCardChannel` creation, low-level `APDU send` method. For high-level API please use Typescript `keycard-sdk`, which is meant for development of applications for Keycard. Check [`keycard-sdk` page](https://github.com/choppu/keycard-sdk) for more details on installation and usage.
 
 The exposed part of the library is divided in 3 parts.
 
