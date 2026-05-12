@@ -8,6 +8,7 @@ export interface Spec extends TurboModule {
   isNFCEnabled(): Promise<boolean>;
   startNFC(prompt: string): Promise<boolean>;
   stopNFC(): Promise<boolean>;
+  stopNFCWithError(err: string): Promise<boolean>;
   setNFCMessage(message: string): Promise<void>;
   openNFCSettings(): Promise<boolean>;
   send(apdu: string): Promise<APDUData>;

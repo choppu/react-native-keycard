@@ -57,7 +57,9 @@ import os.log
               feedbackGenerator.notificationOccurred(.success)
             }
 
-            onConnect()
+            DispatchQueue.main.async {
+              onConnect()
+            }
             self.keycardController?.setAlert("Connected. Don't move your card.")
             os_log("[react-native-status-keycard] card connected")
           },
@@ -79,7 +81,10 @@ import os.log
           })
 
           self.nfcStartPrompt = prompt.isEmpty ? nfcStartPrompt : prompt
-          keycardController?.start(alertMessage: self.nfcStartPrompt)
+          guard let kc = self.keycardController else {
+            return ["nfcStarted": NSNumber(false), "isSuccess": NSNumber(false) ]
+          }
+          kc.start(alertMessage: self.nfcStartPrompt)
 
           return ["nfcStarted": NSNumber(true), "isSuccess": NSNumber(true) ]
         } else {
@@ -90,7 +95,7 @@ import os.log
       }
   }
 
-  public func stopNFC(_ err: String) -> NSNumber {
+  public func stopNFC(_ err: String = "") -> NSNumber {
     if #available(iOS 13.0, *) {
         if (err.isEmpty) {
           self.keycardController?.stop(alertMessage: "Success")
@@ -115,22 +120,15 @@ import os.log
   }
 
   public func send(_ apdu: String) -> [String : String] {
-    guard let apduResp = try? self.cardChannel?.send(apdu) else {
-      return [
-      "data": "",
-      "state": "error",
-      ]
+    do {
+      guard let apduResp = try self.cardChannel?.send(apdu) else {
+        return ["data": "", "state": "error"]
+      }
+      os_log("[react-native-status-keycard] APDUResponse: %@", self.bytesToHex(apduResp))
+      return ["data": bytesToHex(apduResp), "state": "success"]
+    } catch {
+      return ["data": "", "state": "error"]
     }
-
-    var state: String = (apduResp != nil) ? "success" : "error";
-
-    var response =  [
-      "data": bytesToHex(apduResp),
-      "state": state,
-    ]
-
-    os_log("[react-native-status-keycard] APDUResponse: %@", self.bytesToHex(apduResp))
-    return response
   }
 
   public func isKeycardConnected() -> NSNumber {

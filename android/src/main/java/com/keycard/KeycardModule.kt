@@ -58,6 +58,11 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
     promise.resolve(true);
   }
 
+  // iOS only method
+  override fun stopNFCWithError(err: String, promise: Promise) {
+    promise.resolve(true);
+  }
+
   override fun send(apdu: String, promise: Promise) {
     var response: WritableMap = Arguments.createMap().apply {
         putString("data", "");
