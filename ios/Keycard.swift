@@ -116,15 +116,22 @@ import os.log
   }
 
   public func send(_ apdu: String) -> [String : String] {
-    do {
-      guard let apduResp = try self.cardChannel?.send(apdu) else {
-        return ["data": "", "state": "error"]
-      }
-      os_log("[react-native-status-keycard] APDUResponse: %@", self.bytesToHex(apduResp))
-      return ["data": bytesToHex(apduResp), "state": "success"]
-    } catch {
-      return ["data": "", "state": "error"]
+    guard let apduResp = try? self.cardChannel?.send(apdu) else {
+      return [
+      "data": "",
+      "state": "error",
+      ]
     }
+
+    var state: String = (apduResp != nil) ? "success" : "error";
+
+    var response =  [
+      "data": bytesToHex(apduResp),
+      "state": state,
+    ]
+
+    os_log("[react-native-status-keycard] APDUResponse: %@", self.bytesToHex(apduResp))
+    return response
   }
 
   public func isKeycardConnected() -> NSNumber {
