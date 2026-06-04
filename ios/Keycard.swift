@@ -48,6 +48,8 @@ import os.log
         self.keycardController = KeycardController(
           onConnect: {
             [unowned self] channel in
+            // KeycardController invokes this on a background queue, so all UIKit /
+            // RN-bridge work below must hop to main.
             self.cardChannel = channel
 
             let feedbackGenerator = UINotificationFeedbackGenerator()
@@ -55,13 +57,10 @@ import os.log
 
             DispatchQueue.main.async {
               feedbackGenerator.notificationOccurred(.success)
-            }
-
-            DispatchQueue.main.async {
               onConnect()
+              self.keycardController?.setAlert("Connected. Don't move your card.")
+              os_log("[react-native-status-keycard] card connected")
             }
-            self.keycardController?.setAlert("Connected. Don't move your card.")
-            os_log("[react-native-status-keycard] card connected")
           },
           onFailure: {
             [unowned self] error in
@@ -81,10 +80,7 @@ import os.log
           })
 
           self.nfcStartPrompt = prompt.isEmpty ? nfcStartPrompt : prompt
-          guard let kc = self.keycardController else {
-            return ["nfcStarted": NSNumber(false), "isSuccess": NSNumber(false) ]
-          }
-          kc.start(alertMessage: self.nfcStartPrompt)
+          keycardController?.start(alertMessage: self.nfcStartPrompt)
 
           return ["nfcStarted": NSNumber(true), "isSuccess": NSNumber(true) ]
         } else {
