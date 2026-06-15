@@ -36,14 +36,19 @@
       reject(@"E_KEYCARD", @"unavailable", nil);
     }
 };
-- (void)stopNFC:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    NSNumber * result = [keycard stopNFC:@""];
-
+- (void)stopNFCInternal:(NSString *)err resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    NSNumber * result = [keycard stopNFC:err];
     if([result isEqual: @true]) {
         resolve(result);
     } else {
         reject(@"E_KEYCARD", @"unavailable", nil);
     }
+}
+- (void)stopNFCWithError:(NSString *)err resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    [self stopNFCInternal:err resolve:resolve reject:reject];
+};
+- (void)stopNFC:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    [self stopNFCInternal:@"" resolve:resolve reject:reject];
 };
 - (void)setNFCMessage:(NSString *)message resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     NSNumber * result = [keycard setNFCMessage:message];

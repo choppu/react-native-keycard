@@ -58,6 +58,12 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
     promise.resolve(true);
   }
 
+  // `err` is ignored: Android has no system NFC modal to surface it in (iOS-only concern).
+  override fun stopNFCWithError(err: String, promise: Promise) {
+    cardChannel?.stopNFC();
+    promise.resolve(true);
+  }
+
   override fun send(apdu: String, promise: Promise) {
     var response: WritableMap = Arguments.createMap().apply {
         putString("data", "");
