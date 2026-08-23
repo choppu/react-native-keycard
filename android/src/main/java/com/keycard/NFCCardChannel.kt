@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.nfc.NfcAdapter
+import android.nfc.TagLostException
 import android.nfc.tech.IsoDep
 import android.util.Log
 import android.app.Activity
@@ -135,13 +136,36 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>): BroadcastRec
     public fun send(cmd: String): ByteArray {
       val apdu: ByteArray = @OptIn(kotlin.ExperimentalStdlibApi::class) cmd.hexToByteArray();
 
-      try {
-        return this.isoDep!!.transceive(apdu);
+      // Was `isoDep!!` — onDisconnected() nulls this field, so a send racing a
+      // card removal threw an uncaught KotlinNullPointerException. Restores the
+      // guard status-keycard's SmartCard.commandSet() has had since 5b456ea;
+      // TAG_LOST is the constant this file already declares for exactly this
+      // purpose. TagLostException is what transceive() itself throws when the
+      // tag leaves the field, so the guard path and the framework path are
+      // indistinguishable to the JS side. Never hold the lock across transceive.
+      val dep = synchronized(this.lock) { this.isoDep } ?: throw TagLostException(TAG_LOST);
+
+      val resp = try {
+        dep.transceive(apdu);
       } catch(e: SecurityException) {
+        throw IOException("Tag disconnected", e);
+      } catch(e: IllegalStateException) {
         throw IOException("Tag disconnected", e);
       } catch(e: IllegalArgumentException) {
         throw IOException("Malformed card response", e);
       }
+      // TagLostException is an IOException and is deliberately NOT caught above:
+      // it already carries the framework's "Tag was lost." message and must
+      // reach JS intact.
+
+      // A reply shorter than 2 bytes cannot be a valid APDU response (SW1+SW2);
+      // it means the exchange was cut short. The Java bridge raised this inside
+      // send() via APDUResponse's constructor; classify it here, at the only
+      // layer that knows why.
+      if (resp.size < 2) {
+        throw TagLostException(TAG_LOST);
+      }
+      return resp;
     }
 
     public fun isConnected(): Boolean {
