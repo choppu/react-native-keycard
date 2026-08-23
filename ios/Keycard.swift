@@ -8,6 +8,18 @@ import os.log
 
   var cardChannel: NFCCardChannel? = nil
   var nfcStartPrompt: String = "Hold your iPhone close to a Keycard"
+  var onDisconnect: (() -> Void)? = nil
+
+  // NFCReaderError.Code — transceive-level; the session survives these:
+  //   100 readerTransceiveErrorTagConnectionLost   (status-keycard matches this)
+  //   101 readerTransceiveErrorRetryExceeded       (degraded RF link — "move the card")
+  //   102 readerTransceiveErrorTagResponseError    (status-keycard matches this;
+  //                                                 the only code observed on-device)
+  // Deliberately NOT included:
+  //   103 readerTransceiveErrorSessionInvalidated  session already dead; restartPolling
+  //                                                cannot recover it
+  //   104 readerTransceiveErrorTagNotConnected     outside the field-proven set
+  private static let tagLostCodes: Set<Int> = [100, 101, 102]
 
   private var _keycardController: Any? = nil
 
@@ -42,9 +54,10 @@ import os.log
     return isNFCSupported()
   }
 
-  public func startNFC(_ prompt: String, onConnect: @escaping () -> Void, onUserCancel: @escaping () -> Void, onTimeout: @escaping () -> Void) -> NSDictionary {
+  public func startNFC(_ prompt: String, onConnect: @escaping () -> Void, onUserCancel: @escaping () -> Void, onTimeout: @escaping () -> Void, onDisconnect: @escaping () -> Void) -> NSDictionary {
     if #available(iOS 13.0, *) {
       if (keycardController == nil) {
+        self.onDisconnect = onDisconnect
         self.keycardController = KeycardController(
           onConnect: {
             [unowned self] channel in
@@ -73,7 +86,12 @@ import os.log
               let nsError = error as NSError
               if nsError.code == 200 && nsError.domain == "NFCError" {
                 onUserCancel()
-              } else if (nsError.code == 201 || nsError.code == 203) && (nsError.domain == "NFCError") {
+              } else if (nsError.code == 201 || nsError.code == 202 || nsError.code == 203) && (nsError.domain == "NFCError") {
+                // 202 (sessionTerminatedUnexpectedly) previously produced no
+                // callback at all, stranding JS with the controller already
+                // nil'd and Apple's sheet gone. Route it with the timeouts so
+                // JS learns the session ended. Other unrecognised codes keep
+                // today's behaviour deliberately.
                 onTimeout();
               }
             }
@@ -116,22 +134,49 @@ import os.log
   }
 
   public func send(_ apdu: String) -> [String : String] {
-    guard let apduResp = try? self.cardChannel?.send(apdu) else {
-      return [
-      "data": "",
-      "state": "error",
-      ]
+    // Result does not flatten optionals the way `try?` does (SE-0230), so
+    // success carries [UInt8]? and the .some/.none split below is mandatory:
+    // a nil cardChannel (nil'd by onFailure racing a send) lands in
+    // .success(.none), not in .failure.
+    let outcome = Result { try self.cardChannel?.send(apdu) }
+
+    switch outcome {
+    case .success(.some(let apduResp)):
+      os_log("[react-native-status-keycard] APDUResponse: %@", self.bytesToHex(apduResp))
+      return ["data": bytesToHex(apduResp), "state": "success"]
+
+    case .success(.none):
+      // The channel is gone mid-exchange — the iOS mirror of Android's nulled
+      // IsoDep. Recover the same way as a thrown tag loss.
+      return tagLost(code: 100)
+
+    case .failure(let error):
+      let ns = error as NSError
+      guard ns.domain == "NFCError", KeycardImp.tagLostCodes.contains(ns.code) else {
+        // Today's behaviour, unchanged: a non-transceive error stays a
+        // generic failure.
+        return ["data": "", "state": "error"]
+      }
+      return tagLost(code: ns.code)
     }
+  }
 
-    var state: String = (apduResp != nil) ? "success" : "error";
-
-    var response =  [
-      "data": bytesToHex(apduResp),
-      "state": state,
-    ]
-
-    os_log("[react-native-status-keycard] APDUResponse: %@", self.bytesToHex(apduResp))
-    return response
+  // The card left the field mid-APDU. The session survives 1xx transceive
+  // errors (verified on-device: restartPolling() recovered 4/4 re-taps on one
+  // session), so restart polling, tell JS, and let the next tap resume.
+  // Mirrors react-native-status-keycard's keycardInvokation error path.
+  private func tagLost(code: Int) -> [String : String] {
+    os_log("[react-native-status-keycard] tag lost (NFCError:%d), restarting polling", code)
+    DispatchQueue.main.async {
+      self.onDisconnect?()
+    }
+    if #available(iOS 13.0, *) {
+      self.keycardController?.restartPolling()
+      self.keycardController?.setAlert(self.nfcStartPrompt)
+    }
+    // "message" is only ever present on the error path, which the ObjC side
+    // rejects rather than resolves — APDUData's resolved shape is untouched.
+    return ["data": "", "state": "error", "message": "NFCError:\(code)"]
   }
 
   public func isKeycardConnected() -> NSNumber {

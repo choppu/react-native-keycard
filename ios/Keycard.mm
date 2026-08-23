@@ -20,12 +20,18 @@
     resolve(@([keycard isNFCEnabled]));
 };
 - (void)startNFC:(NSString *)prompt resolve: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    // Weak captures: the file-scope KeycardImp is shared across module
+    // instances, so a strong self here would retain a torn-down module (RN
+    // reload) for the process lifetime.
+    __weak typeof(self) weakSelf = self;
     NSDictionary *result = [keycard startNFC:prompt onConnect: ^() {
-      [self emitOnKeycardConnected];
+      [weakSelf emitOnKeycardConnected];
     } onUserCancel: ^() {
-      [self emitOnNFCUserCancelled];
+      [weakSelf emitOnNFCUserCancelled];
     } onTimeout: ^() {
-      [self emitOnNFCTimeout];
+      [weakSelf emitOnNFCTimeout];
+    } onDisconnect: ^() {
+      [weakSelf emitOnKeycardDisconnected];
     }];
 
     if([[result objectForKey:@"nfcStarted"]  isEqual: @true] && [[result objectForKey:@"isSuccess"]  isEqual: @true]) {
@@ -67,11 +73,12 @@
   if([[result objectForKey:@"state"] isEqual: @"success"]) {
     resolve(result);
   } else {
-    reject(@"E_KEYCARD", @"Invalid APDUResponse", nil);
+    // A tag loss carries its classification in "message" ("NFCError:<code>");
+    // rejecting with it lets JS tell "card left the field" from "card said
+    // no". Same reject code as before — the message is the signal.
+    NSString *message = [result objectForKey:@"message"];
+    reject(@"E_KEYCARD", message != nil ? message : @"Invalid APDUResponse", nil);
   }
-
-
-
 };
 - (NSNumber *)isKeycardConnected {
     return [keycard isKeycardConnected];
