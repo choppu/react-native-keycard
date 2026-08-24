@@ -23,6 +23,21 @@ import os.log
 
   private var _keycardController: Any? = nil
 
+  // Guards _keycardController and cardChannel. onFailure nils both from a
+  // global queue while send() reads them from the module's method queue, so
+  // every access takes a strong local reference UNDER the lock and calls
+  // CoreNFC AFTER releasing it. Never hold the lock across a CoreNFC call:
+  // NFCCardChannel.send() opens with a not-on-main dispatchPrecondition and
+  // blocks on a semaphore, so a main-queue hop cannot substitute for locking,
+  // and a lock held across a blocking CoreNFC call can deadlock.
+  private let stateLock = NSLock()
+
+  private func withStateLock<T>(_ body: () -> T) -> T {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    return body()
+  }
+
   @available(iOS 13.0, *)
   private var keycardController: KeycardController? {
     get {
@@ -56,14 +71,20 @@ import os.log
 
   public func startNFC(_ prompt: String, onConnect: @escaping () -> Void, onUserCancel: @escaping () -> Void, onTimeout: @escaping () -> Void, onDisconnect: @escaping () -> Void) -> NSDictionary {
     if #available(iOS 13.0, *) {
-      if (keycardController == nil) {
-        self.onDisconnect = onDisconnect
-        self.keycardController = KeycardController(
+      if (withStateLock { self.keycardController == nil }) {
+        // weak, not unowned: self owns the controller these closures belong
+        // to, so an unowned back-reference dangles if the module is torn
+        // down mid-session (RN reload).
+        let controller = KeycardController(
           onConnect: {
-            [unowned self] channel in
+            [weak self] channel in
+            guard let self = self else { return }
             // KeycardController invokes this on a background queue, so all UIKit /
             // RN-bridge work below must hop to main.
-            self.cardChannel = channel
+            let currentController: KeycardController? = self.withStateLock {
+              self.cardChannel = channel
+              return self.keycardController
+            }
 
             let feedbackGenerator = UINotificationFeedbackGenerator()
             feedbackGenerator.prepare()
@@ -71,14 +92,17 @@ import os.log
             DispatchQueue.main.async {
               feedbackGenerator.notificationOccurred(.success)
               onConnect()
-              self.keycardController?.setAlert("Connected. Don't move your card.")
+              currentController?.setAlert("Connected. Don't move your card.")
               os_log("[react-native-status-keycard] card connected")
             }
           },
           onFailure: {
-            [unowned self] error in
-            self.cardChannel = nil
-            self.keycardController = nil
+            [weak self] error in
+            guard let self = self else { return }
+            self.withStateLock {
+              self.cardChannel = nil
+              self.keycardController = nil
+            }
 
             os_log("[react-native-status-keycard] NFCError: %@", String(describing: error))
 
@@ -97,8 +121,21 @@ import os.log
             }
           })
 
+          self.onDisconnect = onDisconnect
+          // Re-checked under the lock: a concurrent startNFC that won the race
+          // keeps its controller; ours is discarded before it ever starts.
+          let installed: Bool = withStateLock {
+            if self.keycardController == nil {
+              self.keycardController = controller
+              return true
+            }
+            return false
+          }
+          if !installed {
+            return ["nfcStarted": NSNumber(true), "isSuccess": NSNumber(false) ]
+          }
           self.nfcStartPrompt = prompt.isEmpty ? nfcStartPrompt : prompt
-          keycardController?.start(alertMessage: self.nfcStartPrompt)
+          controller.start(alertMessage: self.nfcStartPrompt)
 
           return ["nfcStarted": NSNumber(true), "isSuccess": NSNumber(true) ]
         } else {
@@ -111,13 +148,17 @@ import os.log
 
   public func stopNFC(_ err: String = "") -> NSNumber {
     if #available(iOS 13.0, *) {
-        if (err.isEmpty) {
-          self.keycardController?.stop(alertMessage: "Success")
-        } else {
-          self.keycardController?.stop(errorMessage: err)
+        let controller: KeycardController? = withStateLock {
+          let current = self.keycardController
+          self.cardChannel = nil
+          self.keycardController = nil
+          return current
         }
-        self.cardChannel = nil
-        self.keycardController = nil
+        if (err.isEmpty) {
+          controller?.stop(alertMessage: "Success")
+        } else {
+          controller?.stop(errorMessage: err)
+        }
         return NSNumber(true)
       } else {
         return NSNumber(false)
@@ -126,7 +167,8 @@ import os.log
 
   public func setNFCMessage(_ message: String) -> NSNumber {
     if #available(iOS 13.0, *) {
-        self.keycardController?.setAlert(message)
+        let controller: KeycardController? = withStateLock { self.keycardController }
+        controller?.setAlert(message)
         return NSNumber(true)
       } else {
         return NSNumber(false)
@@ -138,7 +180,8 @@ import os.log
     // success carries [UInt8]? and the .some/.none split below is mandatory:
     // a nil cardChannel (nil'd by onFailure racing a send) lands in
     // .success(.none), not in .failure.
-    let outcome = Result { try self.cardChannel?.send(apdu) }
+    let channel = withStateLock { self.cardChannel }
+    let outcome = Result { try channel?.send(apdu) }
 
     switch outcome {
     case .success(.some(let apduResp)):
@@ -171,8 +214,9 @@ import os.log
       self.onDisconnect?()
     }
     if #available(iOS 13.0, *) {
-      self.keycardController?.restartPolling()
-      self.keycardController?.setAlert(self.nfcStartPrompt)
+      let controller: KeycardController? = withStateLock { self.keycardController }
+      controller?.restartPolling()
+      controller?.setAlert(self.nfcStartPrompt)
     }
     // "message" is only ever present on the error path, which the ObjC side
     // rejects rather than resolves — APDUData's resolved shape is untouched.
