@@ -75,7 +75,7 @@ import os.log
         // weak, not unowned: self owns the controller these closures belong
         // to, so an unowned back-reference dangles if the module is torn
         // down mid-session (RN reload).
-        let controller = KeycardController(
+        guard let controller = KeycardController(
           onConnect: {
             [weak self] channel in
             guard let self = self else { return }
@@ -119,7 +119,12 @@ import os.log
                 onTimeout();
               }
             }
-          })
+          }) else {
+            // init? returns nil when CoreNFC refuses to create a reader
+            // session. Nothing was installed and nothing needs unwinding, so
+            // report the same failure shape as the lost install race below.
+            return ["nfcStarted": NSNumber(true), "isSuccess": NSNumber(false) ]
+          }
 
           self.onDisconnect = onDisconnect
           // Re-checked under the lock: a concurrent startNFC that won the race
