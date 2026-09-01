@@ -23,7 +23,9 @@
     // Weak captures: the file-scope KeycardImp is shared across module
     // instances, so a strong self here would retain a torn-down module (RN
     // reload) for the process lifetime.
-    __weak typeof(self) weakSelf = self;
+    // __typeof__, not typeof: this file is ObjC++ and RN builds pods with
+    // -std=c++20, where bare `typeof` is not a keyword and fails to parse.
+    __weak __typeof__(self) weakSelf = self;
     NSDictionary *result = [keycard startNFC:prompt onConnect: ^() {
       [weakSelf emitOnKeycardConnected];
     } onUserCancel: ^() {
