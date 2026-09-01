@@ -39,8 +39,33 @@ public class NFCCardManager(loopSleepMS: Long?): Thread(), NfcAdapter.ReaderCall
     }
   }
 
+  /**
+   * Drops the current tag after a transceive-level loss.
+   *
+   * IsoDep.isConnected() reports a LOCAL flag, not the RF link: it keeps
+   * returning true for a tag that has physically left the field, until the tag
+   * is closed. Without this the runloop never sees a connected -> disconnected
+   * transition, so no disconnect event is emitted AND a re-tap produces no
+   * connect event either (the state never left "connected"), leaving the
+   * reader deaf until the session is torn down.
+   */
+  public fun invalidateTag() {
+    val dep: IsoDep? = this.isoDep;
+    this.isoDep = null;
+
+    try {
+      dep?.close();
+    } catch (e: IOException) {
+      // Already gone — nothing to release.
+    } catch (e: SecurityException) {
+      // Tag owned by another activity — nothing to release.
+    }
+  }
+
   override fun onTagDiscovered(tag: Tag) {
-    this.isoDep = IsoDep.get(tag);
+    // Release any previous tag before adopting the new one, so a stale
+    // reference can never keep the runloop's presence state stuck.
+    this.invalidateTag();
     try {
       this.isoDep = IsoDep.get(tag);
       this.isoDep?.connect();

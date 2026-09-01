@@ -143,26 +143,37 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>): BroadcastRec
       // purpose. TagLostException is what transceive() itself throws when the
       // tag leaves the field, so the guard path and the framework path are
       // indistinguishable to the JS side. Never hold the lock across transceive.
-      val dep = synchronized(this.lock) { this.isoDep } ?: throw TagLostException(TAG_LOST);
+      val dep = synchronized(this.lock) { this.isoDep } ?: run {
+        this.cardManager.invalidateTag();
+        throw TagLostException(TAG_LOST);
+      }
 
       val resp = try {
         dep.transceive(apdu);
+      } catch(e: TagLostException) {
+        // The tag is gone, but IsoDep.isConnected() keeps reporting true until
+        // the tag is closed, so the runloop would see no transition: no
+        // disconnect event now, and no connect event on the next tap either.
+        this.cardManager.invalidateTag();
+        throw e;
       } catch(e: SecurityException) {
+        this.cardManager.invalidateTag();
         throw IOException("Tag disconnected", e);
       } catch(e: IllegalStateException) {
+        this.cardManager.invalidateTag();
         throw IOException("Tag disconnected", e);
       } catch(e: IllegalArgumentException) {
+        // A malformed OUTBOUND apdu is a programmer error, not a tag loss:
+        // the tag stays valid, so it is not invalidated here.
         throw IOException("Malformed card response", e);
       }
-      // TagLostException is an IOException and is deliberately NOT caught above:
-      // it already carries the framework's "Tag was lost." message and must
-      // reach JS intact.
 
       // A reply shorter than 2 bytes cannot be a valid APDU response (SW1+SW2);
       // it means the exchange was cut short. The Java bridge raised this inside
       // send() via APDUResponse's constructor; classify it here, at the only
       // layer that knows why.
       if (resp.size < 2) {
+        this.cardManager.invalidateTag();
         throw TagLostException(TAG_LOST);
       }
       return resp;
