@@ -44,7 +44,12 @@ public class NFCCardManager(loopSleepMS: Long?): Thread(), NfcAdapter.ReaderCall
     try {
       this.isoDep = IsoDep.get(tag);
       this.isoDep?.connect();
-      this.isoDep?.setTimeout(120000);
+      // 10 s, not 120 s: a transceive against a half-coupled tag (lifted just
+      // as it connected) blocks the full timeout with no TagLostException and
+      // no disconnect transition — observed on-device as a 121 s freeze on
+      // SELECT. No legitimate Keycard APDU takes anywhere near 10 s; on
+      // timeout the transceive throws and the failure surfaces immediately.
+      this.isoDep?.setTimeout(10000);
     } catch (e: IOException) {
       Log.e(TAG, "Error connecting to tag");
     } catch (e: SecurityException) {
