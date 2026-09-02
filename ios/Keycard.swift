@@ -91,19 +91,35 @@ import os.log
       }
   }
 
-  public func stopNFC(_ err: String = "") -> NSNumber {
-    if #available(iOS 13.0, *) {
-        if (err.isEmpty) {
-          self.keycardController?.stop(alertMessage: "Success")
-        } else {
-          self.keycardController?.stop(errorMessage: err)
-        }
-        self.cardChannel = nil
-        self.keycardController = nil
-        return NSNumber(true)
-      } else {
-        return NSNumber(false)
-      }
+  /// Ends the session with the success checkmark, showing `successMessage` on
+  /// Apple's sheet, or "Success" when it is empty.
+  public func stopNFC(successMessage: String) -> NSNumber {
+    guard #available(iOS 13.0, *) else {
+      return NSNumber(false)
+    }
+
+    self.keycardController?.stop(
+      alertMessage: successMessage.isEmpty ? "Success" : successMessage)
+    tearDownSession()
+    return NSNumber(true)
+  }
+
+  /// Ends the session with the error icon, showing `errorMessage` on Apple's
+  /// sheet.
+  public func stopNFC(errorMessage: String) -> NSNumber {
+    guard #available(iOS 13.0, *) else {
+      return NSNumber(false)
+    }
+
+    self.keycardController?.stop(errorMessage: errorMessage)
+    tearDownSession()
+    return NSNumber(true)
+  }
+
+  @available(iOS 13.0, *)
+  private func tearDownSession() {
+    self.cardChannel = nil
+    self.keycardController = nil
   }
 
   public func setNFCMessage(_ message: String) -> NSNumber {
