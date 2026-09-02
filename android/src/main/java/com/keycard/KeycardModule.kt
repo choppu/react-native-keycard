@@ -64,6 +64,13 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
     promise.resolve(true);
   }
 
+  // `message` is ignored for the same reason as `err` above: it exists to word
+  // Apple's system sheet, which Android does not have.
+  override fun stopNFCWithMessage(message: String, promise: Promise) {
+    cardChannel?.stopNFC();
+    promise.resolve(true);
+  }
+
   override fun send(apdu: String, promise: Promise) {
     var response: WritableMap = Arguments.createMap().apply {
         putString("data", "");
