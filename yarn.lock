@@ -8545,6 +8545,7 @@ __metadata:
     turbo: "npm:^2.5.6"
     typescript: "npm:^5.9.2"
   peerDependencies:
+    keycard-sdk: ^3.1.9 || ^4.0.0
     react: "*"
     react-native: "*"
   dependenciesMeta:
