@@ -269,7 +269,7 @@ Returns `Promise<boolean>`.
 
 #### stopNFC
 
-stops NFC.
+stops NFC. On iOS an optional `message` is shown on the system NFC sheet as the session closes, as an error when `isError` is `true`. Android has no system sheet and ignores both.
 
 **Example**
 
@@ -282,6 +282,8 @@ RNKeycard.Core.onKeycardNFCEnabled(async () => {
   ...do something..
 
   await RNKeycard.Core.stopNFC();
+  // await RNKeycard.Core.stopNFC('PIN changed');
+  // await RNKeycard.Core.stopNFC('Wrong PIN', true);
 });
 
 
