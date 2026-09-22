@@ -126,10 +126,16 @@ import os.log
 
   public func stopNFC(_ message: String = "", isError: Bool = false) -> NSNumber {
     if #available(iOS 13.0, *) {
+        let controller: KeycardController? = withStateLock {
+          let current = self.keycardController
+          self.cardChannel = nil
+          self.keycardController = nil
+          return current
+        }
         if (isError) {
-          self.keycardController?.stop(errorMessage: message)
+          controller?.stop(errorMessage: message)
         } else {
-          self.keycardController?.stop(alertMessage: message.isEmpty ? "Success" : message)
+          controller?.stop(alertMessage: message.isEmpty ? "Success" : message)
         }
         return NSNumber(true)
       } else {
@@ -149,17 +155,15 @@ import os.log
 
   public func send(_ apdu: String) -> [String : String] {
     let channel = withStateLock { self.cardChannel }
-    let outcome = Result { try channel?.send(apdu) }
+    guard let channel = channel else {
+      return tagLost(code: 100)
+    }
 
-    switch outcome {
-    case .success(.some(let apduResp)):
+    do {
+      let apduResp = try channel.send(apdu)
       os_log("[react-native-status-keycard] APDUResponse: %@", self.bytesToHex(apduResp))
       return ["data": bytesToHex(apduResp), "state": "success"]
-
-    case .success(.none):
-      return tagLost(code: 100)
-
-    case .failure(let error):
+    } catch {
       let ns = error as NSError
       guard ns.domain == "NFCError", KeycardImp.tagLostCodes.contains(ns.code) else {
         return ["data": "", "state": "error"]

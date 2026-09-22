@@ -1,6 +1,5 @@
 import Foundation
 import CoreNFC
-import os.log
 
 @available(iOS 13.0, *)
 open class KeycardController: NSObject {
@@ -106,7 +105,6 @@ extension KeycardController: NFCTagReaderSessionDelegate {
     }
 
     public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
-        os_log("[react-native-status-keycard] didDetect (%d tag(s))", tags.count)
         if tags.count > 1 {
             setAlert(alertMessages.moreThanOneTagFound)
             tagRemovalDetect(tags[0])

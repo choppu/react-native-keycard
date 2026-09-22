@@ -53,7 +53,7 @@ public class NFCCardManager(loopSleepMS: Long?): Thread(), NfcAdapter.ReaderCall
       this.isoDep = IsoDep.get(tag);
       this.isoDep?.connect();
       // a half-coupled tag blocks transceive for the whole timeout
-      this.isoDep?.setTimeout(10000);
+      this.isoDep?.setTimeout(TRANSSCEIVE_TIMEOUT_MS);
     } catch (e: IOException) {
       Log.e(TAG, "Error connecting to tag");
     } catch (e: SecurityException) {
@@ -120,5 +120,7 @@ public class NFCCardManager(loopSleepMS: Long?): Thread(), NfcAdapter.ReaderCall
   companion object {
     private var TAG: String = "NFCCardManager";
     private var DEFAULT_LOOP_SLEEP_MS: Long = 50;
+    // a half-coupled tag blocks transceive for the whole timeout
+    private const val TRANSSCEIVE_TIMEOUT_MS: Int = 10000;
   }
 }

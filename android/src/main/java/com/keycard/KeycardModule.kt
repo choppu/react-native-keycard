@@ -76,8 +76,8 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
       promise.reject(e);
     } catch(e: IOException) {
       promise.resolve(response);
-    } catch(e: Throwable) {
-      promise.resolve(response);
+    } catch(e: Exception) {
+      promise.reject(e);
     }
   }
 
