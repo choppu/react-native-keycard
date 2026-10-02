@@ -2169,10 +2169,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:2.0.1, @noble/hashes@npm:^2.0.1":
+"@noble/curves@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@noble/curves@npm:2.4.0"
+  dependencies:
+    "@noble/hashes": "npm:2.4.0"
+  checksum: 10c0/b60b737f65cc4e128dd94fea467df1ed73c5c0c089ef1bdb61614a0897db1fa7151d7f95bb7205854a9030d3f80a879e00f3bb74990befde061184ae43dfaec6
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:2.0.1":
   version: 2.0.1
   resolution: "@noble/hashes@npm:2.0.1"
   checksum: 10c0/e81769ce21c3b1c80141a3b99bd001f17edea09879aa936692ae39525477386d696101cd573928a304806efb2b9fa751e1dd83241c67d0c84d30091e85c79bdb
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:2.4.0, @noble/hashes@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@noble/hashes@npm:2.4.0"
+  checksum: 10c0/f5820a38c52886073a69722a030688ad188bbacb822d01554545371259961c2b916266c57c013c2ce5a0d78aec977142fc68fd2a79be4c97b0644fcee9bb35f6
   languageName: node
   linkType: hard
 
@@ -3005,6 +3021,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@scure/base@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@scure/base@npm:2.4.0"
+  checksum: 10c0/985a4bdcafa4289e0cb8b6d53453347308d5ff6ffcbe84d8fac102374fb419b52db565e98fa3931b79a4be1cc3218583065bbca27dfaabca687aac0f3db3639d
+  languageName: node
+  linkType: hard
+
 "@scure/bip32@npm:^2.0.1":
   version: 2.0.1
   resolution: "@scure/bip32@npm:2.0.1"
@@ -3016,13 +3039,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/bip39@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@scure/bip39@npm:2.0.1"
+"@scure/bip32@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@scure/bip32@npm:2.4.0"
   dependencies:
-    "@noble/hashes": "npm:2.0.1"
-    "@scure/base": "npm:2.0.0"
-  checksum: 10c0/ed8a0788bca006a6e4a647ed67c4c973b1deeaee5d62ddc168c9521c33e3a66cf5707c8aadcd0b6f9e3e41c3f763a985d913f4abc3813963497238e73ce166b6
+    "@noble/curves": "npm:2.4.0"
+    "@noble/hashes": "npm:2.4.0"
+    "@scure/base": "npm:2.4.0"
+  checksum: 10c0/37d0fa0512b7bb71673738f5ffbb9f54ea583982c2ffbe8bfa993d0ac72a07d144dbc9407db4edc39a2ad23f3b7277d024a3df43a900e41b5e7fe3105360d582
+  languageName: node
+  linkType: hard
+
+"@scure/bip39@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@scure/bip39@npm:2.4.0"
+  dependencies:
+    "@noble/hashes": "npm:2.4.0"
+  checksum: 10c0/4a879f10f351256201256ccf5e5e9c56dff1cd6aad94c6dd565a2b3d41ef40a3bb655deb320fe46ec02afa7804fd3a19f115ebd432370253a88ce7b2f3555f9b
   languageName: node
   linkType: hard
 
@@ -3088,7 +3121,49 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/add@npm:^2":
+"@turbo/darwin-64@npm:2.11.6":
+  version: 2.11.6
+  resolution: "@turbo/darwin-64@npm:2.11.6"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@turbo/darwin-arm64@npm:2.11.6":
+  version: 2.11.6
+  resolution: "@turbo/darwin-arm64@npm:2.11.6"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@turbo/linux-64@npm:2.11.6":
+  version: 2.11.6
+  resolution: "@turbo/linux-64@npm:2.11.6"
+  conditions: (os=android | os=linux) & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@turbo/linux-arm64@npm:2.11.6":
+  version: 2.11.6
+  resolution: "@turbo/linux-arm64@npm:2.11.6"
+  conditions: (os=android | os=linux) & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@turbo/windows-64@npm:2.11.6":
+  version: 2.11.6
+  resolution: "@turbo/windows-64@npm:2.11.6"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@turbo/windows-arm64@npm:2.11.6":
+  version: 2.11.6
+  resolution: "@turbo/windows-arm64@npm:2.11.6"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@types/add@npm:^2.0.3":
   version: 2.0.3
   resolution: "@types/add@npm:2.0.3"
   checksum: 10c0/d18841b43d3799f69db0bdae380d19d05f43b716315c5bfd4d6c1b3467bada2644eab8c04bb5afdb94bba87604da06d466f22fe30df6bcf0518c373593bb474a
@@ -3196,12 +3271,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^19.2.0":
-  version: 19.2.14
-  resolution: "@types/react@npm:19.2.14"
+"@types/react@npm:^19.3.0":
+  version: 19.3.0
+  resolution: "@types/react@npm:19.3.0"
   dependencies:
     csstype: "npm:^3.2.2"
-  checksum: 10c0/7d25bf41b57719452d86d2ac0570b659210402707313a36ee612666bf11275a1c69824f8c3ee1fdca077ccfe15452f6da8f1224529b917050eb2d861e52b59b7
+  checksum: 10c0/fbcabf303f935ca9f36ed2dcf81751cf84744098c5a683c8a62a0fa7edd31714b48d5c46b12fd0014f7f2dfe4d9ec6de428a850748eec719a70294e51029551b
   languageName: node
   linkType: hard
 
@@ -3280,10 +3355,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"add@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "add@npm:2.0.6"
-  checksum: 10c0/6b21d5f2e58cf5e15d56cc6f9ebce04f04f4c33ae25f09d600ddacf8df00036ba521f17feb1b3f81307b7c6d2ef0bed8b511a0f86f062eb90c2f909b48b588ae
+"add@npm:^2.0.9":
+  version: 2.0.9
+  resolution: "add@npm:2.0.9"
+  checksum: 10c0/c04934ddf86773258bec8206ba980e3bc81fdbef8cc40ffe7c387793537e4815110970cf0d1ceb8f4aca7c6781dff3ec6de7956845e364de7f95c59befcbca5c
   languageName: node
   linkType: hard
 
@@ -8491,7 +8566,7 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@babel/preset-env": "npm:^7.25.3"
     "@babel/runtime": "npm:^7.25.0"
-    "@noble/hashes": "npm:^2.0.1"
+    "@noble/hashes": "npm:^2.4.0"
     "@react-native-clipboard/clipboard": "npm:^1.16.3"
     "@react-native-community/cli": "npm:20.0.0"
     "@react-native-community/cli-platform-android": "npm:20.0.0"
@@ -8500,27 +8575,27 @@ __metadata:
     "@react-native/metro-config": "npm:^0.84.1"
     "@react-native/typescript-config": "npm:^0.84.1"
     "@sbaiahmed1/react-native-blur": "npm:^4.5.7"
-    "@scure/bip32": "npm:^2.0.1"
-    "@scure/bip39": "npm:^2.0.1"
-    "@types/add": "npm:^2"
-    "@types/react": "npm:^19.2.0"
-    add: "npm:^2.0.6"
+    "@scure/bip32": "npm:^2.4.0"
+    "@scure/bip39": "npm:^2.4.0"
+    "@types/add": "npm:^2.0.3"
+    "@types/react": "npm:^19.3.0"
+    add: "npm:^2.0.9"
     react: "npm:19.2.3"
     react-native: "npm:^0.84.1"
     react-native-bouncy-checkbox: "npm:^4.1.4"
     react-native-builder-bob: "npm:^0.40.17"
     react-native-dropdown-select-list: "npm:^2.0.5"
     react-native-get-random-values: "npm:^2.0.0"
-    react-native-mmkv: "npm:^4.2.0"
+    react-native-mmkv: "npm:^4.3.2"
     react-native-modal: "npm:^14.0.0-rc.1"
-    react-native-monorepo-config: "npm:^0.3.1"
+    react-native-monorepo-config: "npm:^0.4.0"
     react-native-nitro-modules: "npm:^0.35.2"
-    react-native-paper: "npm:^5.15.0"
-    react-native-qrcode-svg: "npm:^6.3.21"
+    react-native-paper: "npm:^5.15.3"
+    react-native-qrcode-svg: "npm:^6.3.26"
     react-native-quick-base64: "npm:^2.2.2"
     react-native-quick-crypto: "npm:^1.0.16"
-    react-native-safe-area-context: "npm:^5.7.0"
-    react-native-svg: "npm:^15.15.3"
+    react-native-safe-area-context: "npm:^5.10.1"
+    react-native-svg: "npm:^15.15.5"
   languageName: unknown
   linkType: soft
 
@@ -8530,7 +8605,7 @@ __metadata:
   dependencies:
     "@react-native/babel-preset": "npm:0.83.0"
     "@types/jest": "npm:^29.5.14"
-    "@types/react": "npm:^19.2.0"
+    "@types/react": "npm:^19.3.0"
     buffer: "npm:^6.0.3"
     crypto-random-string: "npm:^5.0.0"
     del-cli: "npm:^6.0.0"
@@ -8539,10 +8614,10 @@ __metadata:
     react: "npm:19.2.0"
     react-native: "npm:0.83.0"
     react-native-builder-bob: "npm:^0.40.17"
-    react-native-mmkv: "npm:^4.1.2"
+    react-native-mmkv: "npm:^4.3.2"
     react-native-nitro-modules: "npm:^0.33.9"
     release-it: "npm:^19.2.4"
-    turbo: "npm:^2.5.6"
+    turbo: "npm:^2.11.6"
     typescript: "npm:^5.9.2"
   peerDependencies:
     react: "*"
@@ -8555,25 +8630,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-mmkv@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "react-native-mmkv@npm:4.1.2"
+"react-native-mmkv@npm:^4.3.2":
+  version: 4.3.2
+  resolution: "react-native-mmkv@npm:4.3.2"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-nitro-modules: "*"
-  checksum: 10c0/713f9c76e732fc010e53203f7dcb9fd571b1d89db13b8ea600ebc3b9505a3c8320e24acabdeb285e7bb0cc0c321d0374cf1a0cca9b211e0852555471aa90e396
-  languageName: node
-  linkType: hard
-
-"react-native-mmkv@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "react-native-mmkv@npm:4.2.0"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-    react-native-nitro-modules: "*"
-  checksum: 10c0/da2211a52f3a5c256906fcc75d0701d0ee21a7e08c1c630d360df5d1f822efebd7daadf598e052d41bbdc74c6677eee58c8dd6680025b71f777e8527e4e7e8a9
+  checksum: 10c0/47c86114ee0ddbc8245dda174f419df9390a8ce0a6bcee0ded5eabd0b257e2b49257ddaf3b39eb5ab95ad7eed0ffa6d6b1e7c6bf8a3e56e6508408e49b98ed07
   languageName: node
   linkType: hard
 
@@ -8589,13 +8653,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-monorepo-config@npm:^0.3.1, react-native-monorepo-config@npm:^0.3.3":
+"react-native-monorepo-config@npm:^0.3.3":
   version: 0.3.3
   resolution: "react-native-monorepo-config@npm:0.3.3"
   dependencies:
     escape-string-regexp: "npm:^5.0.0"
     fast-glob: "npm:^3.3.3"
   checksum: 10c0/42dd8de1bb976c794fe1124ab08fba4645f189c7bdbdcd24dc0e05b639591e690891f89e5dba33c57691840365af85b48004c29c1c128ff195a95e766bb9752e
+  languageName: node
+  linkType: hard
+
+"react-native-monorepo-config@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "react-native-monorepo-config@npm:0.4.0"
+  dependencies:
+    escape-string-regexp: "npm:^5.0.0"
+    fast-glob: "npm:^3.3.3"
+  checksum: 10c0/62e6e2ab859a2e0e5a4028b9f018043a803bfd35c62017a0ca834fc0ff389b5f9cca82c3bf5332d30644e9488e6144ebb0a94965c918d64fce5dbabe094163f8
   languageName: node
   linkType: hard
 
@@ -8619,9 +8693,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-paper@npm:^5.15.0":
-  version: 5.15.0
-  resolution: "react-native-paper@npm:5.15.0"
+"react-native-paper@npm:^5.15.3":
+  version: 5.15.3
+  resolution: "react-native-paper@npm:5.15.3"
   dependencies:
     "@callstack/react-theme-provider": "npm:^3.0.9"
     color: "npm:^3.1.2"
@@ -8630,13 +8704,13 @@ __metadata:
     react: "*"
     react-native: "*"
     react-native-safe-area-context: "*"
-  checksum: 10c0/8add9b730f26737422621289cc0d4be020236d190d8f5173c3dadef7ba413f2a7b7b2b173f4c33bbe2c66c8ad7d2477e412f5cf406fd948596657123684febce
+  checksum: 10c0/936afe4c2cd3dd15fcafb87b785ca59b3aed7048b3aebef860f797047acccf9f8757caaf5ef3a0797ad970a2361dde58df621406d10d2e1e0fe5133ac958f608
   languageName: node
   linkType: hard
 
-"react-native-qrcode-svg@npm:^6.3.21":
-  version: 6.3.21
-  resolution: "react-native-qrcode-svg@npm:6.3.21"
+"react-native-qrcode-svg@npm:^6.3.26":
+  version: 6.3.26
+  resolution: "react-native-qrcode-svg@npm:6.3.26"
   dependencies:
     prop-types: "npm:^15.8.0"
     qrcode: "npm:^1.5.4"
@@ -8645,7 +8719,7 @@ __metadata:
     react: "*"
     react-native: ">=0.63.4"
     react-native-svg: ">=14.0.0"
-  checksum: 10c0/2d227996de5d95148146033940a8f16fd9a7f5b72f10b64da5e20738fc139d386469e850b60cb0eec9e8dc54d3cabe32fd99be18685f90f2e1fc406fb9cdd2e2
+  checksum: 10c0/3ddae2ce0596ddecc11525ac5308465159cbe814fd98453b5c95f3997a3aa84bd9fbe1afbe0ab6b4076d665523c7906903a6153f454a8970af201f4eab4b4446
   languageName: node
   linkType: hard
 
@@ -8685,27 +8759,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-safe-area-context@npm:^5.7.0":
-  version: 5.7.0
-  resolution: "react-native-safe-area-context@npm:5.7.0"
+"react-native-safe-area-context@npm:^5.10.1":
+  version: 5.10.1
+  resolution: "react-native-safe-area-context@npm:5.10.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/c3799e17321b41df1e0a10492c98472f8f8225ef0bbaf8146c4a9acb9519aae9ac11429059143c215e4402c2808e8445274850a339f8477522ded2461e18da80
+  checksum: 10c0/8aebfa832d483e385f9848b5ea92ce3e525a44cad5b3b363b5b190c1f559f3f01176f745ff7a2ad0e2191cb3fb2d0be26c8650956640f086562440c869713ec5
   languageName: node
   linkType: hard
 
-"react-native-svg@npm:^15.15.3":
-  version: 15.15.3
-  resolution: "react-native-svg@npm:15.15.3"
+"react-native-svg@npm:^15.15.5":
+  version: 15.15.5
+  resolution: "react-native-svg@npm:15.15.5"
   dependencies:
     css-select: "npm:^5.1.0"
     css-tree: "npm:^1.1.3"
-    warn-once: "npm:0.1.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/6aa5ea4745c7d174909468b5d5cb75059856d907f0b039bf3650deb81c9afcbd356f2382d7a7424d4cc69597aea5a508484ee5dba91b9126e3b520bc10faefe9
+  checksum: 10c0/34b71b6c83d7235efbc4263abaffcbad780375f9e0fca95786e4f1a543a2b6d07e90c7df426f708e85be68331c412066cdc639f4a6ce82bed42bc728050d9402
   languageName: node
   linkType: hard
 
@@ -9750,74 +9823,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:2.8.11":
-  version: 2.8.11
-  resolution: "turbo-darwin-64@npm:2.8.11"
-  conditions: os=darwin & cpu=x64
-  languageName: node
-  linkType: hard
-
-"turbo-darwin-arm64@npm:2.8.11":
-  version: 2.8.11
-  resolution: "turbo-darwin-arm64@npm:2.8.11"
-  conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"turbo-linux-64@npm:2.8.11":
-  version: 2.8.11
-  resolution: "turbo-linux-64@npm:2.8.11"
-  conditions: os=linux & cpu=x64
-  languageName: node
-  linkType: hard
-
-"turbo-linux-arm64@npm:2.8.11":
-  version: 2.8.11
-  resolution: "turbo-linux-arm64@npm:2.8.11"
-  conditions: os=linux & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"turbo-windows-64@npm:2.8.11":
-  version: 2.8.11
-  resolution: "turbo-windows-64@npm:2.8.11"
-  conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
-"turbo-windows-arm64@npm:2.8.11":
-  version: 2.8.11
-  resolution: "turbo-windows-arm64@npm:2.8.11"
-  conditions: os=win32 & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"turbo@npm:^2.5.6":
-  version: 2.8.11
-  resolution: "turbo@npm:2.8.11"
+"turbo@npm:^2.11.6":
+  version: 2.11.6
+  resolution: "turbo@npm:2.11.6"
   dependencies:
-    turbo-darwin-64: "npm:2.8.11"
-    turbo-darwin-arm64: "npm:2.8.11"
-    turbo-linux-64: "npm:2.8.11"
-    turbo-linux-arm64: "npm:2.8.11"
-    turbo-windows-64: "npm:2.8.11"
-    turbo-windows-arm64: "npm:2.8.11"
+    "@turbo/darwin-64": "npm:2.11.6"
+    "@turbo/darwin-arm64": "npm:2.11.6"
+    "@turbo/linux-64": "npm:2.11.6"
+    "@turbo/linux-arm64": "npm:2.11.6"
+    "@turbo/windows-64": "npm:2.11.6"
+    "@turbo/windows-arm64": "npm:2.11.6"
   dependenciesMeta:
-    turbo-darwin-64:
+    "@turbo/darwin-64":
       optional: true
-    turbo-darwin-arm64:
+    "@turbo/darwin-arm64":
       optional: true
-    turbo-linux-64:
+    "@turbo/linux-64":
       optional: true
-    turbo-linux-arm64:
+    "@turbo/linux-arm64":
       optional: true
-    turbo-windows-64:
+    "@turbo/windows-64":
       optional: true
-    turbo-windows-arm64:
+    "@turbo/windows-arm64":
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 10c0/9c74e4c1494494ee3118c232d2136dfbfd15faf203d433ee73392c57acde43395f8095c8d05fd1d56b5ba58295fe7562ad6c6b9a767f2c86091833bcc53f726e
+  checksum: 10c0/51a174dbc7d65a85730c101920fa8ea393906e4afa7f68ff3210160dc8d98fec92b22ec14d0b15ab5451f03bf8b08ce6a5922f1e6bb64e40c574f3575468e6f8
   languageName: node
   linkType: hard
 
@@ -10092,13 +10123,6 @@ __metadata:
   dependencies:
     makeerror: "npm:1.0.12"
   checksum: 10c0/a17e037bccd3ca8a25a80cb850903facdfed0de4864bd8728f1782370715d679fa72e0a0f5da7c1c1379365159901e5935f35be531229da53bbfc0efdabdb48e
-  languageName: node
-  linkType: hard
-
-"warn-once@npm:0.1.1":
-  version: 0.1.1
-  resolution: "warn-once@npm:0.1.1"
-  checksum: 10c0/f531e7b2382124f51e6d8f97b8c865246db8ab6ff4e53257a2d274e0f02b97d7201eb35db481843dc155815e154ad7afb53b01c4d4db15fb5aa073562496aff7
   languageName: node
   linkType: hard
 
