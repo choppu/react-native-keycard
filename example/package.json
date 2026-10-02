@@ -43,7 +43,7 @@
     "@react-native/typescript-config": "^0.84.1",
     "@types/add": "^2.0.3",
     "@types/react": "^19.3.0",
-    "react-native-builder-bob": "^0.40.17",
+    "react-native-builder-bob": "^0.43.1",
     "react-native-monorepo-config": "^0.4.0"
   },
   "engines": {
