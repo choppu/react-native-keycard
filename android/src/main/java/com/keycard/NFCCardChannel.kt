@@ -1,8 +1,6 @@
-
 package com.keycard
 
-import java.io.IOException
-
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -12,192 +10,214 @@ import android.nfc.NfcAdapter
 import android.nfc.TagLostException
 import android.nfc.tech.IsoDep
 import android.util.Log
-import android.app.Activity
-
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.WritableMap
-
+import androidx.core.content.ContextCompat
+import java.io.IOException
 import kotlin.reflect.KFunction0
-import com.keycard.NFCCardManager
 
-class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>): BroadcastReceiver() {
-    private var nfcAdapter: NfcAdapter? = null
-    private var activity: Activity? = null
-    private var isoDep: IsoDep? = null;
-    val TAG: String = "SmartCard";
-    private var started: Boolean = false;
-    private @Volatile var listening: Boolean = false;
-    private var lock: Any = Any();
-    private var cardEvents: Map<String, KFunction0<Unit>> = keycardEvents;
-    private var cardManager: NFCCardManager;
+class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastReceiver() {
+  private var nfcAdapter: NfcAdapter? = null
+  private var activity: Activity? = null
+  private var isoDep: IsoDep? = null
+  private var started = false
+  private var listening = false
+  private val lock = Any()
+  private val cardEvents: Map<String, KFunction0<Unit>> = keycardEvents
+  private val cardManager: NFCCardManager
 
-    init {
-      this.cardManager = NFCCardManager(null);
-      this.cardManager.setCardListener(this);
-    }
+  init {
+    cardManager = NFCCardManager(null)
+    cardManager.setCardListener(this)
+  }
 
-    public fun log(message: String) {
-        Log.d(TAG, message)
-    }
+  fun log(message: String) {
+    Log.d(TAG, message)
+  }
 
-    override fun onReceive(context: Context, intent: Intent) {
-      val state: Int = intent.getIntExtra(NfcAdapter.EXTRA_ADAPTER_STATE, NfcAdapter.STATE_OFF)
-      when (state) {
-        NfcAdapter.STATE_ON -> {
-          this.cardEvents["onKeycardNFCEnabled"]?.invoke()
-          log("NFC is ON")
-        }
-        NfcAdapter.STATE_OFF -> {
-          this.cardEvents["onKeycardNFCDisabled"]?.invoke()
-          log("NFC is OFF")
-        }
-        else -> {
-          log("No NFC detected")
-        }
+  override fun onReceive(context: Context, intent: Intent) {
+    val state = intent.getIntExtra(NfcAdapter.EXTRA_ADAPTER_STATE, NfcAdapter.STATE_OFF)
+    when (state) {
+      NfcAdapter.STATE_ON -> {
+        cardEvents["onKeycardNFCEnabled"]?.invoke()
+        log("NFC is ON")
+      }
+      NfcAdapter.STATE_OFF -> {
+        cardEvents["onKeycardNFCDisabled"]?.invoke()
+        log("NFC is OFF")
+      }
+      NfcAdapter.STATE_TURNING_ON -> {
+        log("NFC turning on")
+      }
+      NfcAdapter.STATE_TURNING_OFF -> {
+        log("NFC turning off")
+      }
+      else -> {
+        log("Unknown NFC state")
       }
     }
+  }
 
-    public fun start(activity: Activity?): Boolean {
-      if(activity == null) {
-        return false;
-      }
+  fun start(activity: Activity?): Boolean {
+    if (activity == null) {
+      return false
+    }
 
-      if (!this.started) {
-        this.nfcAdapter = NfcAdapter.getDefaultAdapter(activity.getBaseContext());
-        this.cardManager.start();
-        this.started = true;
-      }
-
-      if (this.nfcAdapter != null) {
-        this.activity = activity;
-        val filter: IntentFilter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
-        activity.registerReceiver(this, filter);
-        this.nfcAdapter?.enableReaderMode(activity, this.cardManager, READER_FLAGS, null);
-        return true;
+    val firstSetup = synchronized(lock) {
+      if (!started) {
+        nfcAdapter = NfcAdapter.getDefaultAdapter(activity.baseContext)
+        if (!cardManager.isAlive) {
+          cardManager.start()
+        }
+        started = true
+        true
       } else {
-        log("Not supported in this device");
-        return false;
+        false
       }
     }
 
-    public fun stop(activity: Activity?): Unit {
-      if (activity != null && this.nfcAdapter != null) {
-        this.nfcAdapter?.disableReaderMode(activity);
-      }
+    val adapter = synchronized(lock) { nfcAdapter }
+    if (adapter == null) {
+      log("Not supported in this device")
+      return false
     }
 
-    // onTagDiscovered fires only on field entry, so a card that stayed in the field needs a new polling round
-    public fun restartPolling(): Unit {
-      val act: Activity = this.activity ?: return;
-      val adapter: NfcAdapter = this.nfcAdapter ?: return;
-
-      act.runOnUiThread {
-        try {
-          adapter.disableReaderMode(act);
-          adapter.enableReaderMode(act, this.cardManager, READER_FLAGS, null);
-          log("reader mode restarted");
-        } catch (e: IllegalStateException) {
-          log("could not restart reader mode: " + e.message);
-        }
-      }
+    if (firstSetup) {
+      synchronized(lock) { this.activity = activity }
+      val filter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
+      ContextCompat.registerReceiver(activity, this, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+      adapter.enableReaderMode(activity, cardManager, READER_FLAGS, null)
     }
+    return true
+  }
 
-    public fun startNFC(): Unit {
-      val haveTag: Boolean = synchronized(this.lock) {
-        this.listening = true;
-
-        if (this.isoDep != null) {
-          this.cardEvents["onKeycardConnected"]?.invoke();
-          true
-        } else {
-          false
-        }
-      }
-
-      if (!haveTag) {
-        this.restartPolling();
-      }
-    }
-
-    public fun stopNFC() {
-      synchronized(this.lock) {
-        this.listening = false;
-      }
-    }
-
-    public fun isNFCSupported(activity: Activity?): Boolean {
-      return activity != null && activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC);
-    }
-
-    public fun isNFCEnabled(): Boolean {
-      if (this.nfcAdapter != null) {
-        return this.nfcAdapter!!.isEnabled();
-      } else {
-        return false;
-      }
-    }
-
-    public fun onConnected(iDep: IsoDep) {
-      synchronized(this.lock) {
-        this.isoDep = iDep;
-
-        if (this.listening) {
-          this.cardEvents["onKeycardConnected"]?.invoke();
-        }
-      }
-    }
-
-    public fun onDisconnected() {
-      synchronized(this.lock) {
-        this.isoDep = null
-
-            if (this.listening) {
-              this.cardEvents["onKeycardDisconnected"]?.invoke();
-            }
-        }
-    }
-
-    public fun send(cmd: String): ByteArray {
-      val apdu: ByteArray = @OptIn(kotlin.ExperimentalStdlibApi::class) cmd.hexToByteArray();
-      val dep: IsoDep? = synchronized(this.lock) { this.isoDep };
-
+  fun stop() {
+    val act = synchronized(lock) { activity }
+    val adapter = synchronized(lock) { nfcAdapter }
+    if (act != null && adapter != null) {
       try {
-        if (dep == null) {
-          throw TagLostException(TAG_LOST);
-        }
-        return dep.transceive(apdu);
-      } catch(e: Exception) {
-        when (e) {
-          is TagLostException, is SecurityException, is IllegalStateException -> {
-            // isConnected() stays true for a lost tag until it is closed
-            this.cardManager.invalidateTag();
-            this.restartPolling();
-            throw if (e is TagLostException) e else IOException("Tag disconnected", e);
-          }
-          is IllegalArgumentException -> throw IOException("Malformed card response", e);
-          else -> throw e;
-        }
+        adapter.disableReaderMode(act)
+        act.unregisterReceiver(this)
+      } catch (e: Exception) {
+        log("stop: " + e.message)
       }
     }
+    synchronized(lock) {
+      started = false
+      this.activity = null
+      isoDep = null
+    }
+    cardManager.shutdown()
+  }
 
-    public fun isConnected(): Boolean {
+  // onTagDiscovered fires only on field entry, so a card that stayed in the field needs a new polling round
+  fun restartPolling() {
+    val act = synchronized(lock) { activity } ?: return
+    val adapter = synchronized(lock) { nfcAdapter } ?: return
+
+    act.runOnUiThread {
       try {
-        return this.isoDep != null && this.isoDep!!.isConnected();
-      } catch(e: SecurityException) {
-        return false;
+        adapter.disableReaderMode(act)
+        adapter.enableReaderMode(act, cardManager, READER_FLAGS, null)
+        log("reader mode restarted")
+      } catch (e: IllegalStateException) {
+        log("Could not restart reader mode: " + e.message)
       }
     }
+  }
 
-    companion object {
-      const val MASTER_PATH: String = "m"
-      const val ROOT_PATH: String = "m/44'/60'/0'/0"
-      const val WALLET_PATH: String = "m/44'/60'/0'/0/0"
-      const val WHISPER_PATH: String = "m/43'/60'/1581'/0'/0"
-      const val ENCRYPTION_PATH: String = "m/43'/60'/1581'/1'/0"
-      const val TAG_LOST: String = "Tag was lost."
-      const val WORDS_LIST_SIZE: Int = 2048
-      const val READER_FLAGS: Int =
-        NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
+  fun startNFC() {
+    val haveTag = synchronized(lock) {
+      listening = true
+      isoDep != null
     }
+
+    if (haveTag) {
+      cardEvents["onKeycardConnected"]?.invoke()
+    } else {
+      restartPolling()
+    }
+  }
+
+  fun stopNFC() {
+    synchronized(lock) {
+      listening = false
+    }
+  }
+
+  fun isNFCSupported(activity: Activity?): Boolean {
+    return activity != null && activity.packageManager.hasSystemFeature(PackageManager.FEATURE_NFC)
+  }
+
+  @Suppress("DEPRECATION")
+  fun isNFCEnabled(): Boolean {
+    return synchronized(lock) {
+      nfcAdapter?.isEnabled() ?: false
+    }
+  }
+
+  fun onConnected(iDep: IsoDep) {
+    val shouldNotify = synchronized(lock) {
+      isoDep = iDep
+      listening
+    }
+
+    if (shouldNotify) {
+      cardEvents["onKeycardConnected"]?.invoke()
+    }
+  }
+
+  fun onDisconnected() {
+    val shouldNotify = synchronized(lock) {
+      isoDep = null
+      listening
+    }
+
+    if (shouldNotify) {
+      cardEvents["onKeycardDisconnected"]?.invoke()
+    }
+  }
+
+  @OptIn(kotlin.ExperimentalStdlibApi::class)
+  fun send(cmd: String): ByteArray {
+    val apdu = cmd.hexToByteArray()
+    val dep = synchronized(lock) { isoDep }
+
+    try {
+      if (dep == null) {
+        throw TagLostException(TAG_LOST)
+      }
+      return dep.transceive(apdu)
+    } catch (e: Exception) {
+      when (e) {
+        is TagLostException, is SecurityException, is IllegalStateException -> {
+          // isConnected() stays true for a lost tag until it is closed
+          cardManager.invalidateTag()
+          restartPolling()
+          throw if (e is TagLostException) e else IOException("Tag disconnected", e)
+        }
+        is IllegalArgumentException -> throw IOException("Malformed card response", e)
+        else -> throw e
+      }
+    }
+  }
+
+  fun isConnected(): Boolean {
+    return try {
+      synchronized(lock) { isoDep?.isConnected() == true }
+    } catch (e: SecurityException) {
+      false
+    }
+  }
+
+  companion object {
+    const val MASTER_PATH: String = "m"
+    const val ROOT_PATH: String = "m/44'/60'/0'/0"
+    const val WALLET_PATH: String = "m/44'/60'/0'/0/0"
+    const val WHISPER_PATH: String = "m/43'/60'/1581'/0'/0"
+    const val ENCRYPTION_PATH: String = "m/43'/60'/1581'/1'/0"
+    const val TAG_LOST: String = "Tag was lost."
+    const val WORDS_LIST_SIZE: Int = 2048
+    const val READER_FLAGS: Int =
+      NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
+    private const val TAG: String = "SmartCard"
+  }
 }

@@ -1,29 +1,26 @@
 package com.keycard
 
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.nfc.tech.IsoDep;
-import android.os.SystemClock;
-import android.util.Log;
-
-import java.io.IOException;
-import java.lang.SecurityException
-
-import com.keycard.NFCCardChannel
+import android.nfc.NfcAdapter
+import android.nfc.Tag
+import android.nfc.tech.IsoDep
+import android.os.SystemClock
+import android.util.Log
+import java.io.IOException
 
 /**
  * Manages connection of NFC-based cards. Extends Thread and must be started using the start() method. The thread has
  * a runloop which monitors the connection and from which CardListener callbacks are called.
  */
-public class NFCCardManager(loopSleepMS: Long?): Thread(), NfcAdapter.ReaderCallback {
-  private var isoDep: IsoDep? = null;
-  private var isRunning: Boolean = false;
-  private var loopSleepMS: Long = DEFAULT_LOOP_SLEEP_MS;
-  private var cardListener: NFCCardChannel? = null;
+class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
+  private var isoDep: IsoDep? = null
+  @Volatile private var running = false
+  private val lock = Any()
+  private var loopSleepMS = DEFAULT_LOOP_SLEEP_MS
+  private var cardListener: NFCCardChannel? = null
 
   init {
-    if(loopSleepMS != null) {
-      this.loopSleepMS = loopSleepMS;
+    if (loopSleepMS != null) {
+      this.loopSleepMS = loopSleepMS
     }
   }
 
@@ -31,33 +28,41 @@ public class NFCCardManager(loopSleepMS: Long?): Thread(), NfcAdapter.ReaderCall
    * True if connected, false otherwise.
    * @return if connected, false otherwise
    */
-  public fun isConnected(): Boolean {
-    try {
-      return this.isoDep != null && this.isoDep!!.isConnected();
+  fun isConnected(): Boolean {
+    return try {
+      synchronized(lock) {
+        val dep = isoDep
+        dep != null && dep.isConnected()
+      }
     } catch (e: SecurityException) {
-      return false;
+      false
     }
   }
 
   // isConnected() stays true for a lost tag until it is closed
-  public fun invalidateTag() {
+  fun invalidateTag() {
+    val dep = synchronized(lock) {
+      val current = isoDep
+      isoDep = null
+      current
+    }
     try {
-      this.isoDep?.close();
+      dep?.close()
     } catch (e: Exception) {
+      Log.e(TAG, "invalidateTag: " + e.message)
     }
   }
 
   override fun onTagDiscovered(tag: Tag) {
-    this.invalidateTag();
+    invalidateTag()
     try {
-      this.isoDep = IsoDep.get(tag);
-      this.isoDep?.connect();
+      val dep = IsoDep.get(tag)
+      dep.connect()
       // a half-coupled tag blocks transceive for the whole timeout
-      this.isoDep?.setTimeout(TRANSSCEIVE_TIMEOUT_MS);
-    } catch (e: IOException) {
-      Log.e(TAG, "Error connecting to tag");
-    } catch (e: SecurityException) {
-      Log.e(TAG, "Error connecting to tag");
+      dep.setTimeout(TRANSSCEIVE_TIMEOUT_MS)
+      synchronized(lock) { isoDep = dep }
+    } catch (e: Exception) {
+      Log.e(TAG, "Error connecting to tag")
     }
   }
 
@@ -65,47 +70,58 @@ public class NFCCardManager(loopSleepMS: Long?): Thread(), NfcAdapter.ReaderCall
    * Runloop. Do NOT invoke directly. Use start() instead.
    */
   override fun run() {
-    var connected: Boolean = this.isConnected();
+    running = true
+    var connected = isConnected()
 
-    while (true) {
-      val newConnected: Boolean = this.isConnected();
+    while (running) {
+      val newConnected = isConnected()
       if (newConnected != connected) {
-        connected = newConnected;
-        Log.i(TAG, "tag " + (if(connected) "connected" else "disconnected"));
+        connected = newConnected
+        Log.i(TAG, "tag " + (if (connected) "connected" else "disconnected"))
 
-        if (connected && !isRunning) {
-          this.onCardConnected();
+        if (connected) {
+          try {
+            onCardConnected()
+          } catch (e: Exception) {
+            Log.e(TAG, "onCardConnected: " + e.message)
+          }
         } else {
-          this.onCardDisconnected();
+          try {
+            onCardDisconnected()
+          } catch (e: Exception) {
+            Log.e(TAG, "onCardDisconnected: " + e.message)
+          }
         }
       }
 
-      SystemClock.sleep(loopSleepMS);
+      SystemClock.sleep(loopSleepMS)
     }
+  }
+
+  /**
+   * Stops the run loop and interrupts the thread.
+   */
+  fun shutdown() {
+    running = false
+    interrupt()
   }
 
   /**
    * Reacts on card connected by calling the callback of the registered listener.
    */
   private fun onCardConnected() {
-    this.isRunning = true;
-
-    if (this.cardListener != null) {
-      this.cardListener!!.onConnected(this.isoDep!!);
+    val dep = synchronized(lock) { isoDep }
+    if (dep != null) {
+      cardListener?.onConnected(dep)
     }
-
-    isRunning = false;
   }
 
   /**
    * Reacts on card disconnected by calling the callback of the registered listener.
    */
-  private fun onCardDisconnected(): Unit {
-    this.isRunning = false;
-    isoDep = null;
-    if (this.cardListener != null) {
-      this.cardListener!!.onDisconnected();
-    }
+  private fun onCardDisconnected() {
+    invalidateTag()
+    cardListener?.onDisconnected()
   }
 
   /**
@@ -113,14 +129,14 @@ public class NFCCardManager(loopSleepMS: Long?): Thread(), NfcAdapter.ReaderCall
    *
    * @param listener the new listener
    */
-  public fun setCardListener(listener: NFCCardChannel): Unit {
-    this.cardListener = listener;
+  fun setCardListener(listener: NFCCardChannel) {
+    cardListener = listener
   }
 
   companion object {
-    private var TAG: String = "NFCCardManager";
-    private var DEFAULT_LOOP_SLEEP_MS: Long = 50;
+    private const val TAG = "NFCCardManager"
+    private const val DEFAULT_LOOP_SLEEP_MS = 50L
     // a half-coupled tag blocks transceive for the whole timeout
-    private const val TRANSSCEIVE_TIMEOUT_MS: Int = 10000;
+    private const val TRANSSCEIVE_TIMEOUT_MS = 10000
   }
 }
