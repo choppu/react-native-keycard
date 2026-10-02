@@ -47,8 +47,8 @@
   "license": "MIT",
   "homepage": "https://github.com/choppu/react-native-keycard#readme",
   "dependencies": {
-    "crypto-random-string": "^5.0.0",
-    "keycard-sdk": "^3.1.9"
+    "crypto-random-string": "^6.0.0",
+    "keycard-sdk": "^4.0.1"
   },
   "devDependencies": {
     "@react-native/babel-preset": "0.83.0",
