@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import RNKeycard from 'react-native-keycard';
 import { CardInitializeError, CardLoadKeyError, CardPairingError, CardPinVerificationError, defaultPairingPassword, KeycardManager, KManagerError } from 'keycard-sdk/dist/keycard-manager';
+import { CardIOError } from 'keycard-sdk/dist/apdu-exception';
 import { LocalPairingStorage } from '../../src/LocalPairingStorage';
 import NFCModal from './NFCModal';
 import Styles from './Styles';
@@ -467,6 +468,12 @@ const Main = () => {
           break;
       }
     } catch (err: any) {
+      if (err instanceof CardIOError) {
+        setModalHeader('Card lost');
+        setModalPrompt('Re-position your Keycard on the NFC sensor.');
+        return;
+      }
+
       setModalHeader('Error');
       setModalPrompt(err.message);
 

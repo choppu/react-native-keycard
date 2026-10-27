@@ -21,6 +21,8 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
   private var started = false
   private var listening = false
   private val lock = Any()
+  private val restartLock = Any()
+  private var restartPending = false
   private val cardEvents: Map<String, KFunction0<Unit>> = keycardEvents
   private val cardManager: NFCCardManager
 
@@ -113,6 +115,13 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
     val act = synchronized(lock) { activity } ?: return
     val adapter = synchronized(lock) { nfcAdapter } ?: return
 
+    synchronized(restartLock) {
+      if (restartPending) {
+        return
+      }
+      restartPending = true
+    }
+
     act.runOnUiThread {
       try {
         adapter.disableReaderMode(act)
@@ -120,6 +129,8 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
         log("reader mode restarted")
       } catch (e: IllegalStateException) {
         log("Could not restart reader mode: " + e.message)
+      } finally {
+        synchronized(restartLock) { restartPending = false }
       }
     }
   }

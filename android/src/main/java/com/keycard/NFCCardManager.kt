@@ -25,8 +25,7 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
   }
 
   /**
-   * True if connected, false otherwise.
-   * @return if connected, false otherwise
+   * @return true if connected, false otherwise
    */
   fun isConnected(): Boolean {
     return try {
@@ -34,7 +33,7 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
         val dep = isoDep
         dep != null && dep.isConnected()
       }
-    } catch (e: SecurityException) {
+    } catch (e: Exception) {
       false
     }
   }
