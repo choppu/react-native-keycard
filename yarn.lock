@@ -6808,9 +6808,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keycard-sdk@npm:^3.1.9":
-  version: 3.1.9
-  resolution: "keycard-sdk@npm:3.1.9"
+"keycard-sdk@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "keycard-sdk@npm:4.0.1"
   dependencies:
     "@noble/ciphers": "npm:^1.3.0"
     "@noble/hashes": "npm:^1.8.0"
@@ -6824,7 +6824,7 @@ __metadata:
   dependenciesMeta:
     "@nonth/pcsclite":
       optional: true
-  checksum: 10c0/9fd320c18e43f352b17a7cd5cd5faa4ba00696f1b059b820ee6e49a20fca43c1c4fa7b5bf4c22d1a7852594b27c4a01747370d6493728773226f43efab0d900a
+  checksum: 10c0/4fa7b3c9e65f329412e08259a0cbdf22f87851fc63c116e46a066d0f925a6f1869a6c71e474a6bf6b5f044682a8afb985bedba9f5e3f6db8281d70e7d5b4b910
   languageName: node
   linkType: hard
 
@@ -8535,7 +8535,7 @@ __metadata:
     crypto-random-string: "npm:^5.0.0"
     del-cli: "npm:^6.0.0"
     jest: "npm:^29.7.0"
-    keycard-sdk: "npm:^3.1.9"
+    keycard-sdk: "npm:^4.0.1"
     react: "npm:19.2.0"
     react-native: "npm:0.83.0"
     react-native-builder-bob: "npm:^0.40.17"
@@ -8545,6 +8545,7 @@ __metadata:
     turbo: "npm:^2.5.6"
     typescript: "npm:^5.9.2"
   peerDependencies:
+    keycard-sdk: ^4.0.1
     react: "*"
     react-native: "*"
   dependenciesMeta:
