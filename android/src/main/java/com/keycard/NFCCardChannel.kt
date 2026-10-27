@@ -135,7 +135,12 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
     }
   }
 
-  fun startNFC() {
+  fun startNFC(activity: Activity?) {
+    val wasStarted = synchronized(lock) { started }
+    if (!wasStarted) {
+      start(activity)
+    }
+
     val haveTag = synchronized(lock) {
       listening = true
       isoDep != null
@@ -158,7 +163,6 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
     return activity != null && activity.packageManager.hasSystemFeature(PackageManager.FEATURE_NFC)
   }
 
-  @Suppress("DEPRECATION")
   fun isNFCEnabled(): Boolean {
     return synchronized(lock) {
       nfcAdapter?.isEnabled() ?: false
@@ -220,13 +224,7 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
   }
 
   companion object {
-    const val MASTER_PATH: String = "m"
-    const val ROOT_PATH: String = "m/44'/60'/0'/0"
-    const val WALLET_PATH: String = "m/44'/60'/0'/0/0"
-    const val WHISPER_PATH: String = "m/43'/60'/1581'/0'/0"
-    const val ENCRYPTION_PATH: String = "m/43'/60'/1581'/1'/0"
     const val TAG_LOST: String = "Tag was lost."
-    const val WORDS_LIST_SIZE: Int = 2048
     const val READER_FLAGS: Int =
       NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
     private const val TAG: String = "SmartCard"

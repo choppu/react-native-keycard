@@ -24,8 +24,13 @@ const useNFCCardSession = (props: NFCCardSessionProps) => {
       await RNKeycard.Core.openNFCSettings();
     }
 
-    await RNKeycard.Core.startNFC("Tap your Keycard");
-    props.modalActive(true);
+    try {
+      await RNKeycard.Core.startNFC("Tap your Keycard");
+      props.modalActive(true);
+    } catch (e: any) {
+      props.setModalHeader('NFC unavailable');
+      props.setModalPrompt(e?.message ? e.message : 'Could not start NFC scanning');
+    }
   }, []);
 
   const stop = React.useCallback(async (): Promise<void> => {

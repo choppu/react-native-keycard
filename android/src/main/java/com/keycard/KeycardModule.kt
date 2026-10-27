@@ -54,7 +54,12 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
   }
 
   override fun startNFC(prompt: String, promise: Promise) {
-    cardChannel?.startNFC()
+    val channel = cardChannel
+    if (channel == null) {
+      promise.reject("not_initialized", "NFC is not initialized")
+      return
+    }
+    channel.startNFC(currentActivity())
     promise.resolve(true)
   }
 
@@ -87,9 +92,8 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
     }
   }
 
-  // iOS only method
   override fun setNFCMessage(message: String, promise: Promise) {
-    promise.resolve(true)
+    promise.reject("unsupported", "setNFCMessage is not supported on Android")
   }
 
   companion object {
