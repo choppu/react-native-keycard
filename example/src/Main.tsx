@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import RNKeycard from 'react-native-keycard';
-import { CardInitializeError, CardLoadKeyError, CardPairingError, CardPinVerificationError, defaultPairingPassword, KeycardManager, KManagerError, PAIRED } from 'keycard-sdk/dist/keycard-manager';
+import { CardInitializeError, CardLoadKeyError, CardPairingError, CardPinVerificationError, defaultPairingPassword, KeycardManager, KManagerError } from 'keycard-sdk/dist/keycard-manager';
 import { LocalPairingStorage } from '../../src/LocalPairingStorage';
 import NFCModal from './NFCModal';
 import Styles from './Styles';
@@ -29,8 +29,9 @@ import ShowWalletsScreen from './components/screens/ShowWallets';
 import SignScreen from './components/screens/Sign';
 
 const kManager = new KeycardManager(new LocalPairingStorage());
+const devCAKey = new Uint8Array([0x02, 0x58, 0x77, 0x22, 0x0a, 0xaa, 0xe6, 0xe5, 0x4a, 0x6f, 0x97, 0x46, 0x02, 0xd5, 0x99, 0x5c, 0x0f, 0xe2, 0x4a, 0x3e, 0xa7, 0xdd, 0xab, 0xd8, 0x64, 0x4b, 0xec, 0x79, 0x5b, 0x9d, 0xa0, 0x07, 0x43]);
 const authCert = new Uint8Array([0x02, 0x9a, 0xb9, 0x9e, 0xe1, 0xe7, 0xa7, 0x1b, 0xdf, 0x45, 0xb3, 0xf9, 0xc5, 0x8c, 0x99, 0x86, 0x6f, 0xf1, 0x29, 0x4d, 0x2c, 0x1e, 0x30, 0x4e, 0x22, 0x8a, 0x86, 0xe1, 0x0c, 0x33, 0x43, 0x50, 0x1c]);
-const initialArgs = { cardPublicKeys: [authCert], skipVerificationUID: [] };
+const initialArgs = { caPublicKeys: [authCert, devCAKey], skipVerificationUID: [] };
 export const ethPath = "m/44'/60'/0'/0";
 export const paths = [
   {key: "m/44'/60'/0'/0", value: "m/44'/60'/0'/0"},

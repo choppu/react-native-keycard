@@ -17,7 +17,6 @@
     "lib",
     "android",
     "ios",
-    "cpp",
     "*.podspec",
     "react-native.config.js",
     "!ios/build",
@@ -47,30 +46,32 @@
   "license": "MIT",
   "homepage": "https://github.com/choppu/react-native-keycard#readme",
   "dependencies": {
-    "crypto-random-string": "^6.0.0",
-    "keycard-sdk": "^4.0.1"
+    "react-native-mmkv": "^4.3.2",
+    "react-native-nitro-modules": "^0.37.1"
   },
   "devDependencies": {
-    "@react-native/babel-preset": "0.83.0",
+    "@react-native/babel-preset": "0.88.0",
+    "@react-native/jest-preset": "0.88.0",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.3.0",
     "buffer": "^6.0.3",
-    "del-cli": "^7.0.0",
+    "del-cli": "^8.0.1",
     "jest": "^30.5.2",
-    "react": "19.2.0",
-    "react-native": "0.83.0",
-    "react-native-builder-bob": "^0.43.1",
+    "keycard-sdk": "^4.0.1",
+    "react": "19.3.1",
+    "react-native": "0.88.0",
+    "react-native-builder-bob": "^0.44.1",
     "release-it": "^21.1.0",
     "turbo": "^2.11.6",
     "typescript": "^5.9.2"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "keycard-sdk": "^4.0.1",
+    "react": ">=19.0.0",
+    "react-native": ">=0.85.0"
   },
-  "optionalDependencies": {
-    "react-native-mmkv": "^4.3.2",
-    "react-native-nitro-modules": "^0.33.9"
+  "engines": {
+    "node": ">=20"
   },
   "workspaces": [
     "example"
@@ -103,7 +104,7 @@
     }
   },
   "jest": {
-    "preset": "react-native",
+    "preset": "@react-native/jest-preset",
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"

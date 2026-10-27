@@ -1,4 +1,5 @@
 import React from "react";
+import { Platform } from "react-native";
 import RNKeycard from "react-native-keycard";
 import { Phase } from "../Main";
 
@@ -19,8 +20,8 @@ const useNFCCardSession = (props: NFCCardSessionProps) => {
   }, []);
 
   const start = React.useCallback(async (): Promise<void> => {
-    if (await RNKeycard.Core.isNFCSupported() && !(await RNKeycard.Core.isNFCEnabled())) {
-      RNKeycard.Core.openNFCSettings();
+    if (Platform.OS === 'android' && (await RNKeycard.Core.isNFCSupported()) && !(await RNKeycard.Core.isNFCEnabled())) {
+      await RNKeycard.Core.openNFCSettings();
     }
 
     await RNKeycard.Core.startNFC("Tap your Keycard");

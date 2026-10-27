@@ -1,7 +1,8 @@
 import { Platform, StyleSheet } from "react-native";
 
 export const backgroundColor = '#000000';
-export const backgroundColorTransparent = '#cccccc11'
+export const backgroundColorLighter = 'rgba(0, 0, 0, 0.5)';
+export const backgroundColorTransparent = '#cccccc11';
 export const neutralSolid = '#111111bb';
 export const neutral90 = '#1d1d1d';
 export const logBgColor = '#26272988';
@@ -53,8 +54,9 @@ const Styles = StyleSheet.create({
     justifyContent: 'center'
   },
   modalContainer: {
+    flex: 1,
     justifyContent: 'flex-end',
-    margin: 0,
+    backgroundColor: backgroundColorLighter,
   },
   modalContent: {
     height: 350,
