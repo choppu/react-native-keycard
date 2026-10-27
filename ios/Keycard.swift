@@ -126,10 +126,16 @@ import os.log
 
   public func stopNFC(_ message: String = "", isError: Bool = false) -> NSNumber {
     if #available(iOS 13.0, *) {
+        let controller: KeycardController? = withStateLock {
+          let current = self.keycardController
+          self.cardChannel = nil
+          self.keycardController = nil
+          return current
+        }
         if (isError) {
-          self.keycardController?.stop(errorMessage: message)
+          controller?.stop(errorMessage: message)
         } else {
-          self.keycardController?.stop(alertMessage: message.isEmpty ? "Success" : message)
+          controller?.stop(alertMessage: message.isEmpty ? "Success" : message)
         }
         return NSNumber(true)
       } else {
