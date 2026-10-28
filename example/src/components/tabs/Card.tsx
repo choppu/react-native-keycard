@@ -18,15 +18,15 @@ const CardTab: React.FC<CardTabProps> = props => {
       <View style={styles.cardInfoContainer}>
         <View style={styles.cardInfoField}>
         <Text style={styles.cardInfoLabel}>Instance UID</Text>
-        <Text style={styles.cardInfo}>{cardInfo.appInfo ? Utils.hx(cardInfo.appInfo.instanceUID) : '---'}</Text>
+        <Text style={styles.cardInfo}>{cardInfo.appInfo?.instanceUID ? Utils.hx(cardInfo.appInfo.instanceUID) : '---'}</Text>
       </View>
       <View style={styles.cardInfoField}>
         <Text style={styles.cardInfoLabel}>Key UID</Text>
-        <Text style={styles.cardInfo}>{cardInfo.appInfo ? (cardInfo.appInfo.keyUID ? `0x${Utils.hx(cardInfo.appInfo.keyUID)}`: '---') : '---'}</Text>
+        <Text style={styles.cardInfo}>{cardInfo.appInfo?.keyUID?.length ? `0x${Utils.hx(cardInfo.appInfo.keyUID)}` : '---'}</Text>
       </View>
       <View style={styles.cardInfoField}>
         <Text style={styles.cardInfoLabel}>Applet version</Text>
-        <Text style={styles.cardInfo}>{cardInfo.appInfo ? cardInfo.appInfo.getAppVersionString() : '---'}</Text>
+        <Text style={styles.cardInfo}>{cardInfo.appInfo && cardInfo.appInfo.appVersion !== undefined ? cardInfo.appInfo.getAppVersionString() : '---'}</Text>
       </View>
       <View style={styles.cardInfoField}>
         <Text style={styles.cardInfoLabel}>Pin retry</Text>
