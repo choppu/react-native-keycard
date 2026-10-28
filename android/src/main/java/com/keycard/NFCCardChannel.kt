@@ -67,12 +67,16 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>): BroadcastRec
         this.nfcAdapter = NfcAdapter.getDefaultAdapter(activity.getBaseContext());
         this.cardManager.start();
         this.started = true;
+
+        if (this.nfcAdapter != null) {
+          // The application context outlives the activity, which back finishes while the process lives on.
+          val filter: IntentFilter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
+          activity.getApplicationContext().registerReceiver(this, filter);
+        }
       }
 
       if (this.nfcAdapter != null) {
         this.activity = activity;
-        val filter: IntentFilter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
-        activity.registerReceiver(this, filter);
         this.nfcAdapter?.enableReaderMode(activity, this.cardManager, READER_FLAGS, null);
         return true;
       } else {
@@ -103,7 +107,12 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>): BroadcastRec
       }
     }
 
-    public fun startNFC(): Unit {
+    public fun startNFC(activity: Activity?): Unit {
+      // Reader mode belongs to the activity in front now: a reopened app runs in a new one.
+      if (activity != null) {
+        this.activity = activity;
+      }
+
       val haveTag: Boolean = synchronized(this.lock) {
         this.listening = true;
 

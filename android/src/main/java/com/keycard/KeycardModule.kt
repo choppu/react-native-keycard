@@ -50,7 +50,7 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
   }
 
   override fun startNFC(prompt: String, promise: Promise) {
-    cardChannel?.startNFC();
+    cardChannel?.startNFC(getReactApplicationContext().getCurrentActivity());
     promise.resolve(true);
   }
 
