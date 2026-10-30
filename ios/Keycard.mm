@@ -31,10 +31,10 @@
       [weakSelf emitOnKeycardDisconnected];
     }];
 
-    if([[result objectForKey:@"nfcStarted"]  isEqual: @true] && [[result objectForKey:@"isSuccess"]  isEqual: @true]) {
+    if([[result objectForKey:@"status"] isEqual: @"started"]) {
       resolve(@true);
-    } else if([[result objectForKey:@"nfcStarted"]  isEqual: @true] && [[result objectForKey:@"isSuccess"]  isEqual: @false]) {
-      reject(@"E_KEYCARD", @"already started", nil);
+    } else if([[result objectForKey:@"status"] isEqual: @"already_started"]) {
+      reject(@"E_KEYCARD", @"NFC scanning already started", nil);
     } else {
       reject(@"E_KEYCARD", @"unavailable", nil);
     }

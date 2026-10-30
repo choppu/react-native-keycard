@@ -4,14 +4,16 @@ import CoreNFC
 @available(iOS 13.0, *)
 open class KeycardController: NSObject {
 
-    /// Whether the device supports the Keycard reading
+    /// Whether the device supports Keycard reading.
     public static var isAvailable: Bool {
         return NFCNDEFReaderSession.readingAvailable
     }
 
     private var session: NFCTagReaderSession!
     private let onConnect: (NFCCardChannel) -> Void
+    private let onTagDisconnect: () -> Void
     private let onFailure: (Error) -> Void
+    private var availabilityTimer: DispatchSourceTimer?
     private let alertMessages: AlertMessages
 
     public typealias AlertMessages = (
@@ -20,21 +22,21 @@ open class KeycardController: NSObject {
         tagConnectionError: String
     )
 
-    /// User-facing alert messages to show on various events.
+    /// User-facing alert messages for NFC session events.
     public static let defaultAlertMessages = AlertMessages(
         moreThanOneTagFound: "More than one tag was found. Please present only one tag.",
         unsupportedTagType: "Unsupported Smart Card.",
         tagConnectionError: "Connection error. Please try again."
     )
 
-    /// Creates controller with callbacks for connection and disconnection events for a Keycard
-    /// - Parameter onConnect: Called when the app connected to the Keycard
-    /// - Parameter onFailure: Called when a reading session failed due to various reasons, including leaving the field
+    /// Creates a controller with callbacks for connect, field-exit and session-failure events.
     public init?(alertMessages: AlertMessages = KeycardController.defaultAlertMessages,
                  onConnect: @escaping (NFCCardChannel) -> Void,
+                 onTagDisconnect: @escaping () -> Void,
                  onFailure: @escaping (Error) -> Void) {
         self.alertMessages = alertMessages
         self.onConnect = onConnect
+        self.onTagDisconnect = onTagDisconnect
         self.onFailure = onFailure
         super.init()
         guard let session = NFCTagReaderSession(pollingOption: .iso14443, delegate: self) else {
@@ -43,51 +45,58 @@ open class KeycardController: NSObject {
         self.session = session
     }
 
-    /// Starts the session with a preconfigured message for display.
-    ///
-    /// When any NFC tags are detected, controller checks that it's only single tag detected
-    /// otherwise it restarts the polling and notifies user with `moreThanOneTagFound` alert message.
-    ///
-    /// If the detected tag is not ISO7816 tag, then the session is ended with error (`unsupportedTagType` alert message).
-    ///
-    /// Next, controller tries to connect to the tag. If connection successful, then the `onConnect` is called
-    /// on a background thread with a card channel passed in.
-    ///
-    /// If the connection to the tag failed, then the session is stopped with the `tagConnectionError` alert message.
-    ///
-    /// At any point, if the session is ended with error, the `onFailure` is called with the respective error.
-    ///
-    /// - Parameter alertMessage: message about usage of the NFC card
+    /// Starts the session; onConnect is invoked on a background thread.
     public func start(alertMessage: String? = nil) {
         setAlert(alertMessage)
         session.begin()
 
     }
 
-    /// Stops the session with error icon and message displayed.
-    /// - Parameter errorMessage: error message to display
+    /// Stops the session, showing an error icon and message.
     public func stop(errorMessage: String) {
         session.invalidate(errorMessage: errorMessage)
     }
 
-    /// Stops the session with success icon and optionally updated message displayed.
-    /// - Parameter alertMessage: alert message to update
+    /// Stops the session, showing a success icon and optional message.
     public func stop(alertMessage: String?) {
         setAlert(alertMessage)
         session.invalidate()
     }
 
-    /// Updates the alert message.
-    /// - Parameter alertMessage: alert message to display or nil (no-op)
+    /// Updates the alert message (nil is a no-op).
     public func setAlert(_ alertMessage: String?) {
         if let message = alertMessage {
             session.alertMessage = message
         }
     }
 
-    /// Restarts RF polling
+    /// Restarts RF polling.
     public func restartPolling() {
         session.restartPolling()
+    }
+
+    // CoreNFC has no tag-removal callback: poll tag.isAvailable to detect field exit (Android parity)
+    private static let availabilityPollInterval: DispatchTimeInterval = .milliseconds(100)
+
+    private func startAvailabilityMonitoring(for tag: NFCISO7816Tag) {
+        stopAvailabilityMonitoring()
+        let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+        timer.schedule(deadline: .now() + Self.availabilityPollInterval, repeating: Self.availabilityPollInterval)
+        timer.setEventHandler { [weak self] in
+            guard let self = self else { return }
+            guard !tag.isAvailable else { return }
+            self.stopAvailabilityMonitoring()
+            // card left the field: keep polling for reconnect, then notify KeycardImp (fires onKeycardDisconnected)
+            self.session.restartPolling()
+            self.onTagDisconnect()
+        }
+        timer.resume()
+        availabilityTimer = timer
+    }
+
+    private func stopAvailabilityMonitoring() {
+        availabilityTimer?.cancel()
+        availabilityTimer = nil
     }
 }
 
@@ -99,6 +108,7 @@ extension KeycardController: NFCTagReaderSessionDelegate {
     }
 
     public func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {
+        stopAvailabilityMonitoring()
         DispatchQueue.global().async { [unowned self] in
             self.onFailure(error)
         }
@@ -120,18 +130,15 @@ extension KeycardController: NFCTagReaderSessionDelegate {
                 self.stop(errorMessage: self.alertMessages.tagConnectionError)
                 return
             }
+            self.startAvailabilityMonitoring(for: tag)
             DispatchQueue.global().async {
                 self.onConnect(NFCCardChannel(tag: tag))
             }
         }
     }
 
-    // from Apple's exapmle code
+    // from Apple's sample code: poll tag availability, restart polling once the tag leaves the field
     func tagRemovalDetect(_ tag: NFCTag) {
-        // In the tag removal procedure, you connect to the tag and query for
-        // its availability. You restart RF polling when the tag becomes
-        // unavailable; otherwise, wait for certain period of time and repeat
-        // availability checking.
         session.connect(to: tag) { [weak self] error in
             guard let `self` = self else { return }
             guard error == nil && tag.isAvailable else {

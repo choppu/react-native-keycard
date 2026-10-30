@@ -59,8 +59,11 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
       promise.reject("not_initialized", "NFC is not initialized")
       return
     }
-    channel.startNFC(currentActivity())
-    promise.resolve(true)
+    when (channel.startNFC(currentActivity())) {
+      StartNFCResult.STARTED -> promise.resolve(true)
+      StartNFCResult.ALREADY_STARTED -> promise.reject("already_started", "NFC scanning already started")
+      StartNFCResult.UNAVAILABLE -> promise.reject("nfc_unavailable", "NFC is not available")
+    }
   }
 
   // `message` and `isError` are ignored: Android has no system NFC modal to surface them in (iOS-only concern).

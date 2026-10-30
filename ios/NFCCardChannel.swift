@@ -6,9 +6,11 @@ import os.log
 public class NFCCardChannel: NSObject {
     public enum Error: Swift.Error {
         case invalidAPDU
+        case transceiveTimeout
     }
 
     private let tag: NFCISO7816Tag
+    private static let transceiveTimeout: DispatchTimeInterval = .seconds(10)
 
     public init(tag: NFCISO7816Tag) {
         self.tag = tag
@@ -39,7 +41,6 @@ public class NFCCardChannel: NSObject {
 
     public func send(_ cmd: String) throws -> [UInt8] {
         dispatchPrecondition(condition: DispatchPredicate.notOnQueue(DispatchQueue.main))
-        os_log("CardChannel: sending ==> \(cmd)")
 
         typealias APDUResult = (responseData: Data, sw1: UInt8, sw2: UInt8, error: Swift.Error?)
 
@@ -54,7 +55,11 @@ public class NFCCardChannel: NSObject {
             result = ($0, $1, $2, $3)
             semaphore.signal()
         }
-        semaphore.wait()
+        let waited = semaphore.wait(timeout: .now() + Self.transceiveTimeout)
+        if waited == .timedOut {
+            os_log("CardChannel: transceive timed out, treating as tag loss")
+            throw Error.transceiveTimeout
+        }
 
         if let error = result.error {
             os_log("CardChannel: error: %@", error.localizedDescription)

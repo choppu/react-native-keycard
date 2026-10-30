@@ -7,10 +7,7 @@ import android.os.SystemClock
 import android.util.Log
 import java.io.IOException
 
-/**
- * Manages connection of NFC-based cards. Extends Thread and must be started using the start() method. The thread has
- * a runloop which monitors the connection and from which CardListener callbacks are called.
- */
+/** Manages card connection; CardListener callbacks are invoked from the runloop thread. */
 class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
   private var isoDep: IsoDep? = null
   @Volatile private var running = false
@@ -24,9 +21,6 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
     }
   }
 
-  /**
-   * @return true if connected, false otherwise
-   */
   fun isConnected(): Boolean {
     return try {
       synchronized(lock) {
@@ -57,7 +51,6 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
     try {
       val dep = IsoDep.get(tag)
       dep.connect()
-      // a half-coupled tag blocks transceive for the whole timeout
       dep.setTimeout(TRANSSCEIVE_TIMEOUT_MS)
       synchronized(lock) { isoDep = dep }
     } catch (e: Exception) {
@@ -65,9 +58,6 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
     }
   }
 
-  /**
-   * Runloop. Do NOT invoke directly. Use start() instead.
-   */
   override fun run() {
     running = true
     var connected = isConnected()
@@ -97,17 +87,11 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
     }
   }
 
-  /**
-   * Stops the run loop and interrupts the thread.
-   */
   fun shutdown() {
     running = false
     interrupt()
   }
 
-  /**
-   * Reacts on card connected by calling the callback of the registered listener.
-   */
   private fun onCardConnected() {
     val dep = synchronized(lock) { isoDep }
     if (dep != null) {
@@ -115,19 +99,11 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
     }
   }
 
-  /**
-   * Reacts on card disconnected by calling the callback of the registered listener.
-   */
   private fun onCardDisconnected() {
     invalidateTag()
     cardListener?.onDisconnected()
   }
 
-  /**
-   * Sets the card listener.
-   *
-   * @param listener the new listener
-   */
   fun setCardListener(listener: NFCCardChannel) {
     cardListener = listener
   }

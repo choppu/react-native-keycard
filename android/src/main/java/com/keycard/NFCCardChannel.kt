@@ -14,6 +14,12 @@ import androidx.core.content.ContextCompat
 import java.io.IOException
 import kotlin.reflect.KFunction0
 
+enum class StartNFCResult {
+  STARTED,
+  ALREADY_STARTED,
+  UNAVAILABLE,
+}
+
 class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastReceiver() {
   private var nfcAdapter: NfcAdapter? = null
   private var activity: Activity? = null
@@ -135,22 +141,42 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
     }
   }
 
-  fun startNFC(activity: Activity?) {
-    val wasStarted = synchronized(lock) { started }
-    if (!wasStarted) {
-      start(activity)
+  fun startNFC(activity: Activity?): StartNFCResult {
+    // claim the session atomically so concurrent calls can't both start
+    val claimed = synchronized(lock) {
+      if (listening) {
+        false
+      } else {
+        listening = true
+        true
+      }
+    }
+    if (!claimed) {
+      return StartNFCResult.ALREADY_STARTED
     }
 
-    val haveTag = synchronized(lock) {
-      listening = true
-      isoDep != null
+    if (!synchronized(lock) { started }) {
+      // first-time setup; on failure release the claim so a later startNFC can retry
+      if (!start(activity)) {
+        synchronized(lock) { listening = false }
+        return StartNFCResult.UNAVAILABLE
+      }
     }
+
+    val adapter = synchronized(lock) { nfcAdapter }
+    if (adapter == null) {
+      synchronized(lock) { listening = false }
+      return StartNFCResult.UNAVAILABLE
+    }
+
+    val haveTag = synchronized(lock) { isoDep != null }
 
     if (haveTag) {
       cardEvents["onKeycardConnected"]?.invoke()
     } else {
       restartPolling()
     }
+    return StartNFCResult.STARTED
   }
 
   fun stopNFC() {

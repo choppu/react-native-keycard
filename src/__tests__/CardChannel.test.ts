@@ -24,17 +24,18 @@ describe('NFCCardChannel.send', () => {
     expect(resp.sw).toBe(0x9000);
   });
 
-  it('wraps a native tag-loss rejection as CardIOError carrying the message', async () => {
+  it('wraps an Android tag-loss rejection as CardIOError carrying the message', async () => {
     mockSend.mockRejectedValue(new Error('Tag was lost.'));
     await expect(new NFCCardChannel().send(cmd)).rejects.toThrow(
       /CardIO Error: .*Tag was lost\./
     );
   });
 
-  it('wraps an iOS tag-loss rejection the same way', async () => {
-    mockSend.mockRejectedValue(new Error('NFCError:102'));
+  it('wraps an iOS tag-loss rejection with the same canonical message', async () => {
+    // canonical "Tag was lost." on both platforms (iOS used to reject with "NFCError:102")
+    mockSend.mockRejectedValue(new Error('Tag was lost.'));
     await expect(new NFCCardChannel().send(cmd)).rejects.toThrow(
-      /CardIO Error: .*NFCError:102/
+      /CardIO Error: .*Tag was lost\./
     );
   });
 
