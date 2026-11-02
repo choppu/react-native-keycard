@@ -357,13 +357,32 @@ sends a Keycard APDU command. Low-level `send` method.
 
 * `cmd` [APDUCommand](https://github.com/choppu/keycard-sdk/blob/master/src/apdu-command.ts): a command to send.
 
-Returns `Promise`<[APDUResponse](https://github.com/choppu/keycard-sdk/blob/master/src/apdu-response.ts)>.
+Returns `Promise`<[APDUResponse](https://github.com/choppu/keycard-sdk/blob/master/src/apdu-response.ts)>. Rejects with `CardLostError` if the card stops answering, see [Recovering a lost card](#recovering-a-lost-card).
 
 #### isConnected
 
 checks Keycard connection status.
 
 Returns `boolean`.
+
+### Recovering a lost card
+
+Moving the card a few millimetres drops the link. Polling restarts on its own and `onKeycardConnected` fires once the card is found again, so retry from that event instead of calling `stopNFC`.
+
+```ts
+try {
+  await keycardManager.runOnSecureChannel(channel, PAIRED, args, doSomething);
+} catch (err) {
+  // not instanceof: keycard-sdk re-throws the error as its own KManagerError
+  if (RNKeycard.CardLostError.is(err)) {
+    // re-position the card, then retry from onKeycardConnected
+    return;
+  }
+
+  RNKeycard.Core.stopNFC();
+  // report the failure
+}
+```
 
 ### `RNKeycard.PairingStorage`
 
