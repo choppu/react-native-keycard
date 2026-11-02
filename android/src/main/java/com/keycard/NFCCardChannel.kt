@@ -91,7 +91,7 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
     if (firstSetup) {
       synchronized(lock) { this.activity = activity }
       val filter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
-      ContextCompat.registerReceiver(activity, this, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+      ContextCompat.registerReceiver(activity.applicationContext, this, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
       adapter.enableReaderMode(activity, cardManager, READER_FLAGS, null)
     }
     return true
@@ -103,7 +103,7 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
     if (act != null && adapter != null) {
       try {
         adapter.disableReaderMode(act)
-        act.unregisterReceiver(this)
+        act.applicationContext.unregisterReceiver(this)
       } catch (e: Exception) {
         log("stop: " + e.message)
       }
@@ -170,9 +170,15 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
       return StartNFCResult.UNAVAILABLE
     }
 
-    val haveTag = synchronized(lock) { isoDep != null }
+    // a reopened app runs in a new activity: reader mode is bound to the old one, and so is its tag
+    val armedOn = synchronized(lock) { this.activity }
+    if (activity != null && activity !== armedOn) {
+      synchronized(lock) { this.activity = activity }
+      restartPolling()
+      return StartNFCResult.STARTED
+    }
 
-    if (haveTag) {
+    if (synchronized(lock) { isoDep != null }) {
       cardEvents["onKeycardConnected"]?.invoke()
     } else {
       restartPolling()
