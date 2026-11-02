@@ -1,4 +1,5 @@
 import Crypto from 'react-native-quick-crypto';
+import { bytesToHex } from '../../src/utils';
 
 export namespace Utils {
   export const pairingPasswordToSecret = (pairingPassword: string): Uint8Array => {
@@ -10,11 +11,6 @@ export namespace Utils {
   }
 
   export function hx(arr?: Uint8Array): string {
-    let result = "";
-    for (const value of arr ?? []) {
-      result += value.toString(16).padStart(2, "0");
-    }
-
-    return result;
+    return bytesToHex(arr ?? new Uint8Array());
   }
 }
