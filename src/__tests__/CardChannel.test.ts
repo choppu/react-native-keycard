@@ -1,4 +1,5 @@
 import { NFCCardChannel } from '../CardChannel';
+import { CardLostError } from '../CardLostError';
 
 const mockSend = jest.fn();
 
@@ -24,19 +25,13 @@ describe('NFCCardChannel.send', () => {
     expect(resp.sw).toBe(0x9000);
   });
 
-  it('wraps an Android tag-loss rejection as CardIOError carrying the message', async () => {
-    mockSend.mockRejectedValue(new Error('Tag was lost.'));
-    await expect(new NFCCardChannel().send(cmd)).rejects.toThrow(
-      /CardIO Error: .*Tag was lost\./
+  it('wraps a tag-loss rejection as a retryable CardLostError', async () => {
+    mockSend.mockRejectedValue(
+      Object.assign(new Error('Tag was lost.'), { code: 'KEYCARD_TAG_LOST' })
     );
-  });
 
-  it('wraps an iOS tag-loss rejection with the same canonical message', async () => {
-    // canonical "Tag was lost." on both platforms (iOS used to reject with "NFCError:102")
-    mockSend.mockRejectedValue(new Error('Tag was lost.'));
-    await expect(new NFCCardChannel().send(cmd)).rejects.toThrow(
-      /CardIO Error: .*Tag was lost\./
-    );
+    await expect(new NFCCardChannel().send(cmd)).rejects.toThrow(CardLostError);
+    await expect(new NFCCardChannel().send(cmd)).rejects.toThrow(/Tag was lost\./);
   });
 
   it('wraps a resolved error state as the generic channel error', async () => {
