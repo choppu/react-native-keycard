@@ -357,7 +357,7 @@ sends a Keycard APDU command. Low-level `send` method.
 
 * `cmd` [APDUCommand](https://github.com/choppu/keycard-sdk/blob/master/src/apdu-command.ts): a command to send.
 
-Returns `Promise`<[APDUResponse](https://github.com/choppu/keycard-sdk/blob/master/src/apdu-response.ts)>. Rejects with `CardLostError` if the card stops answering, see [Recovering a lost card](#recovering-a-lost-card).
+Returns `Promise`<[APDUResponse](https://github.com/choppu/keycard-sdk/blob/master/src/apdu-response.ts)>. Rejects with `CardIOError` if the card stops answering, see [Recovering a lost card](#recovering-a-lost-card).
 
 #### isConnected
 
@@ -374,7 +374,7 @@ try {
   await keycardManager.runOnSecureChannel(channel, PAIRED, args, doSomething);
 } catch (err) {
   // not instanceof: keycard-sdk re-throws the error as its own KManagerError
-  if (RNKeycard.CardLostError.is(err)) {
+  if (RNKeycard.NFCCardChannel.isCardLost(err)) {
     // re-position the card, then retry from onKeycardConnected
     return;
   }

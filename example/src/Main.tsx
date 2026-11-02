@@ -478,7 +478,7 @@ const Main = () => {
       }
     } catch (err: any) {
       // a lost card is recoverable: native keeps polling, so wait for onKeycardConnected
-      if (RNKeycard.CardLostError.is(err)) {
+      if (RNKeycard.NFCCardChannel.isCardLost(err)) {
         showCardLost();
         return;
       }
