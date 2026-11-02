@@ -77,6 +77,7 @@ open class KeycardController: NSObject {
 
     // CoreNFC has no tag-removal callback: poll tag.isAvailable to detect field exit (Android parity)
     private static let availabilityPollInterval: DispatchTimeInterval = .milliseconds(100)
+    // losing the tag re-arms polling and the card is usually back within a few polls; don't report the blip
     private static let availabilityDropAfterMisses = 3
 
     private func startAvailabilityMonitoring(for tag: NFCISO7816Tag) {
@@ -87,7 +88,6 @@ open class KeycardController: NSObject {
         timer.setEventHandler { [weak self] in
             guard let self = self else { return }
             guard !tag.isAvailable else { misses = 0; return }
-            // isAvailable dips between commands, and restarting polling tears down a live link
             misses += 1
             guard misses >= Self.availabilityDropAfterMisses else { return }
             self.stopAvailabilityMonitoring()

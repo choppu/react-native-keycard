@@ -71,7 +71,6 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
           notifyTransition(connected)
         }
       } else if (connected) {
-        // closing on the first missed read would abort a link that a marginal couple survives
         misses++
         if (misses >= DROP_AFTER_MISSES) {
           misses = 0
@@ -122,7 +121,7 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
   companion object {
     private const val TAG = "NFCCardManager"
     private const val DEFAULT_LOOP_SLEEP_MS = 50L
-    // consecutive missed reads before the tag is declared lost
+    // a loss re-arms reader mode and the card is back within a few polls; don't report the blip
     private const val DROP_AFTER_MISSES = 3
     // a half-coupled tag blocks transceive for the whole timeout
     private const val TRANSSCEIVE_TIMEOUT_MS = 10000
