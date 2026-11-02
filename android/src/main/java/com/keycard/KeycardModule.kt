@@ -54,15 +54,10 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
   }
 
   override fun startNFC(prompt: String, promise: Promise) {
-    val channel = cardChannel
-    if (channel == null) {
-      promise.reject("not_initialized", "NFC is not initialized")
-      return
-    }
-    when (channel.startNFC(currentActivity())) {
+    when (cardChannel?.startNFC(currentActivity())) {
       StartNFCResult.STARTED -> promise.resolve(true)
       StartNFCResult.ALREADY_STARTED -> promise.reject("already_started", "NFC scanning already started")
-      StartNFCResult.UNAVAILABLE -> promise.reject("nfc_unavailable", "NFC is not available")
+      else -> promise.reject("nfc_unavailable", "NFC is not available")
     }
   }
 
