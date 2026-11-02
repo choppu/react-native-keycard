@@ -113,6 +113,7 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
       this.activity = null
       isoDep = null
     }
+    cardManager.invalidateTag()
     cardManager.shutdown()
   }
 
@@ -242,11 +243,7 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
   }
 
   fun isConnected(): Boolean {
-    return try {
-      synchronized(lock) { isoDep?.isConnected() == true }
-    } catch (e: SecurityException) {
-      false
-    }
+    return cardManager.isConnected()
   }
 
   companion object {

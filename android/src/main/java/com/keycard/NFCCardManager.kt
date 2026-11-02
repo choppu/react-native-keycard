@@ -54,36 +54,47 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
       dep.setTimeout(TRANSSCEIVE_TIMEOUT_MS)
       synchronized(lock) { isoDep = dep }
     } catch (e: Exception) {
-      Log.e(TAG, "Error connecting to tag")
+      Log.e(TAG, "Error connecting to tag", e)
     }
   }
 
   override fun run() {
     running = true
     var connected = isConnected()
+    var misses = 0
 
     while (running) {
-      val newConnected = isConnected()
-      if (newConnected != connected) {
-        connected = newConnected
-        Log.i(TAG, "tag " + (if (connected) "connected" else "disconnected"))
-
-        if (connected) {
-          try {
-            onCardConnected()
-          } catch (e: Exception) {
-            Log.e(TAG, "onCardConnected: " + e.message)
-          }
-        } else {
-          try {
-            onCardDisconnected()
-          } catch (e: Exception) {
-            Log.e(TAG, "onCardDisconnected: " + e.message)
-          }
+      if (isConnected()) {
+        misses = 0
+        if (!connected) {
+          connected = true
+          notifyTransition(connected)
+        }
+      } else if (connected) {
+        // closing on the first missed read would abort a link that a marginal couple survives
+        misses++
+        if (misses >= DROP_AFTER_MISSES) {
+          misses = 0
+          connected = false
+          notifyTransition(connected)
         }
       }
 
       SystemClock.sleep(loopSleepMS)
+    }
+  }
+
+  private fun notifyTransition(connected: Boolean) {
+    val transition = if (connected) "connected" else "disconnected"
+    Log.i(TAG, "tag " + transition)
+    try {
+      if (connected) {
+        onCardConnected()
+      } else {
+        onCardDisconnected()
+      }
+    } catch (e: Exception) {
+      Log.e(TAG, "error notifying tag " + transition + ": " + e.message)
     }
   }
 
@@ -111,6 +122,8 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
   companion object {
     private const val TAG = "NFCCardManager"
     private const val DEFAULT_LOOP_SLEEP_MS = 50L
+    // consecutive missed reads before the tag is declared lost
+    private const val DROP_AFTER_MISSES = 3
     // a half-coupled tag blocks transceive for the whole timeout
     private const val TRANSSCEIVE_TIMEOUT_MS = 10000
   }
