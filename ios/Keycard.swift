@@ -8,6 +8,8 @@ import os.log
   var onDisconnect: (() -> Void)? = nil
 
   static let TAG_LOST: String = "Tag was lost."
+  // must match KeycardModule.TAG_LOST_CODE
+  static let TAG_LOST_CODE: String = "KEYCARD_TAG_LOST"
 
   private static let nfcErrorDomain: String = "NFCError"
 
@@ -186,7 +188,7 @@ import os.log
   }
 
   private func tagLostResponse() -> [String : String] {
-    return ["data": "", "state": "error", "message": KeycardImp.TAG_LOST]
+    return ["data": "", "state": "error", "message": KeycardImp.TAG_LOST, "code": KeycardImp.TAG_LOST_CODE]
   }
 
   // edge-triggered: only the first tag-loss report for a channel acts, so poll and APDU timeout can't double-fire the disconnect

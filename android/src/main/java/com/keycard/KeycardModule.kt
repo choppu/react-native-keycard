@@ -50,7 +50,7 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
   }
 
   override fun isKeycardConnected(): Boolean {
-    return if (this.cardChannel == null) false else this.cardChannel!!.isConnected()
+    return cardChannel?.isConnected() ?: false
   }
 
   override fun startNFC(prompt: String, promise: Promise) {
@@ -87,7 +87,7 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
       }
       promise.resolve(response)
     } catch (e: TagLostException) {
-      promise.reject(e)
+      promise.reject(TAG_LOST_CODE, NFCCardChannel.TAG_LOST, e)
     } catch (e: IOException) {
       promise.resolve(response)
     } catch (e: Exception) {
@@ -101,5 +101,6 @@ class KeycardModule(reactContext: ReactApplicationContext) : NativeKeycardSpec(r
 
   companion object {
     const val NAME = NativeKeycardSpec.NAME
+    const val TAG_LOST_CODE: String = "KEYCARD_TAG_LOST"
   }
 }

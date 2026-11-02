@@ -65,7 +65,8 @@
     resolve(result);
   } else {
     NSString *message = [result objectForKey:@"message"];
-    reject(@"E_KEYCARD", message != nil ? message : @"Invalid APDUResponse", nil);
+    NSString *code = [result objectForKey:@"code"];
+    reject(code != nil ? code : @"E_KEYCARD", message != nil ? message : @"Invalid APDUResponse", nil);
   }
 };
 - (NSNumber *)isKeycardConnected {
