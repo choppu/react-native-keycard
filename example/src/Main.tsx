@@ -2,7 +2,6 @@ import React from 'react';
 import { View } from 'react-native';
 import RNKeycard from 'react-native-keycard';
 import { CardInitializeError, CardLoadKeyError, CardPairingError, CardPinVerificationError, defaultPairingPassword, KeycardManager, KManagerError } from 'keycard-sdk/dist/keycard-manager';
-import { CardIOError } from 'keycard-sdk/dist/apdu-exception';
 import { LocalPairingStorage } from '../../src/LocalPairingStorage';
 import { LocalWhitelistedPubKeysStorage } from '../../src/LocalWhitelistedPubKeysStorage';
 import NFCModal from './NFCModal';
@@ -204,6 +203,22 @@ const Main = () => {
     setlastScreenState(0);
   }, [stop, reset, screen, log, factoryReset, lastScreenState]);
 
+  const finishWithError = React.useCallback((errorMessage: string) => {
+    setPhase(Phase.Idle);
+    setScreen(Screen.Home);
+    setlastScreenState(0);
+    setCmdExecFailed(false);
+    setLogMessage([
+      ...log,
+      `${new Date(Date.now()).toLocaleString("en-GB")} - ${errorMessage}`
+    ]);
+  }, [log]);
+
+  const showCardLost = React.useCallback((): void => {
+    setModalHeader('Card lost');
+    setModalPrompt('Re-position your Keycard on the NFC sensor.');
+  }, []);
+
   const handleCardError = React.useCallback((errorCode: number, errorMessage: string, pRetry: number) => {
     setCmdExecFailed(true);
     switch (errorCode) {
@@ -227,17 +242,10 @@ const Main = () => {
         setPhase(Phase.CardLoadKey);
         break;
       default:
-        setPhase(Phase.Idle);
-        setScreen(Screen.Home);
-        setlastScreenState(0);
-        setCmdExecFailed(false);
-        setLogMessage([
-          ...log,
-          `${new Date(Date.now()).toLocaleString("en-GB")} - ${errorMessage}`
-        ]);
+        finishWithError(errorMessage);
         break;
     }
-  }, [log, screen, phase, cmdExecFailed, pinRetry]);
+  }, [finishWithError]);
 
   const checkCmdExec = React.useCallback((responseData: KeycardManagerResponse, successMessage?: string) => {
     stop();
@@ -469,9 +477,9 @@ const Main = () => {
           break;
       }
     } catch (err: any) {
-      if (err instanceof CardIOError) {
-        setModalHeader('Card lost');
-        setModalPrompt('Re-position your Keycard on the NFC sensor.');
+      // a lost card is recoverable: native keeps polling, so wait for onKeycardConnected
+      if (RNKeycard.CardLostError.is(err)) {
+        showCardLost();
         return;
       }
 
@@ -482,20 +490,16 @@ const Main = () => {
         const pRetry = (err.cardData.pinRetry != undefined) ? err.cardData.pinRetry : pinRetry;
         handleCardError(err.errorCode, err.message, pRetry);
       } else {
-        setScreen(Screen.Home);
-        setlastScreenState(0);
-        setLogMessage([
-          ...log,
-          `${new Date(Date.now()).toLocaleString("en-GB")} - ${err.message}`
-        ]);
+        finishWithError(err.message);
       }
       stop();
     }
-  }, [stop, createMnemonic, loadMnemonic, exportKey, removeKey, changePIN, changePUK, getCardInfo, changePairing, unpair, unpairOthers, phase, log, screen, cardInfo]);
+  }, [stop, createMnemonic, loadMnemonic, exportKey, removeKey, changePIN, changePUK, getCardInfo, changePairing, unpair, unpairOthers, phase, log, screen, cardInfo, finishWithError]);
 
   React.useEffect(() => {
     screenRef.current = screen;
     const onConnect = RNKeycard.Core.onKeycardConnected(handleCardConnected);
+    const onDisconnect = RNKeycard.Core.onKeycardDisconnected(showCardLost);
     const onCardInitialized = kManager.emitter.subscribe("card-initialized", handleCardInitialized);
     const onCardAuthentic = kManager.emitter.subscribe("card-authentic", handleCardAuthentic);
     const onCardPaired = kManager.emitter.subscribe("card-paired", handleCardPaired);
@@ -505,6 +509,7 @@ const Main = () => {
 
     return () => {
       onConnect.remove();
+      onDisconnect.remove();
       onCardInitialized.unsubscribe();
       onCardAuthentic.unsubscribe();
       onCardPaired.unsubscribe();
@@ -512,7 +517,7 @@ const Main = () => {
       onPinVerified.unsubscribe();
       onCmdSuccess.unsubscribe();
     };
-  }, [screen, log, phase, kManager, handleCardConnected, handleCardInitialized, handleCardAuthentic, handleCardPaired, handleSecureChannelOpened, handlePinVerified, handleCmdExecuted]);
+  }, [screen, log, phase, kManager, handleCardConnected, showCardLost, handleCardInitialized, handleCardAuthentic, handleCardPaired, handleSecureChannelOpened, handlePinVerified, handleCmdExecuted]);
 
   return (
     <View style={Styles.mainContainer}>
