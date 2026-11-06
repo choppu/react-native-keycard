@@ -237,9 +237,10 @@ class NFCCardChannel(keycardEvents: Map<String, KFunction0<Unit>>) : BroadcastRe
     } catch (e: Exception) {
       when (e) {
         is TagLostException, is SecurityException, is IllegalStateException -> {
-          // isConnected() stays true for a lost tag until it is closed
-          cardManager.invalidateTag()
-          restartPolling()
+          // a rediscovered tag may already have replaced the failed one: keep it
+          if (cardManager.invalidateTag(dep)) {
+            restartPolling()
+          }
           throw if (e is TagLostException) e else IOException("Tag disconnected", e)
         }
         is IllegalArgumentException -> throw IOException("Malformed card response", e)
