@@ -13,16 +13,17 @@ import os.log
 
   private static let nfcErrorDomain: String = "NFCError"
 
-  private static let nfcTagNotFound = 100
-  private static let nfcTagLost = 101
-  private static let nfcTagNotAvailable = 102
-  private static let tagLostCodes: Set<Int> = [nfcTagNotFound, nfcTagLost, nfcTagNotAvailable]
+  // NFCReaderError codes
+  private static let tagConnectionLost = 100
+  private static let retryExceeded = 101
+  private static let tagResponseError = 102
+  private static let tagLostCodes: Set<Int> = [tagConnectionLost, retryExceeded, tagResponseError]
 
   // codes that invalidate the reader session
-  private static let nfcTagConnectFailed = 200
-  private static let nfcOperationNotAvailable = 201
-  private static let nfcOperationTimeout = 202
-  private static let nfcOperationCancelled = 203
+  private static let userCanceled = 200
+  private static let sessionTimeout = 201
+  private static let sessionTerminatedUnexpectedly = 202
+  private static let systemIsBusy = 203
 
   private var _keycardController: Any? = nil
 
@@ -120,9 +121,9 @@ import os.log
           let nsError = error as NSError
           if nsError.domain == KeycardImp.nfcErrorDomain {
             switch nsError.code {
-            case KeycardImp.nfcTagConnectFailed, KeycardImp.nfcOperationCancelled:
+            case KeycardImp.userCanceled:
               onUserCancel()
-            case KeycardImp.nfcOperationNotAvailable, KeycardImp.nfcOperationTimeout:
+            case KeycardImp.sessionTimeout, KeycardImp.sessionTerminatedUnexpectedly, KeycardImp.systemIsBusy:
               onTimeout()
             default:
               break
@@ -223,7 +224,7 @@ import os.log
   public func send(_ apdu: String) -> [String : String] {
     let channel = withStateLock { self.cardChannel }
     guard let channel = channel else {
-      cardLost(code: KeycardImp.nfcTagNotFound)
+      cardLost(code: KeycardImp.tagConnectionLost)
       return tagLostResponse()
     }
 
