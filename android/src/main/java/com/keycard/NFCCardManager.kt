@@ -22,20 +22,27 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
   }
 
   fun isConnected(): Boolean {
+    return connectedTag() != null
+  }
+
+  private fun connectedTag(): IsoDep? {
     return try {
       synchronized(lock) {
         val dep = isoDep
-        dep != null && dep.isConnected()
+        if (dep != null && dep.isConnected()) dep else null
       }
     } catch (e: Exception) {
-      false
+      null
     }
   }
 
-  // isConnected() stays true for a lost tag until it is closed
-  fun invalidateTag() {
+  // isConnected() stays true for a lost tag until it is closed; a tag that was already replaced is left alone
+  fun invalidateTag(expected: IsoDep? = null): Boolean {
     val dep = synchronized(lock) {
       val current = isoDep
+      if (expected != null && current !== expected) {
+        return false
+      }
       isoDep = null
       current
     }
@@ -44,6 +51,7 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
     } catch (e: Exception) {
       Log.e(TAG, "invalidateTag: " + e.message)
     }
+    return true
   }
 
   override fun onTagDiscovered(tag: Tag) {
@@ -60,22 +68,25 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
 
   override fun run() {
     running = true
-    var connected = isConnected()
+    // tracks the tag, not presence: a rediscovery within the miss window replaces it without a gap
+    var reported: IsoDep? = null
     var misses = 0
 
     while (running) {
-      if (isConnected()) {
+      val dep = connectedTag()
+      if (dep != null) {
         misses = 0
-        if (!connected) {
-          connected = true
-          notifyTransition(connected)
+        if (dep !== reported) {
+          reported = dep
+          notifyTransition(dep)
         }
-      } else if (connected) {
+      } else if (reported != null) {
         misses++
         if (misses >= DROP_AFTER_MISSES) {
           misses = 0
-          connected = false
-          notifyTransition(connected)
+          invalidateTag(reported)
+          reported = null
+          notifyTransition(null)
         }
       }
 
@@ -83,14 +94,14 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
     }
   }
 
-  private fun notifyTransition(connected: Boolean) {
-    val transition = if (connected) "connected" else "disconnected"
+  private fun notifyTransition(dep: IsoDep?) {
+    val transition = if (dep != null) "connected" else "disconnected"
     Log.i(TAG, "tag " + transition)
     try {
-      if (connected) {
-        onCardConnected()
+      if (dep != null) {
+        cardListener?.onConnected(dep)
       } else {
-        onCardDisconnected()
+        cardListener?.onDisconnected()
       }
     } catch (e: Exception) {
       Log.e(TAG, "error notifying tag " + transition + ": " + e.message)
@@ -100,18 +111,6 @@ class NFCCardManager(loopSleepMS: Long?) : Thread(), NfcAdapter.ReaderCallback {
   fun shutdown() {
     running = false
     interrupt()
-  }
-
-  private fun onCardConnected() {
-    val dep = synchronized(lock) { isoDep }
-    if (dep != null) {
-      cardListener?.onConnected(dep)
-    }
-  }
-
-  private fun onCardDisconnected() {
-    invalidateTag()
-    cardListener?.onDisconnected()
   }
 
   fun setCardListener(listener: NFCCardChannel) {
