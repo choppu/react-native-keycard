@@ -14,6 +14,7 @@ open class KeycardController: NSObject {
     private let onTagDisconnect: () -> Void
     private let onFailure: (Error) -> Void
     private var availabilityTimer: DispatchSourceTimer?
+    private let timerLock = NSLock()
     private let alertMessages: AlertMessages
 
     public typealias AlertMessages = (
@@ -72,6 +73,8 @@ open class KeycardController: NSObject {
 
     /// Restarts RF polling.
     public func restartPolling() {
+        // the old tag's monitor would restart polling again once it notices the loss
+        stopAvailabilityMonitoring()
         session.restartPolling()
     }
 
@@ -81,7 +84,6 @@ open class KeycardController: NSObject {
     private static let availabilityDropAfterMisses = 3
 
     private func startAvailabilityMonitoring(for tag: NFCISO7816Tag) {
-        stopAvailabilityMonitoring()
         let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
         timer.schedule(deadline: .now() + Self.availabilityPollInterval, repeating: Self.availabilityPollInterval)
         var misses = 0
@@ -90,18 +92,25 @@ open class KeycardController: NSObject {
             guard !tag.isAvailable else { misses = 0; return }
             misses += 1
             guard misses >= Self.availabilityDropAfterMisses else { return }
-            self.stopAvailabilityMonitoring()
             // card left the field: keep polling for reconnect, then notify KeycardImp (fires onKeycardDisconnected)
-            self.session.restartPolling()
+            self.restartPolling()
             self.onTagDisconnect()
         }
+        replaceAvailabilityTimer(with: timer)
         timer.resume()
-        availabilityTimer = timer
     }
 
     private func stopAvailabilityMonitoring() {
-        availabilityTimer?.cancel()
-        availabilityTimer = nil
+        replaceAvailabilityTimer(with: nil)
+    }
+
+    // called from the session queue, the timer queue and the APDU thread
+    private func replaceAvailabilityTimer(with timer: DispatchSourceTimer?) {
+        timerLock.lock()
+        let old = availabilityTimer
+        availabilityTimer = timer
+        timerLock.unlock()
+        old?.cancel()
     }
 }
 

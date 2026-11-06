@@ -101,7 +101,8 @@ import os.log
       },
       onTagDisconnect: {
         [weak self] in
-        self?.cardLost()
+        // the controller has already restarted polling
+        self?.cardLost(restartPolling: false)
       },
       onFailure: {
         [weak self] error in
@@ -192,7 +193,7 @@ import os.log
   }
 
   // edge-triggered: only the first tag-loss report for a channel acts, so poll and APDU timeout can't double-fire the disconnect
-  private func cardLost(code: Int? = nil) {
+  private func cardLost(code: Int? = nil, restartPolling: Bool = true) {
     let lost: Bool = withStateLock {
       guard self.cardChannel != nil else { return false }
       self.cardChannel = nil
@@ -212,7 +213,9 @@ import os.log
 
     if #available(iOS 13.0, *) {
       let controller: KeycardController? = withStateLock { self.keycardController }
-      controller?.restartPolling()
+      if restartPolling {
+        controller?.restartPolling()
+      }
       controller?.setAlert(self.nfcStartPrompt)
     }
   }
